@@ -27,7 +27,8 @@ const PlasmoOverlay = () => {
   setMantineColorScheme("light")
   return (
     <ThemeProvider>
-      <SideWidgetContainer />
+      {/*<SideWidgetContainer />*/}
+      <></>
     </ThemeProvider>
   )
 }

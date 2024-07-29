@@ -18,9 +18,9 @@ Task Description: "${text}"
 Instructions: Kindly compile a summary in accordance with the task description provided, utilizing the markdown format as indicated below.
 
 Output Format:
-- **Risk**: Low
-- **Impacted Area**: {impacted_area_based_on_ticket_description}
-- **Validation**: {content_needed_for_testers_to_validate}
+**Risk**: Low \n
+**Impacted Area**: {impacted_area_based_on_ticket_description} \n
+**Validation**: {content_needed_for_testers_to_validate}
 
 In the above, {impacted_area_based_on_ticket_description} refers to the areas impacted as inferred from the task description, and {content_needed_for_testers_to_validate} represents the critical validation path that the testing team needs to follow. Please note, the validation should only highlight the key paths and output sentence begins with the "Validate the".
 

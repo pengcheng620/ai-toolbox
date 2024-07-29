@@ -1,4 +1,4 @@
-## Little Idea, Implement Easily, Touch AI Effortlessly 🤖✨
+## Little Idea, Implement Fast, Touch AI Effortlessly 🤖✨
 
 ## Project Overview
 
@@ -18,7 +18,9 @@
 
 ### Key Features ✨
 - [x] **Jira Integration**: Automatically generate summaries and comments for testers, helping to streamline the communication process between developers and QA teams.
+- ![img.png](readme-source/Jira-summary-to-testers.png)
 - [ ] **GitHub Integration**: Automatically generate detailed PR descriptions based on the code changes, reducing the time developers spend on documentation and ensuring consistency.
+- ![img.png](readme-source/GitHub-Integration.png)
 - [ ] **AI-Translate**: Automatically translate text from one language to another when a user highlights some context, facilitating cross-border communication and collaboration.
 - [ ] **AI-Bot**: Implement a chatbot on the right side of the web interface that can answer common questions and provide assistance to employees, reducing the need for manual intervention.
 - [ ] **More little tools...**
