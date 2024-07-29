@@ -10,6 +10,14 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "@ai-sdk/azure": "^0.0.15",
+    "@heroicons/react": "^2.1.4",
+    "@mantine/core": "^7.11.1",
+    "@mantine/hooks": "^7.11.1",
+    "@plasmohq/storage": "^1.11.0",
+    "ai": "^3.2.34",
+    "clsx": "^2.1.1",
+    "marked": "^13.0.2",
     "plasmo": "0.88.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -22,6 +30,8 @@
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
     "postcss": "8.4.33",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
     "prettier": "3.2.4",
     "typescript": "5.3.3"
   },
