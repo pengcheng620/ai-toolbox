@@ -1,8 +1,8 @@
 {
-  "name": "ai-widget",
-  "displayName": "Ai widget",
+  "name": "ai-toolbox",
+  "displayName": "Ai toolbox",
   "version": "0.0.1",
-  "description": "An ai widget",
+  "description": "An ai toolbox",
   "author": "pengcheng",
   "scripts": {
     "dev": "plasmo dev",
