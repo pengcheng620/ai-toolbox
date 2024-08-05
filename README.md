@@ -17,12 +17,17 @@
     - Additional features will be added based on user feedback and evolving needs.
 
 ### Key Features ✨
-- [x] **Jira Integration**: Automatically generate summaries and comments for testers, helping to streamline the communication process between developers and QA teams.
-- ![img.png](readme-source/Jira-summary-to-testers.png)
-- [ ] **GitHub Integration**: Automatically generate detailed PR descriptions based on the code changes, reducing the time developers spend on documentation and ensuring consistency.
-- ![img.png](readme-source/GitHub-Integration.png)
-- [ ] **AI-Translate**: Automatically translate text from one language to another when a user highlights some context, facilitating cross-border communication and collaboration.
-- [ ] **AI-Bot**: Implement a chatbot on the right side of the web interface that can answer common questions and provide assistance to employees, reducing the need for manual intervention.
+- Specific Page Features:
+  - [x] **Jira Integration**: Automatically generate summaries and comments for testers, helping to streamline the communication process between developers and QA teams.
+  ![img.png](readme-source/Jira-summary-to-testers.png)
+  - [ ] **GitHub Integration**: Automatically generate detailed PR descriptions based on the code changes, reducing the time developers spend on documentation and ensuring consistency.
+  ![img.png](readme-source/GitHub-Integration.png)
+  - [ ] **Sprint Review Wiki**: Automatically generate sprint review wiki pages based on Jira tickets, providing a comprehensive overview of the sprint's progress.
+  - [ ] **?? Code Review Assistant ??**: Provide suggestions and best practices during code reviews, helping developers improve code quality and adhere to coding standards.
+- Common Page Features:
+  - [ ] **Selection-AI-Bot**: Implement a popup chatbot over selected text that can provide relevant information or suggestions based on the context, enhancing productivity.
+  - [ ] **AI-Translate**: Automatically translate text from one language to another when a user highlights some context, facilitating cross-border communication and collaboration.
+  - [ ] **AI-Bot**: Implement a chatbot on the right side of the web interface that can answer common questions and provide assistance to employees, reducing the need for manual intervention.
 - [ ] **More little tools...**
 
 ### Benefits 🎉
