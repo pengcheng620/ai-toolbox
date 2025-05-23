@@ -14,11 +14,12 @@
     "@heroicons/react": "^2.1.4",
     "@mantine/core": "^7.11.1",
     "@mantine/hooks": "^7.11.1",
+    "@plasmohq/messaging": "^0.7.1",
     "@plasmohq/storage": "^1.11.0",
     "ai": "^3.2.34",
     "clsx": "^2.1.1",
     "marked": "^13.0.2",
-    "plasmo": "0.88.0",
+    "plasmo": "0.90.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "tailwindcss": "3.4.1"
