@@ -1,7 +1,7 @@
 """FastAPI application main module."""
 
-import logging
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -94,29 +94,18 @@ async def health_check():
     }
 
 
-# 添加调试端点
-@app.options("/{full_path:path}")
-async def handle_options(full_path: str):
-    """Handle all OPTIONS requests for CORS preflight."""
-    logger.info(f"OPTIONS request to: {full_path}")
-    return {"message": "CORS preflight OK"}
-
-
 @app.get("/debug/cors")
 async def debug_cors():
     """Debug CORS configuration."""
+    logger.info(f"DEBUG_CORS_ENDPOINT: settings.cors_origins_list is {settings.cors_origins_list}")
     return {
-        "cors_origins": settings.cors_origins_list,
-        "cors_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
-        "cors_headers": [
-            "Accept",
-            "Accept-Language", 
-            "Content-Language",
-            "Content-Type",
-            "Authorization",
-            "X-Requested-With",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers",
+        "cors_origins_from_settings": settings.cors_origins_list,
+        "cors_methods_configured": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
+        "cors_headers_configured": [
+            "Accept", "Accept-Language", "Content-Language", "Content-Type",
+            "Authorization", "X-Requested-With", "Origin",
+            "Access-Control-Request-Method", "Access-Control-Request-Headers",
         ],
+        "raw_CORS_ORIGINS_env_var": os.getenv("CORS_ORIGINS"),
+        "pydantic_settings_cors_origins_field": settings.cors_origins,
     }

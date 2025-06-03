@@ -29,7 +29,7 @@ class Settings(BaseSettings):
         default="localhost,127.0.0.1", alias="ALLOWED_HOSTS"
     )
     cors_origins: str = Field(
-        default="chrome-extension://*,http://localhost:3000",
+        default="chrome-extension://*,http://localhost:3000,https://jira.autodesk.com",
         alias="CORS_ORIGINS",
     )
 
@@ -53,6 +53,9 @@ class Settings(BaseSettings):
         default="https://cognitiveservices.azure.com/.default", alias="MS_OAUTH_SCOPE"
     )
     ms_oauth_url: str = Field(default="", alias="MS_OAUTH_URL")
+    
+    # Authentication method selection
+    use_oauth_auth: bool = Field(default=True, alias="USE_OAUTH_AUTH")
 
     # OpenAI (fallback)
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
@@ -109,10 +112,7 @@ class Settings(BaseSettings):
         """Check if running in production mode."""
         return self.environment.lower() in ("production", "prod")
 
-    @property
-    def use_oauth_auth(self) -> bool:
-        """Check if OAuth authentication should be used."""
-        return bool(self.ms_oauth_client_id and self.ms_oauth_client_secret)
+
 
 
 # Global settings instance

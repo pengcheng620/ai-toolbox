@@ -1,186 +1,153 @@
-# 前端更新总结
+# 前端API更新说明 🚀
 
-## 🔄 架构变更
+## 更新概述
 
-### 1. API 调用架构升级
+根据后端API的最新变化，前端已完成以下重要更新：
 
-**之前**: 前端直接调用 Azure OpenAI API
+### 🔄 API端点更新
+- **Jira API**: 从 `/ai/jira/comment` 更新为 `/ai/jira/generate`
+- **GitHub API**: 保持 `/ai/github/pr` 不变
+- **默认模式**: 所有API调用默认使用流式响应
+
+### ✨ 新功能特性
+
+#### 1. 流式响应为默认模式
+- **实时生成**: 所有内容都采用逐步显示方式
+- **即时反馈**: 用户可以立即看到生成进度
+- **更好体验**: 无需等待完整响应即可看到内容
+
+#### 2. 简化的用户界面
+- **统一体验**: 所有功能都使用相同的实时生成模式
+- **清晰状态**: 明确显示"实时生成中..."状态
+- **无需选择**: 移除了模式切换，简化用户操作
+
+#### 3. 优化的技术实现
+- **代码简化**: 移除了复杂的模式切换逻辑
+- **性能提升**: 专注于流式响应的优化
+- **维护性**: 更简洁的代码结构
+
+## 📁 更新文件列表
+
+### 核心文件
+- `src/background.ts` - 后台脚本，专注流式响应处理
+- `src/hook/use-api-messaging.tsx` - 简化的Messaging hooks
+- `src/components/jira/add-comment-button.tsx` - Jira组件，实时生成
+- `src/components/github/add-description.tsx` - GitHub组件，实时生成
+- `src/components/debug/messaging-test.tsx` - 测试组件，流式响应演示
+
+## 🎯 使用方式
+
+### 简化的API调用
 ```typescript
-// 旧方式 - 直接使用 AI SDK
-import { streamText } from "ai"
-import { awAzure } from "../../../lib/ai/azure"
-
-const result = await streamText({
-  model: awAzure("gpt-4o"),
-  messages: generateMessages(description)
+// 所有API调用都使用流式响应
+const result = await execute(requestData, {
+  onChunk: (chunk, fullText) => {
+    console.log('实时内容:', fullText)
+    updateUI(fullText)
+  }
 })
 ```
 
-**现在**: 前端调用后端 API 服务
+### Jira评论生成
 ```typescript
-// 新方式 - 通过后端 API
-import { apiClient } from "../../../lib/servers/api-config"
+const result = await execute({
+  task_description: description,
+  task_type: "development",
+  context: { source: "jira_page" }
+}, {
+  onChunk: (chunk, fullText) => {
+    setCommentAreaRealtime(fullText)
+  }
+})
+```
 
-const result = await apiClient.generateGitHubPR({
+### GitHub PR描述生成
+```typescript
+const result = await execute({
   pr_title: prTitle,
   code_changes: description,
   branch_name: branchName
+}, {
+  onChunk: (chunk, fullText) => {
+    setCommentAreaRealtime(fullText)
+  }
 })
 ```
 
-### 2. 新增文件结构
+## 🔧 技术实现
 
-```
-lib/
-├── config/
-│   ├── environment.ts     # 环境配置管理
-│   └── storage.ts         # 存储配置管理 (@plasmohq/storage)
-├── servers/
-│   └── api-config.ts      # API 客户端配置
-└── utils/
-    └── styles.ts          # 样式工具 (clsx)
+### 后台脚本简化
+- **专注流式**: 移除非流式响应处理
+- **自动配置**: 自动为所有请求添加`stream: true`
+- **错误处理**: 针对流式响应优化的错误处理
 
-src/
-└── hook/
-    └── use-api.tsx        # API 调用 hooks
-```
+### 前端组件优化
+- **实时更新**: 所有组件都支持内容实时显示
+- **状态统一**: 统一的"实时生成中..."状态显示
+- **代码简化**: 移除模式切换相关代码
 
-## 🛠️ 技术改进
+### Hook简化
+- **单一模式**: 只支持流式响应模式
+- **类型简化**: 简化的TypeScript类型定义
+- **回调优化**: 专注于onChunk回调的性能
 
-### 1. 状态管理优化
+## 🎨 用户体验改进
 
-使用自定义 hooks 简化状态管理：
+### 统一的实时体验
+- **即时反馈**: 内容开始生成即可看到
+- **进度可见**: 实时显示生成进度
+- **无需等待**: 不再需要等待完整响应
 
-```typescript
-// 之前
-const [isLoading, setIsLoading] = useState(false)
-const [error, setError] = useState<string | null>(null)
+### 简化的交互
+- **一键生成**: 点击即开始实时生成
+- **状态清晰**: 明确的"实时生成中..."提示
+- **自动填充**: 内容实时填入表单字段
 
-// 现在
-const { execute, loading, error } = useGitHubPR()
-```
+## 🧪 测试功能
 
-### 2. 错误处理统一
+### 调试组件
+- **流式演示**: 实时生成内容演示
+- **性能测试**: 流式响应性能测试
+- **错误测试**: 各种错误场景测试
 
-集中的错误处理和用户通知：
+### 使用方法
+1. 访问包含调试组件的页面
+2. 点击测试按钮观察实时生成效果
+3. 查看"实时生成内容"区域的内容更新
 
-```typescript
-// 自动错误通知
-useEffect(() => {
-  if (error) {
-    addNotification({
-      type: "error",
-      title: "生成失败",
-      message: error
-    })
-  }
-}, [error, addNotification])
-```
+## 🚀 性能优化
 
-### 3. 样式管理标准化
+### 流式响应优化
+- **内存效率**: 优化的流式内容处理
+- **响应速度**: 更快的首字节响应时间
+- **用户感知**: 更好的响应速度感知
 
-使用 `clsx` 进行条件样式管理：
+### 代码优化
+- **体积减少**: 移除不必要的模式切换代码
+- **执行效率**: 简化的执行路径
+- **维护性**: 更清晰的代码结构
 
-```typescript
-import { getButtonStyles } from "../../../lib/utils/styles"
+## 🔮 未来计划
 
-// 动态样式
-<div className={getButtonStyles(loading)}>
-```
+### 进一步优化
+- **缓存机制**: 智能内容缓存
+- **预测生成**: 基于上下文的预测生成
+- **个性化**: 用户偏好的个性化生成
 
-### 4. 存储管理
+### 功能扩展
+- **模板系统**: 预定义的生成模板
+- **历史记录**: 生成内容历史管理
+- **批量处理**: 支持批量内容生成
 
-使用 `@plasmohq/storage` 管理扩展设置：
+## 📞 支持与反馈
 
-```typescript
-import { StorageHelper } from "./storage"
+如有问题或建议，请：
+1. 查看控制台日志获取详细信息
+2. 使用调试组件测试功能
+3. 提交Issue或联系开发团队
 
-// 保存用户偏好
-await StorageHelper.setUserPreferences({
-  autoGenerateOnLoad: true,
-  preferredLanguage: "zh"
-})
-```
+---
 
-## 📦 依赖利用
-
-基于 `package.json` 中的依赖：
-
-### 核心依赖
-- ✅ `@plasmohq/storage` - 扩展存储管理
-- ✅ `clsx` - 条件样式管理  
-- ✅ `@mantine/core` - UI 组件库
-- ✅ `@mantine/hooks` - 实用 hooks
-- ✅ `marked` - Markdown 处理
-- ✅ `@heroicons/react` - 图标库
-
-### 移除的依赖使用
-- ❌ `@ai-sdk/azure` - 不再直接使用
-- ❌ `ai` - 改为后端调用
-
-## 🔧 配置文件
-
-### 环境配置 (`lib/config/environment.ts`)
-```typescript
-export const environment = {
-  apiBaseUrl: "http://localhost:8000",
-  isDevelopment: true,
-  isProduction: false
-}
-```
-
-### API 配置 (`lib/servers/api-config.ts`)
-```typescript
-export const defaultApiConfig = {
-  baseUrl: apiBaseUrl,
-  apiVersion: "/api/v1",
-  endpoints: {
-    github: { pr: "/ai/github/pr" },
-    jira: { comment: "/ai/jira/comment" }
-  }
-}
-```
-
-## 🚀 组件更新
-
-### GitHub 组件 (`src/components/github/add-description.tsx`)
-- ✅ 使用 `useGitHubPR` hook
-- ✅ 集成错误处理
-- ✅ 使用样式工具
-- ✅ 改进用户体验
-
-### Jira 组件 (`src/components/jira/add-comment-button.tsx`)
-- ✅ 使用 `useJiraComment` hook
-- ✅ 集成错误处理
-- ✅ 使用样式工具
-- ✅ 改进用户体验
-
-## 🎯 优势
-
-1. **安全性**: 通过后端代理 API 调用，隐藏敏感信息
-2. **一致性**: 统一的错误处理和状态管理
-3. **可维护性**: 模块化架构，职责分离
-4. **用户体验**: 更好的加载状态和错误提示
-5. **扩展性**: 易于添加新的 API 端点和功能
-
-## 🔄 迁移指南
-
-### 开发环境设置
-
-1. 确保后端服务运行在 `http://localhost:8000`
-2. 前端会自动连接到后端 API
-3. 可通过存储设置修改 API 地址
-
-### 生产环境部署
-
-1. 配置正确的后端 API 地址
-2. 确保 CORS 设置正确
-3. 验证健康检查端点
-
-## 📝 下一步
-
-- [ ] 添加 API 重试机制
-- [ ] 实现离线模式支持
-- [ ] 添加更多用户偏好设置
-- [ ] 集成更多 Mantine 组件
-- [ ] 添加性能监控 
+**更新时间**: 2024年12月
+**版本**: v2.1.0 - 流式响应专版
+**特性**: 默认流式响应，简化用户体验 

@@ -59,13 +59,13 @@ def test_prompt_manager():
         config = prompt_manager.get_prompt_config('jira', 'TASK_COMMENT')
         print("  ✅ get_prompt_config: Success")
         
-        # Test generate_prompt
+        # Test generate_prompt with proper string arguments
         prompt = prompt_manager.generate_prompt(
             'jira', 
             'TASK_COMMENT',
-            "实现用户登录功能",
-            "development",
-            {"priority": "high"}
+            "实现用户登录功能",  # task_description as string
+            "development",      # task_type as string
+            {"priority": "high"}  # context as dict
         )
         print("  ✅ generate_prompt: Success")
         print(f"     Generated prompt length: {len(prompt)} characters")
@@ -92,13 +92,13 @@ def test_prompt_generation():
         {
             "service": "jira",
             "type": "TASK_COMMENT",
-            "args": ["实现用户注册功能", "development"],
+            "args": ["实现用户注册功能", "development", {"priority": "high"}],
             "name": "Jira Task Comment"
         },
         {
             "service": "github", 
             "type": "PR_DESCRIPTION",
-            "args": ["feat: 添加用户认证", "代码变更内容", "feature/auth"],
+            "args": ["feat: 添加用户认证", "代码变更内容", "feature/auth", ["commit1", "commit2"]],
             "name": "GitHub PR Description"
         },
         {

@@ -1,13 +1,14 @@
 """AI service API endpoints."""
 
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.services.azure_ai import azure_ai_service
 from app.utils.logger import get_logger
+from app.utils.stream_handler import StreamableRequest, create_streaming_response
 
 logger = get_logger(__name__)
 
@@ -15,7 +16,7 @@ router = APIRouter()
 
 
 # Request models
-class GenerateTextRequest(BaseModel):
+class GenerateTextRequest(StreamableRequest):
     """Request model for text generation."""
 
     prompt: str = Field(..., description="Input prompt for text generation")
@@ -36,7 +37,7 @@ class ChatMessage(BaseModel):
     content: str = Field(..., description="Message content")
 
 
-class ChatStreamRequest(BaseModel):
+class ChatStreamRequest(StreamableRequest):
     """Request model for streaming chat."""
 
     messages: List[ChatMessage] = Field(..., description="Chat messages")
@@ -49,7 +50,7 @@ class ChatStreamRequest(BaseModel):
     )
 
 
-class JiraCommentRequest(BaseModel):
+class JiraCommentRequest(StreamableRequest):
     """Request model for Jira comment generation."""
 
     task_description: str = Field(..., description="Jira task description")
@@ -59,7 +60,7 @@ class JiraCommentRequest(BaseModel):
     )
 
 
-class GitHubPRRequest(BaseModel):
+class GitHubPRRequest(StreamableRequest):
     """Request model for GitHub PR description generation."""
 
     pr_title: str = Field(..., description="Pull Request title")
@@ -128,101 +129,134 @@ async def health_check():
         raise HTTPException(status_code=503, detail="AI service unavailable")
 
 
-@router.post("/generate", response_model=GenerateTextResponse)
+@router.post("/generate", response_model=None)
 async def generate_text(request: GenerateTextRequest):
-    """Generate text using Azure OpenAI with LangChain."""
+    """Generate text using Azure OpenAI with LangChain. Supports both streaming and non-streaming."""
     try:
-        logger.info(f"Generating text with prompt length: {len(request.prompt)}")
+        logger.info(f"Generating text with prompt length: {len(request.prompt)}, stream: {request.stream}")
 
-        result = await azure_ai_service.generate_text(
-            prompt=request.prompt,
-            model=request.model or None,
-            max_tokens=request.max_tokens,
-            temperature=request.temperature,
-            system_message=request.system_message or None,
-        )
-
-        return GenerateTextResponse(**result)
+        if request.stream:
+            # Return streaming response
+            generator = azure_ai_service.generate_text_stream(
+                prompt=request.prompt,
+                model=request.model if request.model else None,
+                max_tokens=request.max_tokens,
+                temperature=request.temperature,
+                system_message=request.system_message if request.system_message else None,
+            )
+            return await create_streaming_response(generator, "Text generation")
+        else:
+            # Return non-streaming response
+            result = await azure_ai_service.generate_text(
+                prompt=request.prompt,
+                model=request.model if request.model else None,
+                max_tokens=request.max_tokens,
+                temperature=request.temperature,
+                system_message=request.system_message if request.system_message else None,
+            )
+            return GenerateTextResponse(**result)
 
     except Exception as e:
         logger.error(f"Text generation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/chat/stream")
+@router.post("/chat/stream", response_model=None)
 async def chat_stream(request: ChatStreamRequest):
-    """Generate streaming chat responses."""
+    """Generate chat responses. Supports both streaming and non-streaming based on stream parameter."""
     try:
-        logger.info(f"Starting chat stream with {len(request.messages)} messages")
+        logger.info(f"Starting chat with {len(request.messages)} messages, stream: {request.stream}")
 
         # Convert Pydantic models to dicts
         messages = [
             {"role": msg.role, "content": msg.content} for msg in request.messages
         ]
 
-        async def generate():
-            try:
-                async for chunk in azure_ai_service.generate_chat_stream(
-                    messages=messages,
-                    model=request.model or None,
+        if request.stream:
+            # Return streaming response
+            generator = azure_ai_service.generate_chat_stream(
+                messages=messages,
+                model=request.model if request.model else None,
+                max_tokens=request.max_tokens,
+                temperature=request.temperature,
+            )
+            return await create_streaming_response(generator, "Chat generation")
+        else:
+            # For non-streaming, use the last message as prompt
+            if messages:
+                last_message = messages[-1]["content"]
+                result = await azure_ai_service.generate_text(
+                    prompt=last_message,
+                    model=request.model if request.model else None,
                     max_tokens=request.max_tokens,
                     temperature=request.temperature,
-                ):
-                    yield f"data: {chunk}\n\n"
-                yield "data: [DONE]\n\n"
-            except Exception as e:
-                logger.error(f"Chat streaming error: {str(e)}")
-                yield f"data: Error: {str(e)}\n\n"
-
-        return StreamingResponse(
-            generate(),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "*",
-            },
-        )
+                )
+                return result
+            else:
+                raise HTTPException(status_code=400, detail="No messages provided")
 
     except Exception as e:
-        logger.error(f"Chat stream initialization failed: {str(e)}")
+        logger.error(f"Chat generation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/jira/generate", response_model=JiraCommentResponse)
+@router.post("/jira/generate", response_model=None)
 async def generate_jira_comment(request: JiraCommentRequest):
-    """Generate Jira task comment using specialized AI prompt."""
+    """Generate Jira task comment using specialized AI prompt. Supports both streaming and non-streaming."""
     try:
-        logger.info(f"Generating Jira comment for task type: {request.task_type}")
+        logger.info(f"Generating Jira comment for task type: {request.task_type}, stream: {request.stream}")
 
-        result = await azure_ai_service.generate_jira_comment(
-            task_description=request.task_description,
-            task_type=request.task_type,
-            context=request.context,
-        )
+        if request.stream:
+            # Return streaming response
+            generator = azure_ai_service.generate_jira_comment_stream(
+                task_description=request.task_description,
+                task_type=request.task_type,
+                context=request.context,
+            )
+            return await create_streaming_response(generator, "Jira comment generation")
+        else:
+            # Return non-streaming response
+            result = await azure_ai_service.generate_jira_comment(
+                task_description=request.task_description,
+                task_type=request.task_type,
+                context=request.context,
+            )
 
-        return JiraCommentResponse(**result)
+            # Check if there was an error and handle it properly
+            if result.get("error"):
+                raise HTTPException(status_code=500, detail=result["error"])
+
+            return JiraCommentResponse(**result)
 
     except Exception as e:
         logger.error(f"Jira comment generation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/github/pr", response_model=GitHubPRResponse)
+@router.post("/github/pr", response_model=None)
 async def generate_github_pr_description(request: GitHubPRRequest):
-    """Generate GitHub PR description using specialized AI prompt."""
+    """Generate GitHub PR description using specialized AI prompt. Supports both streaming and non-streaming."""
     try:
-        logger.info(f"Generating GitHub PR description for: {request.pr_title}")
+        logger.info(f"Generating GitHub PR description for: {request.pr_title}, stream: {request.stream}")
 
-        result = await azure_ai_service.generate_github_pr_description(
-            pr_title=request.pr_title,
-            code_changes=request.code_changes,
-            branch_name=request.branch_name,
-            commit_messages=request.commit_messages,
-        )
-
-        return GitHubPRResponse(**result)
+        if request.stream:
+            # Return streaming response
+            generator = azure_ai_service.generate_github_pr_description_stream(
+                pr_title=request.pr_title,
+                code_changes=request.code_changes,
+                branch_name=request.branch_name,
+                commit_messages=request.commit_messages,
+            )
+            return await create_streaming_response(generator, "GitHub PR description generation")
+        else:
+            # Return non-streaming response
+            result = await azure_ai_service.generate_github_pr_description(
+                pr_title=request.pr_title,
+                code_changes=request.code_changes,
+                branch_name=request.branch_name,
+                commit_messages=request.commit_messages,
+            )
+            return GitHubPRResponse(**result)
 
     except Exception as e:
         logger.error(f"GitHub PR description generation failed: {str(e)}")

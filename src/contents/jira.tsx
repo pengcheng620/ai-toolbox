@@ -7,10 +7,7 @@ import React from "react"
 import { createRoot } from "react-dom/client"
 
 import { AddCommentButton } from "~components/jira/add-comment-button"
-
-
-
-
+import MessagingTest from "~components/debug/messaging-test"
 
 export const config: PlasmoCSConfig = {
   matches: [
@@ -44,7 +41,13 @@ export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({
 }
 
 const PlasmoOverlay = () => {
-  return <AddCommentButton />
+  return (
+    <>
+      <AddCommentButton />
+      {/* 添加调试组件 - 仅在开发环境中显示 */}
+      {process.env.NODE_ENV === 'development' && <MessagingTest />}
+    </>
+  )
 }
 
 export default PlasmoOverlay

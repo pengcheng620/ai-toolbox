@@ -1,14 +1,21 @@
 """Chat service for AI-powered conversations."""
 
 import logging
-from typing import List, Dict, Any, Optional, AsyncIterator, Callable
+from typing import List, Dict, Any, Optional, AsyncIterator, Callable, TypedDict
 
+from openai.types.chat import ChatCompletionMessageParam
 from app.services.base_ai import BaseAzureAIService
 from app.config import settings
 from app.utils.logger import get_logger
 from app.prompts.chat import chat_prompts
 
 logger = get_logger(__name__)
+
+
+class MessageDict(TypedDict):
+    """Type definition for OpenAI message format."""
+    role: str
+    content: str
 
 
 class ChatService(BaseAzureAIService):
@@ -18,6 +25,22 @@ class ChatService(BaseAzureAIService):
         """Initialize chat service."""
         super().__init__()
         logger.info("Chat service initialized")
+
+    def _convert_to_openai_messages(self, messages: List[MessageDict]) -> List[ChatCompletionMessageParam]:
+        """Convert message dicts to OpenAI format."""
+        openai_messages: List[ChatCompletionMessageParam] = []
+        for msg in messages:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            
+            if role == "system":
+                openai_messages.append({"role": "system", "content": content})
+            elif role == "assistant":
+                openai_messages.append({"role": "assistant", "content": content})
+            else:  # default to user
+                openai_messages.append({"role": "user", "content": content})
+        
+        return openai_messages
 
     async def generate_chat_stream(
         self,
@@ -32,11 +55,14 @@ class ChatService(BaseAzureAIService):
             client = await self._get_azure_client()
 
             # Convert messages to OpenAI format
-            openai_messages = []
+            message_dicts: List[MessageDict] = []
             for msg in messages:
-                openai_messages.append(
-                    {"role": msg.get("role", "user"), "content": msg.get("content", "")}
-                )
+                message_dicts.append({
+                    "role": msg.get("role", "user"),
+                    "content": msg.get("content", "")
+                })
+            
+            openai_messages = self._convert_to_openai_messages(message_dicts)
 
             # Stream the response
             stream = await client.chat.completions.create(
@@ -48,7 +74,7 @@ class ChatService(BaseAzureAIService):
             )
 
             async for chunk in stream:
-                if chunk.choices[0].delta.content is not None:
+                if chunk.choices and chunk.choices[0].delta.content is not None:
                     yield chunk.choices[0].delta.content
 
         except Exception as e:
@@ -81,6 +107,10 @@ class ChatService(BaseAzureAIService):
                 system_message=system_msg,
             )
 
+            # If generate_text failed, log the specific error
+            if not result.get("success", False):
+                logger.error(f"Base AI service failed: {result.get('error', 'Unknown error')}")
+            
             return result
 
         except Exception as e:
@@ -90,7 +120,7 @@ class ChatService(BaseAzureAIService):
                 "model": model or settings.azure_openai_deployment_name,
                 "tokens_used": 0,
                 "success": False,
-                "error": str(e),
+                "error": f"Chat service error: {str(e)}",
             }
 
 

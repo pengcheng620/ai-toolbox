@@ -5,6 +5,7 @@ from typing import Dict, Any, Optional
 
 from openai import AsyncAzureOpenAI
 from langchain_openai import AzureChatOpenAI
+from pydantic import SecretStr
 
 from app.config import settings
 from app.services.azure_oauth import oauth_service
@@ -23,54 +24,58 @@ class BaseAzureAIService:
         logger.info("Base Azure AI service initialized")
 
     async def _get_azure_client(self) -> AsyncAzureOpenAI:
-        """Get Azure OpenAI client with token authentication."""
+        """Get Azure OpenAI client with OAuth Bearer token authentication."""
+        # Check if we need to refresh the client due to token expiring
+        if self._azure_client is not None and oauth_service.is_token_expiring():
+            logger.info("Token is expiring, refreshing Azure OpenAI client")
+            self._azure_client = None
+
         if self._azure_client is None:
-            if settings.use_oauth_auth:
-                # Use OAuth token authentication
-                token = await oauth_service.get_token()
-                self._azure_client = AsyncAzureOpenAI(
-                    azure_endpoint=settings.azure_openai_endpoint,
-                    azure_ad_token=token,
-                    api_version=settings.azure_openai_api_version,
-                )
-                logger.info("Azure OpenAI client initialized with OAuth token")
-            else:
-                # Fallback to API key authentication
-                self._azure_client = AsyncAzureOpenAI(
-                    azure_endpoint=settings.azure_openai_endpoint,
-                    api_key=settings.azure_openai_api_key,
-                    api_version=settings.azure_openai_api_version,
-                )
-                logger.info("Azure OpenAI client initialized with API key")
+            # Always use OAuth token authentication
+            token = await oauth_service.get_token()
+            self._azure_client = AsyncAzureOpenAI(
+                azure_endpoint=settings.azure_openai_endpoint,
+                azure_ad_token=token,
+                api_version=settings.azure_openai_api_version,
+            )
+            logger.info("Azure OpenAI client initialized with OAuth token")
 
         return self._azure_client
 
     async def _get_langchain_client(self) -> AzureChatOpenAI:
-        """Get LangChain Azure client with token authentication."""
+        """Get LangChain Azure client with OAuth Bearer token authentication."""
+        # Check if we need to refresh the client due to token expiring
+        if self._langchain_client is not None and oauth_service.is_token_expiring():
+            logger.info("Token is expiring, refreshing LangChain client")
+            self._langchain_client = None
+
         if self._langchain_client is None:
-            if settings.use_oauth_auth:
-                # Use OAuth token authentication
-                token = await oauth_service.get_token()
-                self._langchain_client = AzureChatOpenAI(
-                    azure_endpoint=settings.azure_openai_endpoint,
-                    azure_ad_token=token,
-                    api_version=settings.azure_openai_api_version,
-                    deployment_name=settings.azure_openai_deployment_name,
-                    temperature=0.7,
-                )
-                logger.info("LangChain Azure client initialized with OAuth token")
-            else:
-                # Fallback to API key authentication
-                self._langchain_client = AzureChatOpenAI(
-                    azure_endpoint=settings.azure_openai_endpoint,
-                    api_key=settings.azure_openai_api_key,
-                    api_version=settings.azure_openai_api_version,
-                    deployment_name=settings.azure_openai_deployment_name,
-                    temperature=0.7,
-                )
-                logger.info("LangChain Azure client initialized with API key")
+            # Always use OAuth token authentication
+            token = await oauth_service.get_token()
+            self._langchain_client = AzureChatOpenAI(
+                azure_endpoint=settings.azure_openai_endpoint,
+                azure_ad_token=SecretStr(token),
+                api_version=settings.azure_openai_api_version,
+                azure_deployment=settings.azure_openai_deployment_name,
+                temperature=0.7,
+            )
+            logger.info("LangChain Azure client initialized with OAuth token")
 
         return self._langchain_client
+
+    def _is_auth_error(self, error_str: str) -> bool:
+        """Check if error is related to authentication."""
+        auth_error_indicators = [
+            "401",
+            "unauthorized",
+            "authentication",
+            "invalid_token",
+            "token_expired",
+            "access_denied",
+            "forbidden"
+        ]
+        error_lower = error_str.lower()
+        return any(indicator in error_lower for indicator in auth_error_indicators)
 
     async def generate_text(
         self,
@@ -79,58 +84,83 @@ class BaseAzureAIService:
         max_tokens: int = 1000,
         temperature: float = 0.7,
         system_message: Optional[str] = None,
+        max_retries: int = 2,
     ) -> Dict[str, Any]:
         """Generate text using Azure OpenAI with LangChain."""
         from langchain_core.messages import HumanMessage, SystemMessage
 
-        try:
-            model_name = model or settings.azure_openai_deployment_name
+        model_name = model or settings.azure_openai_deployment_name
+        
+        for attempt in range(max_retries + 1):
+            try:
+                # Prepare messages
+                messages: list = []
+                if system_message:
+                    messages.append(SystemMessage(content=system_message))
+                messages.append(HumanMessage(content=prompt))
 
-            # Prepare messages
-            messages = []
-            if system_message:
-                messages.append(SystemMessage(content=system_message))
-            messages.append(HumanMessage(content=prompt))
+                # Get LangChain client and generate
+                client = await self._get_langchain_client()
 
-            # Get LangChain client and generate
-            client = await self._get_langchain_client()
+                # Update client parameters
+                client.temperature = temperature
+                client.max_tokens = max_tokens
 
-            # Update client parameters
-            client.temperature = temperature
-            client.max_tokens = max_tokens
+                response = await client.ainvoke(messages)
 
-            response = await client.ainvoke(messages)
+                result = {
+                    "text": response.content,
+                    "model": model_name,
+                    "tokens_used": len(str(response.content).split()),  # Approximate
+                    "success": True,
+                }
 
-            result = {
-                "text": response.content,
-                "model": model_name,
-                "tokens_used": len(response.content.split()),  # Approximate
-                "success": True,
-            }
+                logger.info(f"Text generated successfully using model {model_name}")
+                return result
 
-            logger.info(f"Text generated successfully using model {model_name}")
-            return result
+            except Exception as e:
+                error_str = str(e)
+                logger.error(f"Text generation attempt {attempt + 1} failed: {error_str}")
+                
+                # Check if this is an authentication error and we have retries left
+                if self._is_auth_error(error_str) and attempt < max_retries:
+                    logger.info(f"Authentication error detected, refreshing auth and retrying (attempt {attempt + 1}/{max_retries})")
+                    try:
+                        await self.refresh_auth()
+                        continue  # Retry with new token
+                    except Exception as refresh_error:
+                        logger.error(f"Auth refresh failed: {str(refresh_error)}")
+                        # Continue to final error handling
+                
+                # If this is the last attempt or not an auth error, return error
+                if attempt == max_retries:
+                    logger.error(f"All {max_retries + 1} attempts failed for text generation")
+                    return {
+                        "text": "",
+                        "model": model_name,
+                        "tokens_used": 0,
+                        "success": False,
+                        "error": f"Connection error: {error_str}",
+                    }
 
-        except Exception as e:
-            logger.error(f"Text generation failed: {str(e)}")
-            return {
-                "text": "",
-                "model": model or settings.azure_openai_deployment_name,
-                "tokens_used": 0,
-                "success": False,
-                "error": str(e),
-            }
+        # This should never be reached, but just in case
+        return {
+            "text": "",
+            "model": model_name,
+            "tokens_used": 0,
+            "success": False,
+            "error": "Unexpected error in retry loop",
+        }
 
     async def refresh_auth(self):
-        """Refresh authentication tokens."""
+        """Refresh OAuth authentication tokens."""
         try:
-            if settings.use_oauth_auth:
-                oauth_service.clear_cache()
-                await oauth_service.get_token()
-                # Reset clients to force reinitialization with new token
-                self._azure_client = None
-                self._langchain_client = None
-                logger.info("Authentication tokens refreshed")
+            # Force refresh the token
+            await oauth_service.get_token(force_refresh=True)
+            # Reset clients to force reinitialization with new token
+            self._azure_client = None
+            self._langchain_client = None
+            logger.info("OAuth authentication tokens refreshed")
 
         except Exception as e:
             logger.error(f"Auth refresh failed: {str(e)}")

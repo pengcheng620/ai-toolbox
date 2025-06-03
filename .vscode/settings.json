@@ -1,0 +1,19 @@
+{
+    "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "mypy.dmypyExecutable": "./backend/.venv/bin/dmypy",
+    "mypy-type-checker.path": ["./backend/.venv/bin/mypy"],
+    "mypy-type-checker.interpreter": ["./backend/.venv/bin/python"],
+    "mypy-type-checker.args": [
+        "--python-executable", "./backend/.venv/bin/python",
+        "--ignore-missing-imports"
+    ],
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true
+} 

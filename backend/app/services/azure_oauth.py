@@ -44,6 +44,7 @@ class AzureOAuthService:
                 if not response.is_success:
                     error_data = response.json()
                     error_msg = error_data.get("error_description", "Unknown error")
+                    logger.error(f"OAuth token fetch failed: {error_msg}")
                     raise Exception(f"OAuth token fetch failed: {error_msg}")
 
                 token_data = response.json()
@@ -59,25 +60,42 @@ class AzureOAuthService:
             logger.error(f"OAuth token fetch failed: {str(e)}")
             raise
 
-    async def get_token(self) -> str:
+    def is_token_expiring(self, buffer_seconds: int = 300) -> bool:
+        """Check if token is expiring within buffer_seconds (default 5 minutes)."""
+        if not self._token_expiry_time:
+            return True
+        
+        current_time = time.time()
+        return current_time >= (self._token_expiry_time - buffer_seconds)
+
+    async def get_token(self, force_refresh: bool = False) -> str:
         """Get valid OAuth token (cached or fetch new)."""
         current_time = time.time()
 
-        # Check if we have a valid cached token
-        if (
-            self._cached_token
-            and self._token_expiry_time
-            and current_time < self._token_expiry_time
-        ):
+        # Check if we need to refresh token
+        should_refresh = (
+            force_refresh or
+            not self._cached_token or
+            not self._token_expiry_time or
+            current_time >= self._token_expiry_time
+        )
+
+        if not should_refresh:
             logger.debug("Using cached OAuth token")
-            return self._cached_token
+            return self._cached_token  # type: ignore
 
         # Fetch new token
         logger.info("Fetching new OAuth token")
-        self._cached_token = await self._fetch_oauth_token()
-        self._token_expiry_time = current_time + 3600  # 1 hour validity
-
-        return self._cached_token
+        try:
+            self._cached_token = await self._fetch_oauth_token()
+            self._token_expiry_time = current_time + 3600  # 1 hour validity
+            logger.info("OAuth token refreshed successfully")
+            return self._cached_token
+        except Exception as e:
+            logger.error(f"Failed to refresh OAuth token: {str(e)}")
+            # Clear cache on failure
+            self.clear_cache()
+            raise
 
     def clear_cache(self):
         """Clear cached token."""

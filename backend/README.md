@@ -1,133 +1,66 @@
 # AI Toolbox Backend
 
-AI Toolbox 后端服务，为浏览器扩展提供安全的 AI 功能支持。
+A FastAPI-based backend service for AI-powered development tools with Azure OpenAI integration, featuring real-time streaming responses and secure OAuth authentication.
 
-## 🚀 新功能特性
+## Features
 
-- 🔐 **OAuth Token 认证**: 支持 Azure OAuth 令牌认证，更安全的API访问
-- 🤖 **LangChain 集成**: 使用 LangChain 实现智能对话和专业化AI代理
-- 💬 **流式聊天**: 支持实时流式聊天响应，提升用户体验
-- 🎯 **专业化场景**: 专门针对 Jira 和 GitHub 的内容生成优化
-- ⚡ **高性能**: 基于 FastAPI 的异步 API 服务
-- 🛡️ **类型安全**: 完整的 Pydantic 数据验证
+- **Azure OpenAI Integration**: Seamless integration with Azure OpenAI services using OAuth 2.0
+- **Real-time Streaming**: Server-Sent Events (SSE) for typewriter-effect responses
+- **OAuth Authentication**: Secure Microsoft OAuth 2.0 authentication with automatic token refresh
+- **Modular Architecture**: Clean separation of concerns with dedicated services
+- **CORS Support**: Configured for browser extension and web application access
+- **Health Monitoring**: Built-in health check and diagnostic endpoints
+- **Error Handling**: Comprehensive error handling with automatic retry logic
 
-## 认证方式
+## API Endpoints
 
-### 推荐：OAuth Token 认证 (更安全)
+### Health Check
+- `GET /api/v1/ai/health` - Service health status with authentication info
 
-参考 `lib/ai/azure-auth.ts` 中的实现，使用 Azure OAuth client credentials flow：
+### Text Generation
+- `POST /api/v1/ai/generate` - Generate text with Azure OpenAI (supports streaming)
 
-```bash
-# 在 .env 中配置
-MS_OAUTH_CLIENT_ID=your-azure-app-client-id
-MS_OAUTH_CLIENT_SECRET=your-azure-app-client-secret
-MS_OAUTH_GRANT_TYPE=client_credentials
-MS_OAUTH_SCOPE=https://cognitiveservices.azure.com/.default
-MS_OAUTH_URL=https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/token
+### Jira Integration
+- `POST /api/v1/ai/jira/generate` - **Enhanced** Generate Jira task comments with streaming support
+- `POST /api/v1/ai/jira/comment` - Generate Jira task comments  
+- `POST /api/v1/ai/jira/acceptance-criteria` - Generate acceptance criteria
+- `POST /api/v1/ai/jira/estimate` - Estimate task effort
+
+### GitHub Integration
+- `POST /api/v1/ai/github/pr-description` - Generate PR descriptions (supports streaming)
+
+## Streaming Support
+
+All AI endpoints support real-time streaming responses for enhanced user experience:
+
+### Request Format
+```json
+{
+  "task_description": "Implement user authentication",
+  "task_type": "feature",
+  "context": {
+    "priority": "high",
+    "estimated_hours": 8
+  },
+  "stream": true
+}
 ```
 
-### 备选：API Key 认证
+### Response Format
+When `stream: true`, responses use Server-Sent Events (SSE):
+- Content chunks: `data: <content>\n\n`
+- Completion marker: `data: [DONE]\n\n`
+- Error format: `data: Error: <message>\n\n`
 
-```bash
-# 在 .env 中配置
-AZURE_OPENAI_API_KEY=your-azure-openai-api-key
-```
-
-## 技术栈
-
-- **框架**: FastAPI + Uvicorn
-- **AI服务**: Azure OpenAI + LangChain
-- **认证**: OAuth 2.0 Client Credentials Flow
-- **数据验证**: Pydantic v2
-- **包管理**: uv
-- **Python**: 3.11+
-
-## 快速开始
-
-### 环境要求
-
-- Python 3.11 或更高版本
-- uv 包管理器
-
-### 安装依赖
-
-```bash
-# 安装项目依赖
-uv sync
-
-# 安装开发依赖
-uv sync --dev
-```
-
-### 环境配置
-
-1. 复制环境变量示例文件：
-```bash
-cp env.example .env
-```
-
-2. 编辑 `.env` 文件，配置 OAuth 认证信息：
-```bash
-# 推荐使用 OAuth 认证
-MS_OAUTH_CLIENT_ID=your-azure-app-client-id
-MS_OAUTH_CLIENT_SECRET=your-azure-app-client-secret
-MS_OAUTH_URL=https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/token
-
-# Azure OpenAI 端点
-AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
-AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
-
-# 应用密钥
-SECRET_KEY=your-secret-key-here
-JWT_SECRET_KEY=your-jwt-secret-key
-```
-
-### 运行服务
-
-```bash
-# 开发环境运行
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# 或使用开发脚本
-uv run python run_dev.py
-```
-
-服务启动后，访问以下地址：
-
-- **API 文档**: http://localhost:8000/docs
-- **健康检查**: http://localhost:8000/health
-- **API 根路径**: http://localhost:8000/api/v1
-
-## 🔄 API 接口
-
-### AI 服务
-
-- `POST /api/v1/ai/generate` - 通用文本生成 (LangChain增强)
-- `POST /api/v1/ai/chat/stream` - 🆕 流式聊天对话
-- `POST /api/v1/ai/jira/generate` - Jira 任务内容生成 (专业化提示)
-- `POST /api/v1/ai/github/pr` - GitHub PR 描述生成 (专业化提示)
-- `POST /api/v1/ai/auth/refresh` - 🆕 刷新认证令牌
-- `GET /api/v1/ai/health` - AI 服务健康检查
-
-### 认证服务
-
-- `POST /api/v1/auth/login` - 用户登录
-- `GET /api/v1/auth/me` - 获取用户信息
-- `POST /api/v1/auth/logout` - 用户登出
-- `GET /api/v1/auth/health` - 认证服务健康检查
-
-### 🆕 流式聊天使用示例
-
+### Example Usage
 ```javascript
-// 前端使用 Server-Sent Events 接收流式响应
-const response = await fetch('/api/v1/ai/chat/stream', {
+// Frontend JavaScript example
+const response = await fetch('/api/v1/ai/jira/generate', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    messages: [
-      { role: 'user', content: '帮我分析这个Jira任务...' }
-    ],
-    temperature: 0.7
+    task_description: "Add user login functionality",
+    stream: true
   })
 });
 
@@ -137,161 +70,326 @@ while (true) {
   if (done) break;
   
   const chunk = new TextDecoder().decode(value);
-  console.log('收到:', chunk);
+  // Process streaming data for typewriter effect
+  console.log(chunk);
 }
 ```
 
-## 开发指南
+## Environment Configuration
 
-### 项目结构
+Create a `.env` file in the backend directory:
+
+```env
+# Application Settings
+APP_NAME=AI Toolbox Backend
+APP_VERSION=0.1.0
+ENVIRONMENT=development
+DEBUG=true
+SECRET_KEY=your-secret-key-here-at-least-32-characters
+
+# API Configuration
+API_V1_PREFIX=/api/v1
+ALLOWED_HOSTS=localhost,127.0.0.1
+CORS_ORIGINS=chrome-extension://*,http://localhost:3000,https://jira.autodesk.com,http://github.com,https://git.autodesk.com
+
+# Azure OpenAI Configuration
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2023-05-15
+AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
+
+# Microsoft OAuth Configuration (Required)
+MS_OAUTH_URL=https://login.microsoftonline.com/your-tenant.onmicrosoft.com/oauth2/v2.0/token
+MS_OAUTH_CLIENT_ID=your-client-id
+MS_OAUTH_CLIENT_SECRET=your-client-secret
+MS_OAUTH_GRANT_TYPE=client_credentials
+MS_OAUTH_SCOPE=https://cognitiveservices.azure.com/.default
+
+# JWT Configuration
+JWT_SECRET_KEY=your-jwt-secret-key-here-at-least-32-characters
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+```
+
+### Removed Environment Variables
+The following variables have been removed in the latest version:
+- `OPENAI_API_KEY` (replaced by OAuth)
+- `DATABASE_URL` (not currently used)
+- `REDIS_URL` (not currently used)
+- `ENABLE_CACHING`, `ENABLE_RATE_LIMITING`, `ENABLE_METRICS` (feature flags removed)
+
+## Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd ai-toolbox/backend
+   ```
+
+2. **Create virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment**:
+   ```bash
+   cp env.example .env
+   # Edit .env with your Azure and OAuth configuration
+   ```
+
+5. **Run the application**:
+   ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+## OAuth Authentication Setup
+
+### 1. Azure AD Application Registration
+
+1. **Register Application**:
+   - Go to [Azure Portal](https://portal.azure.com) > Azure Active Directory > App registrations
+   - Click "New registration"
+   - Name: "AI Toolbox Backend"
+   - Supported account types: "Accounts in this organizational directory only"
+   - Redirect URI: Not required for client credentials flow
+
+2. **Create Client Secret**:
+   - Go to "Certificates & secrets" > "Client secrets"
+   - Click "New client secret"
+   - Description: "AI Toolbox Backend Secret"
+   - Expires: Choose appropriate duration
+   - **Copy the secret value immediately** (it won't be shown again)
+
+3. **Configure API Permissions**:
+   - Go to "API permissions"
+   - Click "Add a permission"
+   - Select "APIs my organization uses"
+   - Search for "Azure Cognitive Services" or use scope: `https://cognitiveservices.azure.com/.default`
+   - Select "Application permissions"
+   - Click "Grant admin consent"
+
+### 2. Environment Configuration
+
+Update your `.env` file with the OAuth credentials:
+
+```env
+MS_OAUTH_CLIENT_ID=<Application-ID-from-step-1>
+MS_OAUTH_CLIENT_SECRET=<Secret-value-from-step-2>
+MS_OAUTH_URL=https://login.microsoftonline.com/<your-tenant-id>/oauth2/v2.0/token
+```
+
+### 3. Verify OAuth Setup
+
+Test OAuth authentication:
+```bash
+curl -X GET "http://localhost:8000/api/v1/ai/health"
+```
+
+Expected response:
+```json
+{
+  "status": "healthy",
+  "service": "azure_ai", 
+  "auth_method": "oauth",
+  "endpoint": "https://your-resource.openai.azure.com/"
+}
+```
+
+## Development
+
+### Project Structure
 
 ```
 backend/
-├── app/                    # 应用主目录
-│   ├── api/               # API 路由
-│   │   ├── ai.py         # AI 服务路由 (OAuth + LangChain)
-│   │   └── auth.py       # 认证路由
-│   ├── models/           # 数据模型
-│   │   └── schemas.py    # Pydantic 模型
-│   ├── services/         # 业务逻辑
-│   │   ├── azure_ai.py   # Azure AI 服务 (LangChain集成)
-│   │   └── azure_oauth.py # 🆕 OAuth 令牌管理
-│   ├── utils/            # 工具函数
-│   │   └── logger.py     # 日志配置
-│   ├── config.py         # 配置管理 (支持OAuth)
-│   └── main.py          # FastAPI 应用入口
-├── tests/                # 测试文件
-├── .vscode/              # 🆕 VSCode 配置
-├── pyproject.toml        # 项目配置
-└── README.md            # 项目文档
+├── app/
+│   ├── api/              # API route handlers
+│   │   ├── auth.py       # Authentication endpoints
+│   │   ├── base.py       # Base AI endpoints
+│   │   ├── chat.py       # Chat endpoints
+│   │   ├── jira.py       # Jira integration (with streaming)
+│   │   └── github.py     # GitHub integration
+│   ├── services/         # Business logic services
+│   │   ├── azure_ai.py   # Azure OpenAI service (streaming support)
+│   │   ├── azure_oauth.py # OAuth authentication service
+│   │   ├── base_ai.py    # Base AI service with retry logic
+│   │   └── jira_service.py # Jira-specific AI services
+│   ├── utils/            # Utility functions
+│   │   └── logger.py     # Logging configuration
+│   ├── config.py         # Configuration management
+│   └── main.py           # FastAPI application
+├── tests/                # Test files
+├── requirements.txt      # Python dependencies
+├── env.example          # Environment template
+└── README.md            # This file
 ```
 
-### 代码质量
+### Running Tests
 
-运行代码格式化：
 ```bash
-uv run black app/
-uv run isort app/
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=app
+
+# Run specific test file
+pytest tests/test_api.py
+
+# Test streaming functionality
+pytest tests/test_streaming.py -v
 ```
 
-运行类型检查：
+### Code Quality
+
 ```bash
-uv run mypy app/
+# Format code
+black app/
+
+# Lint code
+flake8 app/
+
+# Type checking
+mypy app/
 ```
 
-运行测试：
+## API Documentation
+
+Once the server is running, visit:
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Connection Error
+```
+Error: Connection error.
+```
+**Solutions**:
+- Verify Azure OpenAI endpoint URL format: `https://your-resource.openai.azure.com/`
+- Check OAuth credentials (client ID and secret)
+- Ensure network connectivity to Azure services
+- Verify deployment name matches your Azure OpenAI model deployment
+
+#### 2. Authentication Failed
+```
+Error: Missing credentials. Please pass one of `api_key`, `azure_ad_token`...
+```
+**Solutions**:
+- Verify OAuth configuration in `.env`
+- Check client ID and secret are correct
+- Ensure API permissions are granted in Azure AD
+- Verify tenant ID in OAuth URL
+
+#### 3. OAuth Token Issues
+```
+Error: 401 Unauthorized
+```
+**Solutions**:
+- Service automatically refreshes tokens, but check:
+- OAuth endpoint accessibility
+- Correct tenant ID in `MS_OAUTH_URL`
+- Client secret hasn't expired
+- API permissions are properly configured
+
+#### 4. CORS Issues
+```
+Error: CORS policy blocked the request
+```
+**Solutions**:
+- Update `CORS_ORIGINS` in `.env` to include your frontend domain
+- Add specific origins: `http://localhost:3000,https://yourdomain.com`
+- Restart the server after CORS changes
+- For browser extensions, ensure `chrome-extension://*` is included
+
+#### 5. Streaming Not Working
+```
+Streaming response appears as single chunk
+```
+**Solutions**:
+- Ensure `stream: true` in request body
+- Check frontend properly handles SSE format
+- Verify `Content-Type: text/plain` in streaming response
+- Test with curl: `curl -N` flag for no buffering
+
+### Debug Mode
+
+Enable comprehensive logging:
+```env
+DEBUG=true
+LOG_LEVEL=DEBUG
+```
+
+View detailed logs:
 ```bash
-uv run pytest
+tail -f logs/app.log  # If file logging is configured
+# Or check console output
 ```
 
-## 与前端集成
+### Health Check Diagnostics
 
-### 替换现有的 Azure 直接调用
-
-原来的 `lib/ai/azure-auth.ts` 逻辑现在转移到了后端，前端可以直接调用后端API：
-
-```typescript
-// 替换前：直接调用 Azure OpenAI
-const token = await getToken();
-const response = await azureOpenAI.chat.completions.create({...});
-
-// 替换后：调用后端API
-const response = await fetch('http://localhost:8000/api/v1/ai/generate', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ 
-    prompt: generatePrompt(description),
-    model: 'gpt-4o',
-    max_tokens: 1000,
-    system_message: '你是一个专业的开发助手...'
-  })
-});
+Monitor service health and authentication:
+```bash
+curl -v http://localhost:8000/api/v1/ai/health
 ```
 
-### Jira 和 GitHub 专用端点
-
-```typescript
-// Jira 任务处理
-const jiraResponse = await fetch('/api/v1/ai/jira/generate', {
-  method: 'POST',
-  body: JSON.stringify({
-    task_description: '实现用户登录功能',
-    task_type: 'development',
-    context: { priority: 'high', assignee: 'developer' }
-  })
-});
-
-// GitHub PR 描述
-const prResponse = await fetch('/api/v1/ai/github/pr', {
-  method: 'POST',
-  body: JSON.stringify({
-    pr_title: 'feat: 添加用户认证功能',
-    code_changes: 'src/auth/* - 新增认证模块',
-    branch_name: 'feature/user-auth',
-    commit_messages: ['feat: add login endpoint', 'test: add auth tests']
-  })
-});
+Expected healthy response:
+```json
+{
+  "status": "healthy",
+  "service": "azure_ai",
+  "auth_method": "oauth",
+  "endpoint": "https://your-resource.openai.azure.com/"
+}
 ```
 
-## 优势对比
+### Testing Streaming Endpoints
 
-### OAuth Token vs API Key
-
-| 特性 | OAuth Token | API Key |
-|------|-------------|---------|
-| **安全性** | ✅ 自动过期，可撤销 | ⚠️ 长期有效 |
-| **权限控制** | ✅ 细粒度权限 | ❌ 全权限 |
-| **审计追踪** | ✅ 完整日志 | ⚠️ 有限 |
-| **企业合规** | ✅ 企业级安全 | ❌ 不推荐 |
-
-### LangChain 增强
-
-- 🧠 **智能提示**: 针对不同场景的专业化提示模板
-- 🔧 **工具链**: 支持扩展更多AI工具和代理
-- 📊 **结构化输出**: 更好的数据解析和处理
-- 🔄 **工作流**: 支持复杂的AI工作流编排
-
-## 部署
-
-### Docker 部署
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY pyproject.toml .
-RUN pip install uv
-RUN uv pip install -r pyproject.toml
-
-COPY app/ ./app/
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+Test streaming functionality:
+```bash
+# Test Jira streaming
+curl -X POST "http://localhost:8000/api/v1/ai/jira/generate" \
+  -H "Content-Type: application/json" \
+  -d '{"task_description": "Test task", "stream": true}' \
+  --no-buffer
 ```
 
-### 环境变量
+## Performance Considerations
 
-生产环境需要配置的关键环境变量：
+- **Token Caching**: OAuth tokens are cached and automatically refreshed
+- **Connection Pooling**: HTTP connections are pooled for efficiency
+- **Streaming Optimization**: Use streaming for long responses to improve perceived performance
+- **Error Handling**: Automatic retry logic for transient Azure OpenAI failures
+- **Memory Management**: Streaming responses don't load entire content into memory
 
-- `MS_OAUTH_CLIENT_ID`: Azure 应用客户端ID
-- `MS_OAUTH_CLIENT_SECRET`: Azure 应用客户端密钥  
-- `MS_OAUTH_URL`: OAuth token 端点
-- `AZURE_OPENAI_ENDPOINT`: Azure OpenAI 服务端点
-- `SECRET_KEY`: 应用密钥
-- `JWT_SECRET_KEY`: JWT 签名密钥
-- `ENVIRONMENT`: 环境标识 (production)
+## Security Best Practices
 
-## 贡献指南
+- **Environment Variables**: Never commit `.env` files to version control
+- **OAuth Tokens**: Tokens are automatically refreshed and secured in memory
+- **CORS Configuration**: Restrict to specific domains in production
+- **Secrets Management**: Use strong, unique secrets for JWT and application keys
+- **HTTPS**: Always use HTTPS in production environments
+- **Token Expiration**: Configure appropriate token expiration times
 
-1. Fork 项目
-2. 创建功能分支
-3. 提交代码变更
-4. 创建 Pull Request
+## Contributing
 
-## 许可证
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes with proper tests
+4. Ensure all tests pass: `pytest`
+5. Update documentation if needed
+6. Submit a pull request with clear description
 
-MIT License
+## License
 
-## 支持
-
-如有问题，请提交 Issue 或联系开发团队。 
+[Your License Here]

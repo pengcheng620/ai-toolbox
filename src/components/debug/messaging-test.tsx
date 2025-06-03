@@ -1,122 +1,108 @@
 import React, { useState } from "react"
-import { Button, Card, Text, Group, Stack, Alert } from "@mantine/core"
-import { useHealthCheckMessaging, useJiraCommentMessaging, useGitHubPRMessaging } from "~hook/use-api-messaging"
+import { useHealthCheckMessaging, useJiraCommentMessaging } from "~hook/use-api-messaging"
 
-export const MessagingTestComponent = () => {
+export const MessagingTest = () => {
+  const [testResults, setTestResults] = useState<string[]>([])
   const healthCheck = useHealthCheckMessaging()
-  const jiraComment = useJiraCommentMessaging()
-  const githubPR = useGitHubPRMessaging()
+  const jiraMessaging = useJiraCommentMessaging()
 
-  const runHealthCheck = async () => {
-    await healthCheck.execute({})
+  const addResult = (message: string) => {
+    setTestResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`])
   }
 
-  const runJiraTest = async () => {
-    await jiraComment.execute({
-      task_description: "测试任务描述 - 创建一个用户登录功能",
-      task_type: "development",
-      context: {
-        source: "messaging_test",
-        timestamp: new Date().toISOString()
+  const testHealthCheck = async () => {
+    addResult("🔍 开始健康检查测试...")
+    try {
+      const result = await healthCheck.execute({})
+      if (result) {
+        addResult("✅ 健康检查成功: " + JSON.stringify(result))
+      } else {
+        addResult("❌ 健康检查失败: 无结果")
       }
-    })
+    } catch (error) {
+      addResult("❌ 健康检查错误: " + error.message)
+    }
   }
 
-  const runGitHubTest = async () => {
-    await githubPR.execute({
-      pr_title: "测试PR标题",
-      code_changes: "添加了用户登录功能相关代码",
-      branch_name: "feature/user-login",
-      commit_messages: ["feat: add user login", "fix: handle edge cases"]
-    })
+  const testJiraMessaging = async () => {
+    addResult("🔍 开始Jira消息测试...")
+    try {
+      const result = await jiraMessaging.execute({
+        task_description: "测试任务描述",
+        task_type: "development",
+        context: {
+          source: "debug_test",
+          timestamp: new Date().toISOString()
+        }
+      })
+      if (result) {
+        addResult("✅ Jira消息成功: " + JSON.stringify(result).substring(0, 100) + "...")
+      } else {
+        addResult("❌ Jira消息失败: 无结果")
+      }
+    } catch (error) {
+      addResult("❌ Jira消息错误: " + error.message)
+    }
   }
 
-  const TestResult = ({ title, result, loading, error }: { 
-    title: string, 
-    result: any, 
-    loading: boolean, 
-    error: string | null 
-  }) => (
-    <Alert 
-      color={error ? "red" : result ? "green" : "blue"} 
-      title={`${title} ${loading ? "(运行中...)" : ""}`}
-    >
-      {error && <Text size="sm" c="red">错误: {error}</Text>}
-      {result && (
-        <Text size="xs" c="dimmed" mt="xs">
-          成功: {JSON.stringify(result, null, 2).slice(0, 200)}...
-        </Text>
-      )}
-      {!loading && !error && !result && <Text size="sm">等待测试</Text>}
-    </Alert>
-  )
+  const clearResults = () => {
+    setTestResults([])
+  }
 
   return (
-    <Card shadow="sm" padding="lg" style={{ maxWidth: 800, margin: "20px auto" }}>
-      <Stack gap="md">
-        <Text size="lg" fw={500}>Plasmo Messaging API 测试工具</Text>
-        
-        <Text size="sm" c="dimmed">
-          此工具通过Plasmo Messaging API测试后台脚本与内容脚本的通信，
-          避免了CORS问题。
-        </Text>
-        
-        <Group gap="sm">
-          <Button 
-            onClick={runHealthCheck} 
-            loading={healthCheck.loading} 
-            size="sm"
-            variant="light"
-          >
-            测试健康检查
-          </Button>
-          <Button 
-            onClick={runJiraTest} 
-            loading={jiraComment.loading} 
-            size="sm"
-            color="orange"
-          >
-            测试Jira API
-          </Button>
-          <Button 
-            onClick={runGitHubTest} 
-            loading={githubPR.loading} 
-            size="sm"
-            color="green"
-          >
-            测试GitHub API
-          </Button>
-        </Group>
+    <div style={{ 
+      position: "fixed", 
+      top: "10px", 
+      right: "10px", 
+      background: "white", 
+      border: "2px solid #ccc", 
+      padding: "10px", 
+      borderRadius: "5px",
+      maxWidth: "400px",
+      maxHeight: "300px",
+      overflow: "auto",
+      zIndex: 10000,
+      fontSize: "12px"
+    }}>
+      <h3>Plasmo消息系统调试</h3>
+      
+      <div style={{ marginBottom: "10px" }}>
+        <button onClick={testHealthCheck} disabled={healthCheck.loading}>
+          {healthCheck.loading ? "测试中..." : "测试健康检查"}
+        </button>
+        <button onClick={testJiraMessaging} disabled={jiraMessaging.loading} style={{ marginLeft: "5px" }}>
+          {jiraMessaging.loading ? "测试中..." : "测试Jira消息"}
+        </button>
+        <button onClick={clearResults} style={{ marginLeft: "5px" }}>
+          清空结果
+        </button>
+      </div>
 
-        <Stack gap="sm">
-          <TestResult 
-            title="健康检查" 
-            result={healthCheck.data} 
-            loading={healthCheck.loading} 
-            error={healthCheck.error} 
-          />
-          <TestResult 
-            title="Jira评论生成" 
-            result={jiraComment.data} 
-            loading={jiraComment.loading} 
-            error={jiraComment.error} 
-          />
-          <TestResult 
-            title="GitHub PR生成" 
-            result={githubPR.data} 
-            loading={githubPR.loading} 
-            error={githubPR.error} 
-          />
-        </Stack>
+      <div style={{ 
+        background: "#f5f5f5", 
+        padding: "5px", 
+        borderRadius: "3px",
+        maxHeight: "200px",
+        overflow: "auto"
+      }}>
+        {testResults.length === 0 ? (
+          <div>点击按钮开始测试...</div>
+        ) : (
+          testResults.map((result, index) => (
+            <div key={index} style={{ marginBottom: "2px", fontSize: "11px" }}>
+              {result}
+            </div>
+          ))
+        )}
+      </div>
 
-        <Alert color="blue" title="Messaging API 架构说明">
-          <Text size="sm">
-            🔄 <strong>新架构</strong>: 内容脚本 → Plasmo Messaging → 后台脚本 → 后端API<br/>
-            ✅ <strong>优势</strong>: 避免CORS限制，安全的API调用<br/>
-            🎯 <strong>原理</strong>: 后台脚本在扩展环境中运行，不受页面的同源策略限制
-          </Text>
-        </Alert>
-      </Stack>
-    </Card>
+      {(healthCheck.error || jiraMessaging.error) && (
+        <div style={{ color: "red", marginTop: "5px", fontSize: "11px" }}>
+          错误: {healthCheck.error || jiraMessaging.error}
+        </div>
+      )}
+    </div>
   )
-} 
+}
+
+export default MessagingTest 
