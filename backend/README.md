@@ -137,7 +137,11 @@ The following variables have been removed in the latest version:
 
 3. **Install dependencies**:
    ```bash
-   pip install -r requirements.txt
+   # Using uv (recommended)
+   uv sync
+
+   # Or using pip
+   pip install -e .
    ```
 
 4. **Configure environment**:
@@ -227,7 +231,8 @@ backend/
 │   ├── config.py         # Configuration management
 │   └── main.py           # FastAPI application
 ├── tests/                # Test files
-├── requirements.txt      # Python dependencies
+├── pyproject.toml        # Python dependencies (uv)
+├── uv.lock              # Lock file
 ├── env.example          # Environment template
 └── README.md            # This file
 ```

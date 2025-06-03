@@ -1,127 +1,117 @@
-# AI Toolbox Frontend
+# AI Toolbox Browser Extension
 
-A React-based web frontend for the AI Toolbox, featuring real-time streaming interfaces and modern UI components.
+基于Plasmo框架的浏览器扩展，为AI工具箱提供无缝的浏览器集成体验，支持实时流式响应和现代UI组件。
 
-## 🚧 Status: Planned
+## 🚀 功能特性
 
-This frontend application is currently in the planning phase. The browser extension currently serves as the primary frontend interface.
+- **实时流式UI**: 处理服务器发送事件的打字机效果组件
+- **Jira集成界面**: 浏览器内Jira评论生成界面
+- **GitHub集成界面**: PR描述生成界面
+- **通用AI聊天**: 通用AI聊天界面
+- **无缝集成**: 直接在目标网站上注入UI组件
+- **响应式设计**: 适配各种屏幕尺寸的界面
 
-## 🎯 Planned Features
+## 🛠 技术栈
 
-- **Real-time Streaming UI**: Components that handle Server-Sent Events for typewriter effects
-- **Jira Integration Interface**: Web-based interface for Jira comment generation
-- **GitHub Integration Interface**: Web-based interface for PR description generation
-- **Universal AI Chat**: General-purpose AI chat interface
-- **Authentication Flow**: OAuth 2.0 authentication with Azure AD
-- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
+- **框架**: Plasmo + React 18 + TypeScript
+- **构建工具**: Plasmo Framework
+- **样式**: Tailwind CSS + Mantine UI组件库
+- **状态管理**: Plasmo Storage API
+- **HTTP客户端**: Fetch API，支持流式响应
+- **图标**: Heroicons
+- **包管理**: pnpm
+- **扩展类型**: Manifest V3
 
-## 🛠 Planned Technology Stack
-
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite for fast development and building
-- **Styling**: Tailwind CSS for utility-first styling
-- **State Management**: Zustand for lightweight state management
-- **HTTP Client**: Fetch API with streaming support
-- **UI Components**: Custom components with Headless UI
-- **Icons**: Heroicons or Lucide React
-- **Testing**: Vitest + React Testing Library
-
-## 📁 Planned Project Structure
+## 📁 项目结构
 
 ```
 frontend/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── ui/             # Basic UI components (Button, Input, etc.)
-│   │   ├── streaming/      # Streaming-specific components
-│   │   ├── jira/          # Jira-related components
-│   │   └── github/        # GitHub-related components
-│   ├── pages/              # Page components
-│   │   ├── Dashboard.tsx   # Main dashboard
-│   │   ├── Jira.tsx       # Jira integration page
-│   │   └── GitHub.tsx     # GitHub integration page
-│   ├── hooks/              # Custom React hooks
-│   │   ├── useStreaming.ts # Streaming data hook
-│   │   ├── useAuth.ts     # Authentication hook
-│   │   └── useApi.ts      # API interaction hook
-│   ├── services/           # API and external services
-│   │   ├── api.ts         # API client
-│   │   ├── auth.ts        # Authentication service
-│   │   └── streaming.ts   # Streaming utilities
-│   ├── stores/             # Zustand stores
-│   │   ├── authStore.ts   # Authentication state
-│   │   └── uiStore.ts     # UI state
-│   ├── types/              # TypeScript type definitions
-│   │   ├── api.ts         # API response types
-│   │   ├── jira.ts        # Jira-specific types
-│   │   └── github.ts      # GitHub-specific types
-│   ├── utils/              # Utility functions
-│   │   ├── constants.ts   # Application constants
-│   │   └── helpers.ts     # Helper functions
-│   ├── App.tsx             # Main application component
-│   ├── main.tsx           # Application entry point
-│   └── index.css          # Global styles
-├── public/                 # Static assets
-├── tests/                  # Test files
-├── package.json           # Dependencies and scripts
-├── vite.config.ts         # Vite configuration
-├── tailwind.config.js     # Tailwind CSS configuration
-├── tsconfig.json          # TypeScript configuration
-└── README.md              # This file
+├── src/                    # 源代码目录
+│   ├── components/         # 可复用UI组件
+│   ├── hooks/             # 自定义React hooks
+│   ├── services/          # API和外部服务
+│   ├── types/             # TypeScript类型定义
+│   └── utils/             # 工具函数
+├── background/            # 后台脚本
+├── assets/               # 静态资源
+├── lib/                  # 库文件
+├── terminal/             # 终端相关组件
+├── package.json          # 依赖和脚本（pnpm）
+├── plasmo.config.js      # Plasmo配置
+├── tailwind.config.js    # Tailwind CSS配置
+├── tsconfig.json         # TypeScript配置
+└── README.md             # 本文件
 ```
 
-## 🚀 Planned Quick Start
+## 🚀 快速开始
 
-Once implemented, the frontend will be started with:
+### 环境要求
+
+- Node.js 18+
+- pnpm
+- Chrome浏览器（用于开发和测试）
+
+### 安装和开发
 
 ```bash
-# Install dependencies
+# 安装依赖
 pnpm install
 
-# Start development server
-pnpm run dev
+# 启动开发模式（监听文件变化）
+pnpm dev
 
-# Build for production
-pnpm run build
+# 构建生产版本
+pnpm build
 
-# Preview production build
-pnpm run preview
-
-# Run tests
-pnpm test
-
-# Run tests with coverage
-pnpm run test:coverage
+# 打包扩展
+pnpm package
 ```
 
-## 🔗 Integration with Backend
+### 加载扩展到Chrome
 
-The frontend will integrate with the backend API at `http://localhost:8000`:
+1. 打开Chrome浏览器
+2. 访问 `chrome://extensions/`
+3. 开启"开发者模式"
+4. 点击"加载已解压的扩展程序"
+5. 选择 `build/chrome-mv3-dev` 文件夹（开发模式）或 `build/chrome-mv3-prod` 文件夹（生产模式）
 
-### Streaming Integration Example
+## 🔗 后端集成
+
+扩展通过 `http://localhost:8000` 与后端API集成：
+
+### Plasmo消息传递
+
+```typescript
+// 使用Plasmo的消息传递API与后台脚本通信
+import { sendToBackground } from "@plasmohq/messaging"
+
+// 发送消息到后台脚本
+const response = await sendToBackground({
+  name: "generateJiraComment",
+  body: {
+    task_description: "实现用户认证",
+    task_type: "feature",
+    stream: true
+  }
+})
+```
+
+### 流式响应处理
 
 ```typescript
 // hooks/useStreaming.ts
 import { useState, useCallback } from 'react';
 
-interface StreamingOptions {
-  onChunk: (chunk: string) => void;
-  onComplete: () => void;
-  onError: (error: string) => void;
-}
-
 export const useStreaming = () => {
   const [isStreaming, setIsStreaming] = useState(false);
+  const [content, setContent] = useState('');
 
-  const startStream = useCallback(async (
-    endpoint: string,
-    data: any,
-    options: StreamingOptions
-  ) => {
+  const startStream = useCallback(async (data: any) => {
     setIsStreaming(true);
-    
+    setContent('');
+
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch('http://localhost:8000/api/v1/ai/jira/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, stream: true })
@@ -135,135 +125,95 @@ export const useStreaming = () => {
         if (done) break;
 
         const chunk = new TextDecoder().decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') {
-              options.onComplete();
-              break;
-            } else if (data.startsWith('Error:')) {
-              options.onError(data);
-              break;
-            } else {
-              options.onChunk(data);
-            }
-          }
-        }
+        setContent(prev => prev + chunk);
       }
     } catch (error) {
-      options.onError(error instanceof Error ? error.message : 'Unknown error');
+      console.error('Streaming error:', error);
     } finally {
       setIsStreaming(false);
     }
   }, []);
 
-  return { startStream, isStreaming };
+  return { startStream, isStreaming, content };
 };
 ```
 
-### Jira Component Example
+### Content Script示例
 
 ```typescript
-// components/jira/JiraCommentGenerator.tsx
-import React, { useState } from 'react';
-import { useStreaming } from '../../hooks/useStreaming';
+// contents/jira-integration.tsx
+import type { PlasmoCSConfig } from "plasmo"
+import { useState } from "react"
+import { useStreaming } from "~hooks/useStreaming"
 
-interface JiraCommentGeneratorProps {
-  taskDescription: string;
-  taskType: string;
-  context?: Record<string, any>;
+export const config: PlasmoCSConfig = {
+  matches: ["https://jira.*.com/*"]
 }
 
-export const JiraCommentGenerator: React.FC<JiraCommentGeneratorProps> = ({
-  taskDescription,
-  taskType,
-  context
-}) => {
-  const [generatedContent, setGeneratedContent] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const { startStream } = useStreaming();
+const JiraCommentGenerator = () => {
+  const { startStream, isStreaming, content } = useStreaming()
+  const [taskDescription, setTaskDescription] = useState("")
 
   const handleGenerate = async () => {
-    setIsGenerating(true);
-    setGeneratedContent('');
-
-    await startStream('/api/v1/ai/jira/generate', {
+    await startStream({
       task_description: taskDescription,
-      task_type: taskType,
-      context
-    }, {
-      onChunk: (chunk) => {
-        setGeneratedContent(prev => prev + chunk);
-      },
-      onComplete: () => {
-        setIsGenerating(false);
-      },
-      onError: (error) => {
-        console.error('Generation failed:', error);
-        setIsGenerating(false);
-      }
-    });
-  };
+      task_type: "feature"
+    })
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg z-50">
+      <h3 className="text-lg font-semibold mb-2">AI评论生成器</h3>
+      <textarea
+        value={taskDescription}
+        onChange={(e) => setTaskDescription(e.target.value)}
+        placeholder="输入任务描述..."
+        className="w-full p-2 border rounded mb-2"
+      />
       <button
         onClick={handleGenerate}
-        disabled={isGenerating}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+        disabled={isStreaming}
+        className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        {isGenerating ? 'Generating...' : 'Generate Comment'}
+        {isStreaming ? '生成中...' : '生成评论'}
       </button>
-      
-      <div className="border rounded p-4 min-h-[200px] bg-gray-50">
-        <pre className="whitespace-pre-wrap font-mono text-sm">
-          {generatedContent}
-          {isGenerating && <span className="animate-pulse">|</span>}
-        </pre>
-      </div>
+      {content && (
+        <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
+          {content}
+          {isStreaming && <span className="animate-pulse">|</span>}
+        </div>
+      )}
     </div>
-  );
-};
+  )
+}
+
+export default JiraCommentGenerator
 ```
 
-## 🔄 Migration from Extension
+## 🛠 开发指南
 
-When migrating from the browser extension:
+### Plasmo特性
 
-1. **Extract Shared Components**: Move reusable components to a shared library
-2. **Adapt API Calls**: Update API calls to work with the web environment
-3. **Responsive Design**: Ensure components work well in both extension and web contexts
-4. **State Management**: Implement proper state management for the web application
-5. **Authentication**: Implement web-based OAuth flow
+- **Content Scripts**: 在目标网站注入UI组件
+- **Background Scripts**: 处理API调用和数据管理
+- **Popup**: 扩展图标点击时显示的界面
+- **Storage API**: 跨页面数据持久化
+- **Messaging**: 组件间通信
 
-## 🧪 Testing Strategy
+### 开发最佳实践
 
-- **Unit Tests**: Test individual components and hooks
-- **Integration Tests**: Test component interactions and API calls
-- **E2E Tests**: Test complete user workflows
-- **Streaming Tests**: Specifically test streaming functionality
-- **Accessibility Tests**: Ensure WCAG compliance
+1. **使用TypeScript**: 确保类型安全
+2. **模块化组件**: 创建可复用的UI组件
+3. **错误处理**: 妥善处理API错误和网络问题
+4. **性能优化**: 避免不必要的重渲染
+5. **用户体验**: 提供加载状态和错误反馈
 
-## 🚀 Deployment
+## � 相关文档
 
-The frontend will be deployed as a static site:
-
-```bash
-# Build for production
-npm run build
-
-# Deploy to hosting service (Vercel, Netlify, etc.)
-# The dist/ folder contains the built application
-```
-
-## 🔗 Related Documentation
-
-- [Backend README](../backend/README.md) - Backend API documentation
-- [Extension README](../extension/README.md) - Browser extension documentation
-- [Root README](../README.md) - Project overview and setup
+- [Plasmo官方文档](https://docs.plasmo.com/) - Plasmo框架文档
+- [后端文档](../backend/README.md) - 后端API文档
+- [项目根目录](../README.md) - 项目概览和设置
 
 ---
 
-**Note**: This frontend is currently in the planning phase. The browser extension serves as the current frontend interface. Development will begin after the backend streaming functionality is fully stabilized.
+**注意**: 这是一个基于Plasmo框架的浏览器扩展项目，专注于为AI工具箱提供无缝的浏览器集成体验。

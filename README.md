@@ -1,429 +1,186 @@
 # AI Toolbox
 
-A comprehensive AI-powered development toolkit featuring real-time streaming responses, secure authentication, and specialized tools for Jira and GitHub workflows.
+一个全面的AI驱动开发工具包，提供实时流式响应、安全认证以及专门的Jira和GitHub工作流工具。
 
-## 🚀 Key Features
+## 🚀 核心功能
 
-- **Real-time Streaming**: Typewriter-effect responses for enhanced user experience
-- **Secure Authentication**: Microsoft OAuth 2.0 with automatic token refresh
-- **Jira Integration**: AI-powered task comment generation with streaming support
-- **GitHub Integration**: Intelligent PR description generation
-- **Browser Extension**: Chrome extension for seamless workflow integration
-- **Modular Architecture**: Clean separation between frontend and backend services
+- **实时流式响应**: 打字机效果的AI响应，提升用户体验
+- **安全认证**: Microsoft OAuth 2.0自动令牌刷新
+- **Jira集成**: AI驱动的任务评论生成，支持流式输出
+- **GitHub集成**: 智能PR描述生成
+- **浏览器扩展**: Chrome扩展，无缝集成工作流
+- **模块化架构**: 前后端清晰分离
 
-## 📁 Project Structure
+## 📁 项目结构
 
 ```
 ai-toolbox/
-├── backend/                 # FastAPI backend service
-│   ├── app/                # Application code
-│   │   ├── api/           # API route handlers
-│   │   ├── services/      # Business logic services
-│   │   └── utils/         # Utility functions
-│   ├── tests/             # Backend tests
-│   ├── requirements.txt   # Python dependencies
-│   └── README.md         # Backend documentation
-├── frontend/              # Frontend application (planned)
-│   ├── src/              # Source code
-│   ├── public/           # Static assets
-│   └── README.md         # Frontend documentation
-├── extension/             # Browser extension
-│   ├── manifest.json     # Extension manifest
-│   ├── src/              # Extension source code
-│   └── README.md         # Extension documentation
-├── lib/                   # Shared libraries
-│   ├── ai/               # AI service utilities
-│   └── models/           # Shared data models
-└── README.md             # This file
+├── backend/                 # FastAPI后端服务
+│   ├── app/                # 应用代码
+│   │   ├── api/           # API路由处理器
+│   │   ├── services/      # 业务逻辑服务
+│   │   └── utils/         # 工具函数
+│   ├── tests/             # 后端测试
+│   ├── pyproject.toml     # Python依赖管理
+│   └── README.md         # 后端文档
+├── frontend/              # Plasmo浏览器扩展
+│   ├── src/              # 源代码
+│   ├── background/       # 后台脚本
+│   ├── package.json      # 前端依赖（pnpm）
+│   └── README.md         # 前端文档
+└── README.md             # 本文件
 ```
 
-## 🛠 Technology Stack
+## 🛠 技术栈
 
-### Backend
-- **Framework**: FastAPI with Uvicorn
-- **AI Services**: Azure OpenAI with OAuth 2.0
-- **Authentication**: Microsoft OAuth client credentials flow
-- **Data Validation**: Pydantic v2
-- **Language**: Python 3.11+
+### 后端
+- **框架**: FastAPI + Uvicorn
+- **AI服务**: Azure OpenAI + OAuth 2.0
+- **认证**: Microsoft OAuth客户端凭据流
+- **数据验证**: Pydantic v2
+- **语言**: Python 3.11+
+- **包管理**: uv
 
-### Frontend (Planned)
-- **Framework**: React with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand
-- **HTTP Client**: Fetch API with streaming support
+### 前端（浏览器扩展）
+- **框架**: Plasmo + React + TypeScript
+- **构建工具**: Plasmo Framework
+- **样式**: Tailwind CSS + Mantine UI
+- **包管理**: pnpm
+- **扩展类型**: Manifest V3
 
-### Browser Extension
-- **Manifest**: V3
-- **Content Scripts**: TypeScript
-- **Background Service**: Service Worker
-- **UI Framework**: React (injected)
+## 🚀 快速开始
 
-## 🚀 Quick Start
+### 环境要求
 
-### Prerequisites
+- Python 3.11+
+- Node.js 18+ 和 pnpm
+- Azure OpenAI访问权限和OAuth设置
 
-- Python 3.11 or higher
-- Node.js 18+ (for frontend development)
-- Azure OpenAI access with OAuth setup
+### 后端设置
 
-### Backend Setup
-
-1. **Navigate to backend directory**:
+1. **进入后端目录**:
    ```bash
    cd backend
    ```
 
-2. **Create virtual environment**:
+2. **安装依赖**:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   # 使用uv（推荐）
+   uv sync
+
+   # 或使用pip
+   pip install -e .
    ```
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment**:
+3. **配置环境**:
    ```bash
    cp env.example .env
-   # Edit .env with your Azure and OAuth configuration
+   # 编辑.env文件，配置Azure和OAuth信息
    ```
 
-5. **Run the backend**:
+4. **运行后端**:
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-### Frontend Setup (Coming Soon)
+### 浏览器扩展设置
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Browser Extension Setup
-
-```bash
-cd extension
-npm install
-npm run build
-# Load unpacked extension in Chrome developer mode
-```
-
-## 🔧 Configuration
-
-### Azure OpenAI Setup
-
-1. **Create Azure OpenAI Resource**:
-   - Go to Azure Portal
-   - Create new Azure OpenAI resource
-   - Deploy a GPT-4 model (e.g., gpt-4o)
-
-2. **Register Azure AD Application**:
-   - Go to Azure Active Directory > App registrations
-   - Create new registration
-   - Generate client secret
-   - Configure API permissions for Azure Cognitive Services
-
-3. **Update Environment Variables**:
-   ```env
-   # Azure OpenAI Configuration
-   AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
-   AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o
-
-   # OAuth Configuration
-   MS_OAUTH_CLIENT_ID=your-client-id
-   MS_OAUTH_CLIENT_SECRET=your-client-secret
-   MS_OAUTH_URL=https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/token
+1. **进入前端目录**:
+   ```bash
+   cd frontend
    ```
 
-## 🌟 Main Features
+2. **安装依赖**:
+   ```bash
+   pnpm install
+   ```
 
-### 1. Jira Comment Generation with Streaming
+3. **开发模式**:
+   ```bash
+   pnpm dev
+   ```
 
-Generate intelligent task comments with real-time typewriter effect:
+4. **构建扩展**:
+   ```bash
+   pnpm build
+   # 在Chrome开发者模式下加载build文件夹
+   ```
 
-```javascript
-// Non-streaming (traditional)
-const response = await fetch('/api/v1/ai/jira/generate', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    task_description: "Implement user authentication",
-    task_type: "feature",
-    context: { priority: "high" },
-    stream: false
-  })
-});
+## 🔧 配置
 
-// Streaming (real-time typewriter effect)
-const streamResponse = await fetch('/api/v1/ai/jira/generate', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    task_description: "Implement user authentication",
-    task_type: "feature",
-    context: { priority: "high" },
-    stream: true
-  })
-});
+### Azure OpenAI设置
 
-const reader = streamResponse.body.getReader();
-while (true) {
-  const { done, value } = await reader.read();
-  if (done) break;
+1. **创建Azure OpenAI资源**
+2. **注册Azure AD应用程序**
+3. **配置环境变量**
 
-  const chunk = new TextDecoder().decode(value);
-  // Process streaming data for typewriter effect
-  displayChunk(chunk);
-}
+详细配置步骤请参考 [backend/README.md](./backend/README.md)
+
+## 🌟 主要功能
+
+### 1. Jira任务评论生成
+- 智能生成任务评论
+- 支持实时流式输出
+- 打字机效果提升用户体验
+
+### 2. GitHub PR描述生成
+- 自动生成PR描述
+- 基于代码变更智能分析
+- 支持流式响应
+
+### 3. 通用文本生成
+- 灵活的AI文本生成
+- 可配置参数（温度、最大令牌数等）
+- 适用于各种使用场景
+
+## 🔄 开发工作流
+
+### 后端开发
+```bash
+cd backend
+uv sync                    # 安装依赖
+pytest                     # 运行测试
+uvicorn app.main:app --reload  # 启动开发服务器
 ```
 
-### 2. GitHub PR Description Generation
-
-Intelligent PR descriptions with streaming support:
-
-```javascript
-const response = await fetch('/api/v1/ai/github/pr-description', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    pr_title: "Add user authentication",
-    code_changes: "...",
-    branch_name: "feature/auth",
-    stream: true
-  })
-});
+### 扩展开发
+```bash
+cd frontend
+pnpm install              # 安装依赖
+pnpm dev                  # 开发模式
+pnpm build                # 构建扩展
 ```
 
-### 3. Universal Text Generation
+## 📊 API文档
 
-Flexible text generation for any use case:
-
-```javascript
-const response = await fetch('/api/v1/ai/generate', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    prompt: "Explain the benefits of microservices",
-    stream: true,
-    temperature: 0.7,
-    max_tokens: 1000
-  })
-});
-```
-
-## 🔄 Development Workflow
-
-### Backend Development
-
-1. **Make changes** to backend code in `backend/app/`
-2. **Run tests**: `pytest`
-3. **Check code quality**: `black app/ && flake8 app/`
-4. **Test API endpoints** using Swagger UI at http://localhost:8000/docs
-
-### Frontend Development (Planned)
-
-1. **Make changes** to frontend code in `frontend/src/`
-2. **Run development server**: `npm run dev`
-3. **Run tests**: `npm test`
-4. **Build for production**: `npm run build`
-
-### Extension Development
-
-1. **Make changes** to extension code in `extension/src/`
-2. **Build extension**: `npm run build`
-3. **Reload extension** in Chrome developer mode
-4. **Test functionality** on target websites
-
-## 📊 API Documentation
-
-Once the backend is running, access comprehensive API documentation:
-
+后端运行后，访问API文档：
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
-- **Health Check**: http://localhost:8000/api/v1/ai/health
+- **健康检查**: http://localhost:8000/api/v1/ai/health
 
-### Key Endpoints
+### 主要端点
+- `POST /api/v1/ai/jira/generate` - Jira评论生成（支持流式）
+- `POST /api/v1/ai/github/pr-description` - GitHub PR描述
+- `POST /api/v1/ai/generate` - 通用文本生成
+- `GET /api/v1/ai/health` - 服务健康状态
 
-- `POST /api/v1/ai/jira/generate` - Jira comment generation (streaming supported)
-- `POST /api/v1/ai/github/pr-description` - GitHub PR descriptions
-- `POST /api/v1/ai/generate` - Universal text generation
-- `GET /api/v1/ai/health` - Service health and authentication status
+## � 相关文档
 
-## 🧪 Testing
+- [后端文档](./backend/README.md) - 详细的后端API和配置说明
+- [前端文档](./frontend/README.md) - 浏览器扩展开发指南
 
-### Backend Tests
+## 🤝 贡献
 
-```bash
-cd backend
-pytest                          # Run all tests
-pytest --cov=app               # Run with coverage
-pytest tests/test_streaming.py # Test streaming functionality
-```
+1. Fork本仓库
+2. 创建功能分支: `git checkout -b feature/your-feature`
+3. 提交更改并编写测试
+4. 确保所有测试通过
+5. 提交Pull Request
 
-### Frontend Tests (Planned)
-
-```bash
-cd frontend
-npm test                       # Run unit tests
-npm run test:e2e              # Run end-to-end tests
-```
-
-### Integration Tests
-
-```bash
-# Test full workflow
-curl -X POST "http://localhost:8000/api/v1/ai/jira/generate" \
-  -H "Content-Type: application/json" \
-  -d '{"task_description": "Test task", "stream": true}' \
-  --no-buffer
-```
-
-## 🚀 Deployment
-
-### Backend Deployment
-
-```bash
-# Using Docker
-docker build -t ai-toolbox-backend ./backend
-docker run -p 8000:8000 --env-file backend/.env ai-toolbox-backend
-
-# Using direct deployment
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-### Frontend Deployment (Planned)
-
-```bash
-cd frontend
-npm run build
-# Deploy dist/ folder to your hosting service
-```
-
-## 🔄 Frontend Restructuring (Planned)
-
-### Overview
-The project is planned to be restructured to separate frontend and backend concerns more clearly. Currently, the browser extension serves as the primary frontend, but a dedicated web frontend will be added.
-
-### Planned Structure
-```
-ai-toolbox/
-├── backend/           # FastAPI backend (current)
-├── frontend/          # React web application (planned)
-├── extension/         # Browser extension (current)
-└── shared/           # Shared utilities and types
-```
-
-### Migration Plan
-
-1. **Phase 1**: Extract shared utilities to `shared/` directory
-2. **Phase 2**: Create standalone React frontend in `frontend/`
-3. **Phase 3**: Refactor extension to use shared components
-4. **Phase 4**: Implement unified build and deployment pipeline
-
-### Potential Risks and Mitigation
-
-#### 1. Relative Path Issues
-**Risk**: Moving files may break relative imports
-**Mitigation**:
-- Use absolute imports with path mapping
-- Update tsconfig.json and build configurations
-- Implement comprehensive testing before migration
-
-#### 2. Build Script Dependencies
-**Risk**: Build scripts may reference incorrect paths
-**Mitigation**:
-- Update package.json scripts to use correct working directories
-- Use workspace-aware build tools (e.g., npm workspaces, lerna)
-- Test build processes in isolated environments
-
-#### 3. Development Environment Configuration
-**Risk**: Development servers and hot reload may break
-**Mitigation**:
-- Update development server configurations
-- Ensure proper proxy settings for API calls
-- Maintain separate development scripts for each component
-
-#### 4. Shared Dependencies
-**Risk**: Version conflicts between frontend and extension
-**Mitigation**:
-- Use workspace package management
-- Maintain consistent dependency versions
-- Implement dependency audit processes
-
-#### 5. Type Definitions
-**Risk**: Shared types may become inconsistent
-**Mitigation**:
-- Create shared type definitions in `shared/types/`
-- Use TypeScript project references
-- Implement type checking in CI/CD pipeline
-
-### Development Workflow Changes
-
-#### Current Workflow
-```bash
-# Extension development
-npm run dev          # Builds extension
-npm run build        # Production build
-
-# Backend development
-cd backend
-uvicorn app.main:app --reload
-```
-
-#### Planned Workflow
-```bash
-# Root level commands
-npm run dev:frontend    # Start React dev server
-npm run dev:extension   # Build extension in watch mode
-npm run dev:backend     # Start backend server
-npm run dev:all         # Start all services
-
-# Individual component development
-cd frontend && npm run dev
-cd extension && npm run dev
-cd backend && uvicorn app.main:app --reload
-```
-
-## 🔒 Security Considerations
-
-- **OAuth Tokens**: Automatically refreshed and secured in memory
-- **Environment Variables**: Never commit `.env` files
-- **CORS**: Properly configured for specific domains
-- **HTTPS**: Required for production deployments
-- **API Keys**: Use OAuth instead of long-lived API keys
-
-## 🤝 Contributing
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/your-feature`
-3. **Make your changes** with proper tests
-4. **Ensure all tests pass**: `pytest` (backend) and `npm test` (frontend)
-5. **Update documentation** if needed
-6. **Submit a pull request** with clear description
-
-### Code Style
-
-- **Backend**: Black formatting, Flake8 linting, MyPy type checking
-- **Frontend**: Prettier formatting, ESLint linting, TypeScript strict mode
-- **Commit Messages**: Conventional commits format
-
-## 📝 License
+## 📝 许可证
 
 [Your License Here]
 
-## 🆘 Support
-
-- **Documentation**: Check individual README files in each directory
-- **Issues**: Submit GitHub issues for bugs and feature requests
-- **Discussions**: Use GitHub discussions for questions and ideas
-
 ---
 
-**Note**: This project is actively developed with a focus on AI-powered development tools and real-time user experiences.
+**注意**: 本项目专注于AI驱动的开发工具和实时用户体验，正在积极开发中。
