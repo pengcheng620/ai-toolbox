@@ -1,5 +1,5 @@
-export const JIRA_BTN_COMMENT_DES = {
-  name: "Summary to Testers",
+export const JIRA_BTN_DOD_DES = {
+  name: "Generate DoD Summary",
   tooltip:
-    "Summarize development task descriptions, identify affected areas, and define validation content for testers. Aim for high accuracy and detail."
+    "Generate a comprehensive Definition of Done summary based on the ticket description. Includes feature flag assessment, test coverage validation, code review requirements, and quality gates to help validate if the work meets completion criteria."
 }

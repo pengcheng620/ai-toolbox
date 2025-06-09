@@ -21,10 +21,8 @@ A FastAPI-based backend service for AI-powered development tools with Azure Open
 - `POST /api/v1/ai/generate` - Generate text with Azure OpenAI (supports streaming)
 
 ### Jira Integration
-- `POST /api/v1/ai/jira/generate` - **Enhanced** Generate Jira task comments with streaming support
-- `POST /api/v1/ai/jira/comment` - Generate Jira task comments  
-- `POST /api/v1/ai/jira/acceptance-criteria` - Generate acceptance criteria
-- `POST /api/v1/ai/jira/estimate` - Estimate task effort
+- `POST /api/v1/ai/jira/generate` - **Enhanced** Generate Jira Definition of Done (DoD) summary with streaming support
+- `POST /api/v1/ai/jira/definition-of-done` - Generate Definition of Done summary for development tickets
 
 ### GitHub Integration
 - `POST /api/v1/ai/github/pr-description` - Generate PR descriptions (supports streaming)
@@ -225,7 +223,7 @@ backend/
 │   │   ├── azure_ai.py   # Azure OpenAI service (streaming support)
 │   │   ├── azure_oauth.py # OAuth authentication service
 │   │   ├── base_ai.py    # Base AI service with retry logic
-│   │   └── jira_service.py # Jira-specific AI services
+│   │   └── jira_service.py # Jira Definition of Done (DoD) AI services
 │   ├── utils/            # Utility functions
 │   │   └── logger.py     # Logging configuration
 │   ├── config.py         # Configuration management

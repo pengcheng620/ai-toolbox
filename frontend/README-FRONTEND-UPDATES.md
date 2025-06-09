@@ -33,7 +33,6 @@
 - `src/hook/use-api-messaging.tsx` - 简化的Messaging hooks
 - `src/components/jira/add-comment-button.tsx` - Jira组件，实时生成
 - `src/components/github/add-description.tsx` - GitHub组件，实时生成
-- `src/components/debug/messaging-test.tsx` - 测试组件，流式响应演示
 
 ## 🎯 使用方式
 

@@ -2,23 +2,22 @@ import { marked } from "marked"
 import React, { useEffect, useState } from "react"
 
 import { useNotification } from "~components/common/notification"
-import { JIRA_BTN_COMMENT_DES } from "~components/jira/jira-servers"
-import { useJiraCommentMessaging } from "~hook/use-api-messaging"
+import { useJiraDoDefinitionMessaging } from "~hook/use-api-messaging"
 
 import { SparklesIcon } from "../../../lib/icons/heroicon"
 
-export const AddCommentButton = () => {
+export const GenerateDoDefinitionButton = () => {
   const { addNotification } = useNotification()
-  const { execute, loading, error } = useJiraCommentMessaging()
+  const { execute, loading, error } = useJiraDoDefinitionMessaging()
   const [streamingContent, setStreamingContent] = useState("")
 
-  // 监听错误变化并显示通知
+  // Monitor error changes and display notifications
   useEffect(() => {
     if (error) {
-      console.error("Jira API错误:", error)
+      console.error("Jira API Error:", error)
       addNotification({
         type: "error",
-        title: "生成失败",
+        title: "Generation Failed",
         message: error
       })
     }
@@ -30,9 +29,9 @@ export const AddCommentButton = () => {
       const $commentEditor = document.querySelector("#footer-comment-button")
       if (!$commentEditor) return
       const clickEvent = new MouseEvent("click", {
-        bubbles: true, // 事件是否冒泡
-        cancelable: true, // 事件是否可以取消
-        view: window // 指定事件的视图（通常是 window）
+        bubbles: true, // Event bubbling
+        cancelable: true, // Event cancellable
+        view: window // Event view (usually window)
       })
       $commentEditor.dispatchEvent(clickEvent)
     }
@@ -40,97 +39,92 @@ export const AddCommentButton = () => {
     const $commentField = document.querySelector("textarea#comment")
     if (!$commentField) return
     const description = document.querySelector("#description-val")?.textContent
-    
+
     if (!description?.trim()) {
       addNotification({
         type: "warning",
-        title: "警告",
-        message: "未找到任务描述，请确保页面已完全加载"
+        title: "Warning",
+        message: "Task description not found. Please ensure the page is fully loaded."
       })
       return
     }
 
-    await handleGenerate(description)
+    await handleGenerateDoD(description)
   }
 
-  const handleGenerate = async (description: string) => {
+  const handleGenerateDoD = async (description: string) => {
     if (loading) return
 
-    console.log("🚀 开始生成Jira评论 (流式响应)...")
-    console.log("任务描述:", description)
+    console.log("🚀 Starting Jira Definition of Done generation (streaming response)...")
+    console.log("Task description:", description)
 
-    // 首先测试健康检查以验证消息系统是否正常工作
-    console.log("🔍 测试消息系统连接...")
+    // First test health check to verify messaging system is working
+    console.log("🔍 Testing messaging system connection...")
     try {
       const healthCheck = await fetch("http://localhost:8000/api/v1/ai/health")
-      console.log("🔍 后端API健康检查:", healthCheck.status)
+      console.log("🔍 Backend API health check:", healthCheck.status)
     } catch (error) {
-      console.error("🔍 后端API连接失败:", error)
+      console.error("🔍 Backend API connection failed:", error)
       addNotification({
         type: "error",
-        title: "连接失败",
-        message: "无法连接到后端API服务器，请确保服务器正在运行"
+        title: "Connection Failed",
+        message: "Unable to connect to backend API server. Please ensure the server is running."
       })
       return
     }
 
-    // 清空之前的流式内容
+    // Clear previous streaming content
     setStreamingContent("")
 
     addNotification({
       type: "info",
-      title: "生成中", 
-      message: "正在实时生成Jira评论..."
+      title: "Generating",
+      message: "Generating Definition of Done summary in real-time..."
     })
 
-    // 使用Plasmo Messaging API调用后台脚本，默认使用流式响应
+    // Use API to call backend service with streaming response by default
     const result = await execute({
-      task_description: description,
-      task_type: "development",
-      context: {
-        source: "jira_page",
-        timestamp: new Date().toISOString(),
-        url: window.location.href
-      }
+      task_description: description
     }, {
       onChunk: (chunk: string, fullText: string) => {
-        console.log("📝 收到流式内容:", chunk)
+        console.log("📝 Received streaming content:", chunk)
         setStreamingContent(fullText)
-        // 实时更新评论区域
+        // Update comment area in real-time
         setCommentAreaRealtime(fullText)
       }
     })
 
-    // 如果成功，确保最终内容已设置
+    // If successful, ensure final content is set
     if (result) {
-      console.log("✅ 生成成功:", result)
+      console.log("✅ Generation successful:", result)
       const finalContent = result.generated_content || streamingContent
-      // 确保最终内容已正确设置
+      // Ensure final content is properly set
       await setCommentArea(finalContent)
       addNotification({
         type: "info",
-        title: "生成成功",
-        message: "Jira评论已生成并填入表单"
+        title: "Generation Successful",
+        message: "Definition of Done summary has been generated and filled into the form"
       })
       setStreamingContent("")
     } else {
-      console.error("❌ 生成失败，结果为空")
+      console.error("❌ Generation failed, result is empty")
     }
   }
 
-  // 实时更新评论区域（用于流式响应）
+  // Real-time update comment area (for streaming response)
   const setCommentAreaRealtime = async (text: string) => {
+    // Update textarea with raw markdown text
     const $commentField = document.querySelector(
       "textarea#comment"
     ) as HTMLTextAreaElement
     if ($commentField) {
       $commentField.value = text
-      // 触发输入事件
+      // Trigger input event
       const event = new Event('input', { bubbles: true })
       $commentField.dispatchEvent(event)
     }
 
-    // 同时更新富文本编辑器
+    // Update rich text editor with HTML converted from markdown
     const $commentEditor = document.querySelector(
       "#mce_0_ifr"
     ) as HTMLIFrameElement
@@ -140,63 +134,83 @@ export const AddCommentButton = () => {
       const targetElement = iframeDocument?.getElementById("tinymce")
       if (targetElement) {
         try {
-          const comment = await marked(text)
-          const paragraph = targetElement.querySelector("p")
-          if (paragraph) {
-            paragraph.innerHTML = comment
-          }
+          // Let marked handle all markdown-to-HTML conversion
+          const htmlContent = await marked(text, {
+            breaks: true,        // Convert \n to <br>
+            gfm: true,          // GitHub Flavored Markdown
+            pedantic: false
+          })
+
+          targetElement.innerHTML = htmlContent
         } catch (e) {
-          console.warn("Markdown转换失败:", e)
+          console.error("Markdown conversion failed:", e)
+          console.error("Original text:", text)
+          console.error("Text length:", text.length)
+          // Fallback: simple line break conversion
+          targetElement.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`
         }
       }
     }
   }
 
   const setCommentArea = async (text: string) => {
+    // Update textarea with raw markdown text
     const $commentField = document.querySelector(
       "textarea#comment"
     ) as HTMLTextAreaElement
     if (!$commentField) {
-      console.warn("未找到评论文本框")
+      console.warn("Comment text field not found")
       return
     }
+
     $commentField.value = text
-    
-    // 触发输入事件
+    // Trigger input event
     const event = new Event('input', { bubbles: true })
     $commentField.dispatchEvent(event)
 
+    // Update rich text editor with HTML converted from markdown
     const $commentEditor = document.querySelector(
       "#mce_0_ifr"
     ) as HTMLIFrameElement
     if (!$commentEditor) return
-    
+
     const iframeDocument =
       $commentEditor.contentDocument || $commentEditor.contentWindow?.document
     const targetElement = iframeDocument?.getElementById("tinymce")
     if (targetElement) {
-      const comment = await marked(text)
-      console.log("设置富文本编辑器内容:", comment)
-      const paragraph = targetElement.querySelector("p")
-      if (paragraph) {
-        paragraph.innerHTML = comment
+      try {
+        // Let marked handle all markdown-to-HTML conversion
+        const htmlContent = await marked(text, {
+          breaks: true,        // Convert \n to <br>
+          gfm: true,          // GitHub Flavored Markdown
+          pedantic: false
+        })
+
+        targetElement.innerHTML = htmlContent
+      } catch (e) {
+        console.error("Markdown conversion failed:", e)
+        console.error("Original text:", text)
+        console.error("Text length:", text.length)
+        // Fallback: simple line break conversion
+        targetElement.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`
       }
     }
   }
 
   return (
-    <div 
-      className="aui-buttons" 
+    <div
+      className="aui-buttons"
       onClick={handleClick}
       style={{ cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1 }}
+      title="Generate a Definition of Done summary based on the ticket description to help validate if the work meets completion criteria. Includes feature flag assessment, test coverage validation, code review requirements, and quality gates."
     >
       <a
-        title={`${JIRA_BTN_COMMENT_DES.tooltip} (实时生成)`}
+        title="Generate Definition of Done Summary (Real-time Generation)"
         className="aui-button toolbar-trigger issueaction-comment-issue add-issue-comment inline-comment"
         style={{ display: "flex", alignItems: "center" }}>
         <SparklesIcon style={{ width: 20, marginRight: 5 }} />
         <span className="trigger-label">
-          {loading ? "实时生成中..." : JIRA_BTN_COMMENT_DES.name}
+          {loading ? "Generating DoD..." : "Generate DoD Summary"}
         </span>
       </a>
     </div>

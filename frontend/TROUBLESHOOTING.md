@@ -77,12 +77,6 @@ const result = await execute({ task_description: "..." })
 
 ### 🧪 测试验证
 
-**使用Messaging测试组件**:
-```typescript
-import { MessagingTestComponent } from "~components/debug/messaging-test"
-// 包含健康检查、Jira API、GitHub API的完整测试
-```
-
 **控制台验证**:
 ```javascript
 // 查看后台脚本日志

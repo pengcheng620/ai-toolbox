@@ -6,7 +6,7 @@ import type {
 import React from "react"
 import { createRoot } from "react-dom/client"
 
-import { AddCommentButton } from "~components/jira/add-comment-button"
+import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
 
 
 
@@ -43,7 +43,7 @@ export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({
 }
 
 const PlasmoOverlay = () => {
-  return <AddCommentButton />
+  return <GenerateDoDefinitionButton />
 }
 
 export default PlasmoOverlay

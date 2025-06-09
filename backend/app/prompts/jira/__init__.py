@@ -1,17 +1,11 @@
 """Jira prompts module."""
 
-from app.prompts.jira.task_comment import TASK_COMMENT_PROMPT
-from app.prompts.jira.acceptance_criteria import ACCEPTANCE_CRITERIA_PROMPT
-from app.prompts.jira.effort_estimation import EFFORT_ESTIMATION_PROMPT
-from app.prompts.jira.summary_for_testers import SUMMARY_FOR_TESTERS_PROMPT
+from app.prompts.jira.definition_of_done import DEFINITION_OF_DONE_PROMPT
 
 class JiraPrompts:
     """Jira prompts collection."""
-    
-    TASK_COMMENT = TASK_COMMENT_PROMPT
-    ACCEPTANCE_CRITERIA = ACCEPTANCE_CRITERIA_PROMPT  
-    EFFORT_ESTIMATION = EFFORT_ESTIMATION_PROMPT
-    SUMMARY_FOR_TESTERS = SUMMARY_FOR_TESTERS_PROMPT
+
+    DEFINITION_OF_DONE = DEFINITION_OF_DONE_PROMPT
 
 # Global instance
-jira_prompts = JiraPrompts() 
+jira_prompts = JiraPrompts()

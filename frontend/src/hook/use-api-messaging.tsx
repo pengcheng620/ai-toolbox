@@ -127,8 +127,8 @@ export function useGitHubPRMessaging() {
   return useMessagingApi("/ai/github/generate")
 }
 
-// Jira 评论生成 hook - 直接API调用  
-export function useJiraCommentMessaging() {
+// Jira Definition of Done generation hook - direct API call
+export function useJiraDoDefinitionMessaging() {
   return useMessagingApi("/ai/jira/generate")
 }
 

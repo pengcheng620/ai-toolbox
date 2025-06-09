@@ -1,12 +1,11 @@
 """AI service API endpoints."""
 
-import logging
-from typing import List, Dict, Any, Union
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import StreamingResponse
+from typing import List
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.services.azure_ai import azure_ai_service
+from app.services.jira_service import jira_service
 from app.utils.logger import get_logger
 from app.utils.stream_handler import StreamableRequest, create_streaming_response
 
@@ -50,14 +49,10 @@ class ChatStreamRequest(StreamableRequest):
     )
 
 
-class JiraCommentRequest(StreamableRequest):
-    """Request model for Jira comment generation."""
+class JiraDoDefinitionRequest(StreamableRequest):
+    """Request model for Jira Definition of Done generation."""
 
     task_description: str = Field(..., description="Jira task description")
-    task_type: str = Field(default="development", description="Type of task")
-    context: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional context"
-    )
 
 
 class GitHubPRRequest(StreamableRequest):
@@ -82,13 +77,14 @@ class GenerateTextResponse(BaseModel):
     error: str = ""
 
 
-class JiraCommentResponse(BaseModel):
-    """Response model for Jira comment generation."""
+class JiraDoDefinitionResponse(BaseModel):
+    """Response model for Jira Definition of Done generation."""
 
     generated_content: str
     suggestions: List[str]
     model: str
     tokens_used: int
+    success: bool = True
     error: str = ""
 
 
@@ -201,35 +197,53 @@ async def chat_stream(request: ChatStreamRequest):
 
 
 @router.post("/jira/generate", response_model=None)
-async def generate_jira_comment(request: JiraCommentRequest):
-    """Generate Jira task comment using specialized AI prompt. Supports both streaming and non-streaming."""
+async def generate_jira_definition_of_done(request: JiraDoDefinitionRequest):
+    """Generate Jira Definition of Done using specialized AI prompt. Supports both streaming and non-streaming."""
     try:
-        logger.info(f"Generating Jira comment for task type: {request.task_type}, stream: {request.stream}")
+        logger.info(f"Generating Jira Definition of Done, stream: {request.stream}")
 
         if request.stream:
-            # Return streaming response
-            generator = azure_ai_service.generate_jira_comment_stream(
-                task_description=request.task_description,
-                task_type=request.task_type,
-                context=request.context,
-            )
-            return await create_streaming_response(generator, "Jira comment generation")
+            # For streaming, we need to create a custom generator
+            async def generate_stream():
+                result = await jira_service.generate_dod_summary(
+                    task_description=request.task_description
+                )
+
+                if result.get("success"):
+                    content = result.get("generated_content", "")
+                    # Simulate streaming by sending chunks while preserving line breaks
+                    import re
+
+                    # Split content into tokens while preserving whitespace and line breaks
+                    tokens = re.findall(r'\S+|\s+', content)
+
+                    chunk_size = 3  # Send every 3 tokens
+                    for i in range(0, len(tokens), chunk_size):
+                        chunk_tokens = tokens[i:i + chunk_size]
+                        chunk = "".join(chunk_tokens)  # Preserve original spacing and line breaks
+                        yield chunk
+
+                        # Add small delay to simulate real streaming
+                        import asyncio
+                        await asyncio.sleep(0.05)
+                else:
+                    yield f"Error: {result.get('error', 'Unknown error')}"
+
+            return await create_streaming_response(generate_stream(), "Jira Definition of Done generation")
         else:
             # Return non-streaming response
-            result = await azure_ai_service.generate_jira_comment(
-                task_description=request.task_description,
-                task_type=request.task_type,
-                context=request.context,
+            result = await jira_service.generate_dod_summary(
+                task_description=request.task_description
             )
 
             # Check if there was an error and handle it properly
             if result.get("error"):
                 raise HTTPException(status_code=500, detail=result["error"])
 
-            return JiraCommentResponse(**result)
+            return JiraDoDefinitionResponse(**result)
 
     except Exception as e:
-        logger.error(f"Jira comment generation failed: {str(e)}")
+        logger.error(f"Jira Definition of Done generation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
