@@ -10,7 +10,7 @@ import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
 
 export const config: PlasmoCSConfig = {
   matches: [
-    "https://jira.autodesk.com/*"
+    "https://jira.autodesk.com/browse/*"
     // "http://localhost:8887/*"
   ]
 }

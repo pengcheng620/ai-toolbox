@@ -1,0 +1,81 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Development Rules
+
+## Project Rules Overview
+
+- Only modify the project according to this specification. Do not speculate or reference general development knowledge.
+- When modifying README.md, you must also update related documentation in docs/.
+- For any features involving both backend/ and frontend/, ensure interface and type definitions are synchronized.
+- When adding or modifying APIs, you must also update docs/api-documentation.md.
+- For any features related to jira or sprint-planning, you must check and update all related files, including frontend/src/components/jira, frontend/src/components/sprint-planning, backend/app/services/jira_api_client.py, backend/app/services/sprint_planning_service.py, etc.
+- Do not modify a single file without checking related dependencies.
+- For any deployment-related changes, you must also check deployment/ and .github/workflows/.
+
+## Directory Structure Rules
+
+- backend/: All backend code and configuration, including app, services, api, models, etc.
+- frontend/: All frontend code, including src/components, src/hook, src/services, src/types, etc.
+- docs/: All documentation, including API docs and user guides.
+- deployment/: Deployment-related configuration and scripts.
+- .github/: CI/CD workflow configuration.
+- wiki/: Research and design documents.
+
+## Naming and Formatting Rules
+
+- File, folder, function, and class names must follow the existing style.
+- Unreviewed naming styles are prohibited.
+- Any new types must be defined in frontend/src/types/ or backend/app/models/schemas.py.
+
+## Feature Implementation Rules
+
+- When adding features, always check if you need to update both frontend and backend, APIs, types, and documentation.
+- For any features related to jira, sprint-planning, or github, always check all related files and folders.
+- Do not implement features only on one side (frontend or backend).
+
+## Third-Party Dependency Rules
+
+- When adding or upgrading dependencies, always update the corresponding lock files (e.g., pnpm-lock.yaml, uv.lock).
+- Unreviewed dependency upgrades are prohibited.
+
+## Workflow Rules
+
+- For any multi-file changes, the commit message must clearly indicate the affected scope.
+- Do not describe only single-file changes in commit messages.
+- For any changes involving APIs, deployment, or CI/CD, always check docs/, deployment/, and .github/.
+
+## Key File Interaction Rules
+
+- When modifying frontend/README.md, always update related documentation in docs/.
+- When modifying services in backend/app/services/, always check api/, models/, and docs/.
+- When adding or modifying APIs, always update docs/api-documentation.md.
+
+## AI Decision Rules
+
+- When facing ambiguous requests, always recursively check all related files and folders, and search online if necessary.
+- Do not ask the user for clarification unless you have completed autonomous analysis.
+- Always prioritize the existing project structure and rules when making decisions.
+
+## Prohibited Actions
+
+- Do not include any general development knowledge.
+- Do not provide feature explanations or technical tutorials.
+- Do not modify a single file without checking dependencies.
+- Unreviewed naming, dependencies, or formatting are prohibited.
+
+## Examples
+
+### Allowed Actions
+- When adding jira-related features, update backend/app/services/jira_api_client.py, frontend/src/components/jira/, and docs/jira-api-integration.md together.
+- When adding an API, update backend/app/api/, models/, and docs/api-documentation.md together.
+- When modifying README.md, update all related documentation in docs/.
+
+### Prohibited Actions
+- Modifying only frontend/src/components/jira/ without checking backend/app/services/.
+- Adding an API only in backend/app/api/ without updating docs/api-documentation.md.
+- Modifying jira-related features in a single file only.
+
+**All rules must be strictly followed. Any violation is considered an error.**

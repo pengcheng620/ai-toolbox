@@ -88,6 +88,18 @@ class Settings(BaseSettings):
     enable_rate_limiting: bool = Field(default=True, alias="ENABLE_RATE_LIMITING")
     enable_metrics: bool = Field(default=True, alias="ENABLE_METRICS")
 
+    # Jira API Integration
+    jira_base_url: str = Field(default="", alias="JIRA_BASE_URL")
+    jira_username: str = Field(default="", alias="JIRA_USERNAME")
+    jira_api_token: str = Field(default="", alias="JIRA_API_TOKEN")
+    jira_enable_api: bool = Field(default=False, alias="JIRA_ENABLE_API")
+    jira_api_timeout: int = Field(default=30, alias="JIRA_API_TIMEOUT")
+    jira_default_project: str = Field(default="", alias="JIRA_DEFAULT_PROJECT")
+    
+    # Jira Authentication Method
+    jira_auth_method: str = Field(default="basic", alias="JIRA_AUTH_METHOD")  # "basic" or "pat"
+    jira_personal_access_token: str = Field(default="", alias="JIRA_PERSONAL_ACCESS_TOKEN")
+
     @property
     def allowed_hosts_list(self) -> List[str]:
         """Get allowed hosts as list."""
@@ -111,6 +123,19 @@ class Settings(BaseSettings):
     def is_production(self) -> bool:
         """Check if running in production mode."""
         return self.environment.lower() in ("production", "prod")
+
+    @property
+    def jira_api_enabled(self) -> bool:
+        """Check if Jira API integration is enabled and properly configured."""
+        if not self.jira_enable_api or not bool(self.jira_base_url):
+            return False
+        
+        if self.jira_auth_method.lower() == "pat":
+            # PAT authentication requires only the Personal Access Token
+            return bool(self.jira_personal_access_token)
+        else:
+            # Basic authentication requires username and API token
+            return bool(self.jira_username) and bool(self.jira_api_token)
 
 
 

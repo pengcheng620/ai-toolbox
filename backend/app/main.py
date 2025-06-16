@@ -16,6 +16,7 @@ from app.api.base import router as base_ai_router
 from app.api.chat import router as chat_router
 from app.api.jira import router as jira_router
 from app.api.github import router as github_router
+from app.api.sprint_planning import router as sprint_planning_router
 
 logger = get_logger(__name__)
 
@@ -70,6 +71,7 @@ app.include_router(base_ai_router, prefix=f"{settings.api_v1_prefix}/ai", tags=[
 app.include_router(chat_router, prefix=f"{settings.api_v1_prefix}/ai/chat", tags=["AI Chat"])
 app.include_router(jira_router, prefix=f"{settings.api_v1_prefix}/ai/jira", tags=["AI Jira"])
 app.include_router(github_router, prefix=f"{settings.api_v1_prefix}/ai/github", tags=["AI GitHub"])
+app.include_router(sprint_planning_router, prefix=f"{settings.api_v1_prefix}/sprint-planning", tags=["Sprint Planning"])
 
 
 @app.get("/")
