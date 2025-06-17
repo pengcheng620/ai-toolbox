@@ -2,18 +2,230 @@
 
 ## 概述
 
-Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 Sprint 规划分析、团队工作负载管理、假期影响评估和性能监控。
+Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 Sprint 规划分析、团队工作负载管理、假期影响评估、性能监控和 Jira Issue 详细信息获取。
 
 ## 基础信息
 
-- **Base URL**: `http://localhost:8000/api/v1`
+- **Base URL**: `http://localhost:8000/api`
 - **认证**: 暂无（开发环境）
 - **内容类型**: `application/json`
 - **字符编码**: UTF-8
 
 ## API 端点
 
-### 1. Sprint Planning 分析
+### 1. Jira Issue 信息获取
+
+#### GET /jira/issue/{issue_key}/details
+
+获取指定 Jira Issue 的详细信息，包括评论、附件、关联 issues 等。
+
+**路径参数**:
+- `issue_key` (string, required): Jira Issue Key，例如 "PROJ-123"
+
+**查询参数**:
+- `include_comments` (boolean, optional, default=true): 是否包含评论信息
+- `include_attachments` (boolean, optional, default=true): 是否包含附件信息
+
+**请求示例**:
+```bash
+GET /api/jira/issue/UC-70875/details?include_comments=true&include_attachments=true
+```
+
+**响应体**:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "12345",
+    "key": "UC-70875",
+    "summary": "Issue 标题",
+    "description": "详细描述",
+    "description_rendered": "渲染后的 HTML 描述",
+    "status": {
+      "id": "3",
+      "name": "In Progress",
+      "status_category": "indeterminate"
+    },
+    "issue_type": {
+      "id": "10001",
+      "name": "Story",
+      "icon_url": "https://..."
+    },
+    "priority": {
+      "id": "3",
+      "name": "Medium",
+      "icon_url": "https://..."
+    },
+    "assignee": {
+      "id": "user123",
+      "name": "John Doe",
+      "display_name": "John Doe",
+      "avatar": "https://...",
+      "email_address": "john.doe@company.com"
+    },
+    "reporter": {
+      "id": "user456",
+      "name": "Jane Smith",
+      "display_name": "Jane Smith",
+      "avatar": "https://..."
+    },
+    "story_points": 5.0,
+    "labels": ["frontend", "ui"],
+    "created": "2024-01-01T10:00:00Z",
+    "updated": "2024-01-15T14:30:00Z",
+    "url": "https://jira.company.com/browse/UC-70875",
+    "comments": [
+      {
+        "id": "comment123",
+        "body": "评论内容",
+        "rendered_body": "渲染后的评论 HTML",
+        "author": {
+          "id": "user789",
+          "name": "Alice Johnson",
+          "email": "alice@company.com",
+          "avatar": "https://..."
+        },
+        "created": "2024-01-10T09:15:00Z",
+        "updated": "2024-01-10T09:15:00Z"
+      }
+    ],
+    "comments_count": 3,
+    "attachments": [
+      {
+        "id": "att456",
+        "filename": "design.pdf",
+        "size": 2048576,
+        "mime_type": "application/pdf",
+        "content_url": "https://jira.company.com/attachment/456/design.pdf",
+        "thumbnail_url": "https://jira.company.com/attachment/456/thumbnail",
+        "author": {
+          "id": "user123",
+          "name": "John Doe"
+        },
+        "created": "2024-01-05T16:20:00Z"
+      }
+    ],
+    "attachments_count": 2,
+    "issue_links": [
+      {
+        "id": "link789",
+        "type": {
+          "name": "Blocks",
+          "inward": "is blocked by",
+          "outward": "blocks"
+        },
+        "direction": "outward",
+        "linked_issue": {
+          "key": "UC-70876",
+          "summary": "相关 Issue 标题",
+          "status": "To Do",
+          "issue_type": "Bug"
+        }
+      }
+    ],
+    "issue_links_count": 1,
+    "subtasks": [
+      {
+        "id": "sub123",
+        "key": "UC-70875-1",
+        "summary": "子任务标题",
+        "status": "Done",
+        "issue_type": "Subtask",
+        "assignee": {
+          "id": "user456",
+          "name": "Jane Smith",
+          "avatar": "https://..."
+        }
+      }
+    ],
+    "subtasks_count": 2,
+    "votes": 3,
+    "watches": 7,
+    "environment": "生产环境",
+    "environment_rendered": "生产环境"
+  }
+}
+```
+
+**错误响应**:
+```json
+{
+  "success": false,
+  "error": "Issue UC-12345 not found"
+}
+```
+
+**状态码**:
+- `200`: 成功
+- `404`: Issue 不存在
+- `500`: 服务器内部错误
+
+---
+
+#### GET /jira/issue/{issue_key}/basic
+
+获取指定 Jira Issue 的基本信息（轻量级版本，不包含评论和附件）。
+
+**路径参数**:
+- `issue_key` (string, required): Jira Issue Key，例如 "PROJ-123"
+
+**请求示例**:
+```bash
+GET /api/jira/issue/UC-70875/basic
+```
+
+**响应体**:
+```json
+{
+  "success": true,
+  "data": {
+    "key": "UC-70875",
+    "summary": "Issue 标题",
+    "description": "详细描述",
+    "status": {
+      "id": "3",
+      "name": "In Progress",
+      "status_category": "indeterminate"
+    },
+    "issue_type": {
+      "id": "10001",
+      "name": "Story",
+      "icon_url": "https://..."
+    },
+    "priority": {
+      "id": "3",
+      "name": "Medium",
+      "icon_url": "https://..."
+    },
+    "assignee": {
+      "id": "user123",
+      "name": "John Doe",
+      "display_name": "John Doe",
+      "avatar": "https://..."
+    },
+    "reporter": {
+      "id": "user456",
+      "name": "Jane Smith",
+      "display_name": "Jane Smith",
+      "avatar": "https://..."
+    },
+    "created": "2024-01-01T10:00:00Z",
+    "updated": "2024-01-15T14:30:00Z",
+    "url": "https://jira.company.com/browse/UC-70875",
+    "story_points": 5.0,
+    "labels": ["frontend", "ui"]
+  }
+}
+```
+
+**状态码**:
+- `200`: 成功
+- `404`: Issue 不存在
+- `500`: 服务器内部错误
+
+---
+
+### 2. Sprint Planning 分析
 
 #### POST /sprint-planning/analyze
 
@@ -183,7 +395,7 @@ Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 S
 
 ---
 
-### 2. 团队工作负载分析
+### 3. 团队工作负载分析
 
 #### POST /sprint-planning/team-workload
 
@@ -201,28 +413,18 @@ Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 S
       "carryOverPoints": 2,
       "totalWorkload": 10,
       "issueCount": 3,
-      "status": "normal",
-      "capacity": 12,
-      "utilizationPercentage": 83
+      "status": "normal|high|overloaded"
     }
   },
   "unassignedPoints": 5,
   "totalAssignedPoints": 37,
-  "balanceRecommendations": [
-    {
-      "from": "user1",
-      "to": "user2",
-      "points": 3,
-      "reason": "平衡工作负载"
-    }
-  ],
   "success": true
 }
 ```
 
 ---
 
-### 3. Board 信息
+### 4. Board 信息
 
 #### GET /sprint-planning/board-info/{board_id}
 
@@ -243,7 +445,7 @@ Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 S
 
 ---
 
-### 4. Sprint 数据
+### 5. Sprint 数据
 
 #### GET /sprint-planning/sprint-data/{board_id}
 
@@ -269,7 +471,7 @@ Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 S
 
 ---
 
-### 5. 假期分析
+### 6. 假期分析
 
 #### POST /sprint-planning/holiday-analysis
 
@@ -298,7 +500,7 @@ Sprint Planning Assistant API 提供了一套完整的 RESTful 接口，用于 S
 
 ---
 
-### 6. 性能监控
+### 7. 性能监控
 
 #### GET /sprint-planning/performance-metrics
 

@@ -112,13 +112,6 @@ LOG_LEVEL=INFO
 LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
 ```
 
-### Removed Environment Variables
-The following variables have been removed in the latest version:
-- `OPENAI_API_KEY` (replaced by OAuth)
-- `DATABASE_URL` (not currently used)
-- `REDIS_URL` (not currently used)
-- `ENABLE_CACHING`, `ENABLE_RATE_LIMITING`, `ENABLE_METRICS` (feature flags removed)
-
 ## Installation
 
 1. **Clone the repository**:
@@ -392,7 +385,3 @@ curl -X POST "http://localhost:8000/api/v1/ai/jira/generate" \
 4. Ensure all tests pass: `pytest`
 5. Update documentation if needed
 6. Submit a pull request with clear description
-
-## License
-
-[Your License Here]

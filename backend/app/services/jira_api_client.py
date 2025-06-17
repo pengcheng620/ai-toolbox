@@ -64,6 +64,9 @@ class JiraAPIClient:
         """Get board information by board ID."""
         if not settings.jira_api_enabled:
             raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
 
         try:
             url = f"{self.base_url}/rest/agile/1.0/board/{board_id}"
@@ -105,6 +108,9 @@ class JiraAPIClient:
         """Get sprints for a board."""
         if not settings.jira_api_enabled:
             raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
 
         try:
             url = f"{self.base_url}/rest/agile/1.0/board/{board_id}/sprint"
@@ -155,6 +161,9 @@ class JiraAPIClient:
         """Get issues for a specific sprint."""
         if not settings.jira_api_enabled:
             raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
 
         try:
             url = f"{self.base_url}/rest/agile/1.0/sprint/{sprint_id}/issue"
@@ -201,6 +210,9 @@ class JiraAPIClient:
         """Get board configuration including columns and estimation settings."""
         if not settings.jira_api_enabled:
             raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
 
         try:
             url = f"{self.base_url}/rest/agile/1.0/board/{board_id}/configuration"
@@ -283,7 +295,7 @@ class JiraAPIClient:
         }
 
         # Extract story points
-        story_points = 0
+        story_points: float = 0.0
         # Common custom field names for story points
         story_point_fields = ["customfield_10004", "customfield_10008", "customfield_10002"]
         for field_name in story_point_fields:
@@ -319,6 +331,9 @@ class JiraAPIClient:
         """Search issues using JQL."""
         if not settings.jira_api_enabled:
             raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
 
         try:
             url = f"{self.base_url}/rest/api/2/search"
@@ -353,6 +368,178 @@ class JiraAPIClient:
             logger.error(f"Failed to search issues with JQL '{jql}': {str(e)}")
             return {
                 "issues": [],
+                "success": False,
+                "error": str(e)
+            }
+
+    async def get_issue_details(self, issue_key: str, include_comments: bool = True, include_attachments: bool = True) -> Dict[str, Any]:
+        """Get detailed information for a specific issue including comments, links, and attachments."""
+        if not settings.jira_api_enabled:
+            raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
+
+        try:
+            # Build expand parameters to get additional details
+            expand_params = ["renderedFields", "names", "schema", "transitions", "operations"]
+            if include_comments:
+                expand_params.append("comments")
+            if include_attachments:
+                expand_params.append("attachment")
+            
+            url = f"{self.base_url}/rest/api/2/issue/{issue_key}"
+            params = {
+                "expand": ",".join(expand_params)
+            }
+            
+            async with self.session.get(url, params=params) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Parse basic issue information
+                    basic_info = self._parse_issue_data(data)
+                    
+                    # Extract additional details
+                    fields = data.get("fields", {})
+                    rendered_fields = data.get("renderedFields", {})
+                    
+                    # Parse comments
+                    comments = []
+                    if include_comments and "comments" in data.get("fields", {}):
+                        comments_data = fields.get("comment", {}).get("comments", [])
+                        for comment_data in comments_data:
+                            comment = {
+                                "id": comment_data.get("id"),
+                                "body": comment_data.get("body", ""),
+                                "rendered_body": rendered_fields.get("comment", {}).get("comments", [{}])[0].get("body", "") if rendered_fields.get("comment") else "",
+                                "author": {
+                                    "id": comment_data.get("author", {}).get("accountId", ""),
+                                    "name": comment_data.get("author", {}).get("displayName", ""),
+                                    "email": comment_data.get("author", {}).get("emailAddress", ""),
+                                    "avatar": comment_data.get("author", {}).get("avatarUrls", {}).get("48x48", "")
+                                },
+                                "created": comment_data.get("created", ""),
+                                "updated": comment_data.get("updated", "")
+                            }
+                            comments.append(comment)
+                    
+                    # Parse attachments
+                    attachments = []
+                    if include_attachments and "attachment" in fields:
+                        for attachment_data in fields.get("attachment", []):
+                            attachment = {
+                                "id": attachment_data.get("id"),
+                                "filename": attachment_data.get("filename", ""),
+                                "size": attachment_data.get("size", 0),
+                                "mime_type": attachment_data.get("mimeType", ""),
+                                "content_url": attachment_data.get("content", ""),
+                                "thumbnail_url": attachment_data.get("thumbnail", ""),
+                                "author": {
+                                    "id": attachment_data.get("author", {}).get("accountId", ""),
+                                    "name": attachment_data.get("author", {}).get("displayName", "")
+                                },
+                                "created": attachment_data.get("created", "")
+                            }
+                            attachments.append(attachment)
+                    
+                    # Parse issue links
+                    issue_links = []
+                    if "issuelinks" in fields:
+                        for link_data in fields.get("issuelinks", []):
+                            link_type = link_data.get("type", {})
+                            link = {
+                                "id": link_data.get("id"),
+                                "type": {
+                                    "name": link_type.get("name", ""),
+                                    "inward": link_type.get("inward", ""),
+                                    "outward": link_type.get("outward", "")
+                                }
+                            }
+                            
+                            # Add linked issue information
+                            if "inwardIssue" in link_data:
+                                linked_issue = link_data["inwardIssue"]
+                                link["direction"] = "inward"
+                                link["linked_issue"] = {
+                                    "key": linked_issue.get("key", ""),
+                                    "summary": linked_issue.get("fields", {}).get("summary", ""),
+                                    "status": linked_issue.get("fields", {}).get("status", {}).get("name", ""),
+                                    "issue_type": linked_issue.get("fields", {}).get("issuetype", {}).get("name", "")
+                                }
+                            elif "outwardIssue" in link_data:
+                                linked_issue = link_data["outwardIssue"]
+                                link["direction"] = "outward"
+                                link["linked_issue"] = {
+                                    "key": linked_issue.get("key", ""),
+                                    "summary": linked_issue.get("fields", {}).get("summary", ""),
+                                    "status": linked_issue.get("fields", {}).get("status", {}).get("name", ""),
+                                    "issue_type": linked_issue.get("fields", {}).get("issuetype", {}).get("name", "")
+                                }
+                            
+                            issue_links.append(link)
+                    
+                    # Parse subtasks
+                    subtasks = []
+                    if "subtasks" in fields:
+                        for subtask_data in fields.get("subtasks", []):
+                            subtask = {
+                                "id": subtask_data.get("id"),
+                                "key": subtask_data.get("key"),
+                                "summary": subtask_data.get("fields", {}).get("summary", ""),
+                                "status": subtask_data.get("fields", {}).get("status", {}).get("name", ""),
+                                "issue_type": subtask_data.get("fields", {}).get("issuetype", {}).get("name", ""),
+                                "assignee": None
+                            }
+                            
+                            # Parse subtask assignee
+                            assignee_data = subtask_data.get("fields", {}).get("assignee")
+                            if assignee_data:
+                                subtask["assignee"] = {
+                                    "id": assignee_data.get("accountId", ""),
+                                    "name": assignee_data.get("displayName", ""),
+                                    "avatar": assignee_data.get("avatarUrls", {}).get("48x48", "")
+                                }
+                            
+                            subtasks.append(subtask)
+                    
+                    # Combine all information
+                    detailed_info = {
+                        **basic_info,
+                        "description_rendered": rendered_fields.get("description", ""),
+                        "environment": fields.get("environment", ""),
+                        "environment_rendered": rendered_fields.get("environment", ""),
+                        "comments": comments,
+                        "comments_count": len(comments),
+                        "attachments": attachments,
+                        "attachments_count": len(attachments),
+                        "issue_links": issue_links,
+                        "issue_links_count": len(issue_links),
+                        "subtasks": subtasks,
+                        "subtasks_count": len(subtasks),
+                        "votes": fields.get("votes", {}).get("votes", 0),
+                        "watches": fields.get("watches", {}).get("watchCount", 0),
+                        "url": f"{self.base_url}/browse/{issue_key}",
+                        "success": True
+                    }
+                    
+                    return detailed_info
+                    
+                elif response.status == 404:
+                    return {
+                        "success": False,
+                        "error": f"Issue {issue_key} not found"
+                    }
+                else:
+                    error_text = await response.text()
+                    return {
+                        "success": False,
+                        "error": f"API error {response.status}: {error_text}"
+                    }
+
+        except Exception as e:
+            logger.error(f"Failed to get detailed info for issue {issue_key}: {str(e)}")
+            return {
                 "success": False,
                 "error": str(e)
             }

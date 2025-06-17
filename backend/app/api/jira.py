@@ -1,10 +1,11 @@
 """Jira API endpoints."""
 
-from typing import List
-from fastapi import APIRouter, HTTPException
+from typing import List, Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from app.services.jira_service import jira_service
+from app.services.jira_api_client import jira_api_client
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -32,6 +33,17 @@ class JiraDoDefinitionResponse(BaseModel):
     error: str = ""
 
 
+class JiraIssueDetailsResponse(BaseModel):
+    """Response model for Jira Issue details."""
+
+    success: bool
+    data: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    
+    class Config:
+        arbitrary_types_allowed = True
+
+
 # Endpoints
 @router.post("/definition-of-done", response_model=JiraDoDefinitionResponse)
 async def generate_definition_of_done(request: JiraDoDefinitionRequest):
@@ -47,6 +59,85 @@ async def generate_definition_of_done(request: JiraDoDefinitionRequest):
 
     except Exception as e:
         logger.error(f"Jira Definition of Done generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/issue/{issue_key}/details", response_model=JiraIssueDetailsResponse)
+async def get_issue_details(
+    issue_key: str,
+    include_comments: bool = Query(default=True, description="Include comments in the response"),
+    include_attachments: bool = Query(default=True, description="Include attachments in the response")
+):
+    """Get detailed information for a specific Jira issue including comments, links, and attachments."""
+    try:
+        logger.info(f"Getting detailed information for issue: {issue_key}")
+
+        async with jira_api_client as client:
+            result = await client.get_issue_details(
+                issue_key=issue_key,
+                include_comments=include_comments,
+                include_attachments=include_attachments
+            )
+
+        if result.get("success"):
+            return JiraIssueDetailsResponse(
+                success=True,
+                data=result
+            )
+        else:
+            return JiraIssueDetailsResponse(
+                success=False,
+                error=result.get("error", "Unknown error occurred")
+            )
+
+    except Exception as e:
+        logger.error(f"Failed to get issue details for {issue_key}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/issue/{issue_key}/basic")
+async def get_issue_basic(issue_key: str):
+    """Get basic information for a specific Jira issue (lightweight version)."""
+    try:
+        logger.info(f"Getting basic information for issue: {issue_key}")
+
+        async with jira_api_client as client:
+            result = await client.get_issue_details(
+                issue_key=issue_key,
+                include_comments=False,
+                include_attachments=False
+            )
+
+        if result.get("success"):
+            # Return only basic fields for lightweight response
+            basic_data = {
+                "key": result.get("key"),
+                "summary": result.get("summary"),
+                "description": result.get("description"),
+                "status": result.get("status"),
+                "issue_type": result.get("issue_type"),
+                "priority": result.get("priority"),
+                "assignee": result.get("assignee"),
+                "reporter": result.get("reporter"),
+                "created": result.get("created"),
+                "updated": result.get("updated"),
+                "url": result.get("url"),
+                "story_points": result.get("story_points"),
+                "labels": result.get("labels", [])
+            }
+            
+            return JiraIssueDetailsResponse(
+                success=True,
+                data=basic_data
+            )
+        else:
+            return JiraIssueDetailsResponse(
+                success=False,
+                error=result.get("error", "Unknown error occurred")
+            )
+
+    except Exception as e:
+        logger.error(f"Failed to get basic issue info for {issue_key}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

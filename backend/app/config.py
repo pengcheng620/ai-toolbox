@@ -57,9 +57,6 @@ class Settings(BaseSettings):
     # Authentication method selection
     use_oauth_auth: bool = Field(default=True, alias="USE_OAUTH_AUTH")
 
-    # OpenAI (fallback)
-    openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
-
     # Database
     database_url: str = Field(
         default="postgresql+asyncpg://localhost/ai_toolbox", alias="DATABASE_URL"
