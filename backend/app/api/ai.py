@@ -1,11 +1,12 @@
-"""AI service API endpoints."""
+"""AI-powered services API endpoints."""
 
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.services.azure_ai import azure_ai_service
-from app.services.jira_service import jira_service
+from app.services.jira.jira_service import jira_service
+from app.services.github_service import github_service
 from app.utils.logger import get_logger
 from app.utils.stream_handler import StreamableRequest, create_streaming_response
 

@@ -80,7 +80,7 @@ ai-toolbox/
 
 4. **运行后端**:
    ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   uv run run_dev.py
    ```
 
 ### 浏览器扩展设置
@@ -139,8 +139,7 @@ ai-toolbox/
 ```bash
 cd backend
 uv sync                    # 安装依赖
-pytest                     # 运行测试
-uvicorn app.main:app --reload  # 启动开发服务器
+uv run run_dev.py    # 启动开发服务器
 ```
 
 ### 扩展开发

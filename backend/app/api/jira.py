@@ -4,8 +4,8 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from app.services.jira_service import jira_service
-from app.services.jira_api_client import jira_api_client
+from app.services.jira.jira_service import jira_service
+from app.services.jira.jira_api_client import jira_api_client
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)

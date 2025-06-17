@@ -1,13 +1,14 @@
 """Sprint Planning service for AI-powered analysis and recommendations."""
 
 from typing import Dict, Any, List, Optional, Callable
+from datetime import datetime, timedelta
 
+from app.services.jira.holiday_service import holiday_service
 from app.services.base_ai import BaseAzureAIService
-from app.services.holiday_service import holiday_service
 from app.services.ai_recommendations_service import ai_recommendations_service
 from app.services.performance_monitor import performance_monitor
-from app.services.jira_rest_client import jira_rest_client
-from app.services.jira_data_optimizer import jira_data_optimizer
+from app.services.jira.jira_rest_client import jira_rest_client
+from app.services.jira.jira_data_optimizer import jira_data_optimizer
 from app.config import settings
 from app.utils.logger import get_logger
 
@@ -256,7 +257,6 @@ class SprintPlanningService(BaseAzureAIService):
 
             if not start_date or not end_date:
                 # Use default 2-week sprint if dates not available
-                from datetime import datetime, timedelta
                 now = datetime.now()
                 start_date = now.isoformat()
                 end_date = (now + timedelta(days=14)).isoformat()
@@ -334,7 +334,6 @@ class SprintPlanningService(BaseAzureAIService):
 
     def _get_current_timestamp(self) -> str:
         """Get current timestamp in ISO format."""
-        from datetime import datetime
         return datetime.now().isoformat()
 
 

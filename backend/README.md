@@ -143,7 +143,7 @@ LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 5. **Run the application**:
    ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   uv run run_dev.py
    ```
 
 ## OAuth Authentication Setup

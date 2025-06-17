@@ -12,7 +12,7 @@ from enum import Enum
 import asyncio
 from datetime import datetime
 
-from app.services.jira_rest_client import JiraRESTClient
+from .jira_rest_client import JiraRESTClient
 from app.config import settings
 from app.utils.logger import get_logger
 

@@ -9,7 +9,8 @@ import psutil
 import os
 
 from app.services.sprint_planning_service import sprint_planning_service
-from app.services.jira_data_optimizer import jira_data_optimizer
+from app.services.jira.jira_data_optimizer import jira_data_optimizer
+from app.services.ai_recommendations_service import ai_recommendations_service
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
