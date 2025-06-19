@@ -29,7 +29,13 @@ You are reviewing a development task. Your goal is to create a clear, concise, a
 "{task_description}"
 
 ### YOUR TASK
-Based on the task description, generate a complete DoD summary. Adhere strictly to the Markdown format specified below. Do not add any introductory or concluding sentences outside of this format. Use empty lines to create paragraphs and line breaks.
+Based on the task description, generate a complete DoD summary. Adhere strictly to the Markdown format specified below. Do not add any introductory or concluding sentences outside of this format.
+
+### CRITICAL FORMATTING REQUIREMENTS
+- Use EXACTLY two newline characters (\\n\\n) between each section
+- Use EXACTLY one newline character (\\n) between list items
+- Ensure proper spacing for readability
+- Do NOT merge sections together
 
 ### OUTPUT FORMAT
 
@@ -37,24 +43,32 @@ Based on the task description, generate a complete DoD summary. Adhere strictly 
 
 [A 1-2 sentence summary of the core development task.]
 
+
 **Definition of Done (DoD)**
+
 - **End-to-End Workflows:** [State `Covered ✅` or `Not Applicable ❌`. If covered, briefly mention which workflow.]
 - **Automated Tests:** [State `Required ✅` or `Not Required ❌`. If required, specify the type of test.]
 - **Jira Ticket Hygiene:** [State `Complete ✅` or `Needs Update ❌`. Assume fields should be filled.]
 - **Risk Assessment:** [State `Completed ✅` or `Not Applicable ❌`. If completed, briefly mention the primary consideration.]
 
+
 **Key Validation Path for Testers**
 
 [A single sentence starting with "Validate that..." describing the most critical path for a black-box tester.]
 
+
 **Disclaimer / Discussion Notes**
+
 - **Note 1:** [A specific note, risk, or dependency. Mention key impacted areas here.]
 - **Note 2:** [Another specific point, e.g., "Requires stakeholder approval..."]
 - **Note 3:** [A final point, such as "A rollback plan should be prepared..."]
 
 ### FINAL CHECK
-Before providing the output, review it to ensure it perfectly matches the Markdown formatting requested.
-Use double line breaks (\n\n) to separate paragraphs and headings.
+Before providing the output, review it to ensure:
+1. Each section is separated by exactly two newlines (\\n\\n)
+2. List items are separated by exactly one newline (\\n)
+3. The formatting exactly matches the template above
+4. No sections are merged together
 """
 
 # def generate_definition_of_done_prompt(task_description: str) -> str:

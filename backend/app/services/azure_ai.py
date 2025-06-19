@@ -71,26 +71,37 @@ class AzureAIService:
             self._langchain_client = None
 
         if self._langchain_client is None:
+            # Check if the model is o3-mini which doesn't support temperature
+            deployment_name = settings.azure_openai_deployment_name
+
             if settings.use_oauth_auth:
                 # Use OAuth token authentication
                 token = await oauth_service.get_token()
-                self._langchain_client = AzureChatOpenAI(
-                    azure_endpoint=settings.azure_openai_endpoint,
-                    azure_ad_token=SecretStr(token),
-                    api_version=settings.azure_openai_api_version,
-                    azure_deployment=settings.azure_openai_deployment_name,
-                    temperature=0.7,
-                )
+                client_params = {
+                    "azure_endpoint": settings.azure_openai_endpoint,
+                    "azure_ad_token": SecretStr(token),
+                    "api_version": settings.azure_openai_api_version,
+                    "azure_deployment": deployment_name,
+                }
+                # Only set temperature for models that support it
+                if "o3" not in deployment_name.lower():
+                    client_params["temperature"] = 0.7
+
+                self._langchain_client = AzureChatOpenAI(**client_params)
                 logger.info("LangChain Azure client initialized with OAuth token")
             else:
                 # Fallback to API key authentication
-                self._langchain_client = AzureChatOpenAI(
-                    azure_endpoint=settings.azure_openai_endpoint,
-                    api_key=SecretStr(settings.azure_openai_api_key),
-                    api_version=settings.azure_openai_api_version,
-                    azure_deployment=settings.azure_openai_deployment_name,
-                    temperature=0.7,
-                )
+                client_params = {
+                    "azure_endpoint": settings.azure_openai_endpoint,
+                    "api_key": SecretStr(settings.azure_openai_api_key),
+                    "api_version": settings.azure_openai_api_version,
+                    "azure_deployment": deployment_name,
+                }
+                # Only set temperature for models that support it
+                if "o3" not in deployment_name.lower():
+                    client_params["temperature"] = 0.7
+
+                self._langchain_client = AzureChatOpenAI(**client_params)
                 logger.info("LangChain Azure client initialized with API key")
 
         return self._langchain_client
@@ -133,10 +144,15 @@ class AzureAIService:
             client = await self._get_langchain_client()
 
             # Update client parameters
-            client.temperature = temperature
-            client.max_tokens = max_tokens
+            # For newer models like o3-mini, use bind to set max_completion_tokens
+            # and exclude temperature if it's an o3 model
+            if "o3" in model_name.lower():
+                bound_client = client.bind(max_completion_tokens=max_tokens)
+            else:
+                client.temperature = temperature
+                bound_client = client.bind(max_completion_tokens=max_tokens, temperature=temperature)
 
-            response = await client.ainvoke(messages)
+            response = await bound_client.ainvoke(messages)
 
             # Handle response content properly
             content = response.content
@@ -191,7 +207,7 @@ class AzureAIService:
             stream = await client.chat.completions.create(
                 model=model_name,
                 messages=openai_messages,
-                max_tokens=max_tokens,
+                max_completion_tokens=max_tokens,
                 temperature=temperature,
                 stream=True,
             )
@@ -230,7 +246,7 @@ class AzureAIService:
             stream = await client.chat.completions.create(
                 model=model_name,
                 messages=openai_messages,
-                max_tokens=max_tokens,
+                max_completion_tokens=max_tokens,
                 temperature=temperature,
                 stream=True,
             )
@@ -345,7 +361,7 @@ class AzureAIService:
             stream = await client.chat.completions.create(
                 model=model_name,
                 messages=openai_messages,
-                max_tokens=1000,
+                max_completion_tokens=1000,
                 temperature=0.7,
                 stream=True,
             )
@@ -473,7 +489,7 @@ PR标题：{pr_title}
             stream = await client.chat.completions.create(
                 model=model_name,
                 messages=openai_messages,
-                max_tokens=1000,
+                max_completion_tokens=1000,
                 temperature=0.7,
                 stream=True,
             )

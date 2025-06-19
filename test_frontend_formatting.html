@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端 Markdown 格式化测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .input-section, .output-section {
+            flex: 1;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .output {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            min-height: 300px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .test-button {
+            background-color: #28a745;
+        }
+        .test-button:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <h1>前端 Markdown 格式化测试</h1>
+    
+    <div class="container">
+        <div class="input-section">
+            <h3>原始内容 (模拟流式响应)</h3>
+            <textarea id="input" placeholder="在这里输入测试内容...">**Summary** auser permission managementsystem that supportsrole assignment andpermission validation tosecurely manage accesscontrols. ofDone (DoD)****End-to-End Workflows:**✅ – Includesuser role assignmentworkflows and permissioncheck workflows**Automated Tests:**✅ – Unittests for businesslogic and integrationtests for roleand permission validation- **Jira TicketHygiene:** ✅- **Risk Assessment:**Completed ✅ –Focused on securityimplications and properhandling of userpermissions ValidationPath for Testers**Validate that userscan be correctlyassigned roles andthat the systemonly permits actionsthat align withthe defined permissions.**Disclaimer / DiscussionNotes** **Note1:** integrationwith existing authenticationmodules for aseamless user experience.- **Note 2:**Requires stakeholder approvalfor role definitionsand permission levels.- **Note 3:**A rollback planshould be preparedto address potentialdeployment issues.</textarea>
+            <br>
+            <button onclick="formatContent()">格式化内容</button>
+            <button class="test-button" onclick="testStreamingSimulation()">模拟流式响应</button>
+        </div>
+        
+        <div class="output-section">
+            <h3>格式化后的 HTML 输出</h3>
+            <div id="output" class="output"></div>
+            
+            <h3>格式化后的 Markdown 文本</h3>
+            <textarea id="formatted-text" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        // 格式化生成的内容，确保正确的换行和段落分隔
+        function formatGeneratedContent(content) {
+            if (!content) return content
+
+            // 移除多余的空白字符，但保留必要的换行
+            let formatted = content.trim()
+
+            // 确保段落标题（独立行的粗体文本）之间有适当的间距
+            // 只在粗体文本是独立行且后面跟着非空行时添加换行
+            formatted = formatted.replace(/^(\*\*[^*]+\*\*)\s*$/gm, '$1\n')
+
+            // 确保列表项之间有适当的间距
+            formatted = formatted.replace(/^(\s*-\s+\*\*[^*]+\*\*.*?)(\s*-\s+\*\*)/gm, '$1\n$2')
+
+            // 确保句子结束后的段落标题有适当的间距
+            formatted = formatted.replace(/([.!?])\s*\n(\*\*[^*]+\*\*)/g, '$1\n\n$2')
+
+            // 清理多余的连续换行符（超过2个的）
+            formatted = formatted.replace(/\n{3,}/g, '\n\n')
+
+            return formatted
+        }
+
+        async function formatContent() {
+            const input = document.getElementById('input').value
+            const output = document.getElementById('output')
+            const formattedTextArea = document.getElementById('formatted-text')
+            
+            // 应用格式化函数
+            const formattedText = formatGeneratedContent(input)
+            formattedTextArea.value = formattedText
+            
+            try {
+                // 转换为 HTML
+                const htmlContent = await marked.parse(formattedText, {
+                    breaks: true,        // Convert \n to <br>
+                    gfm: true,          // GitHub Flavored Markdown
+                    pedantic: false
+                })
+                
+                output.innerHTML = htmlContent
+            } catch (e) {
+                console.error("Markdown 转换失败:", e)
+                // 回退方案
+                const fallbackHtml = formattedText
+                    .split('\n\n')
+                    .map(paragraph => paragraph.trim())
+                    .filter(paragraph => paragraph.length > 0)
+                    .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+                    .join('')
+                output.innerHTML = fallbackHtml
+            }
+        }
+
+        async function testStreamingSimulation() {
+            const input = document.getElementById('input')
+            const output = document.getElementById('output')
+            const formattedTextArea = document.getElementById('formatted-text')
+            
+            // 清空输出
+            input.value = ''
+            output.innerHTML = ''
+            formattedTextArea.value = ''
+            
+            // 模拟流式数据
+            const testData = [
+                '**Summary**', ' a', 'user permission', ' management', 'system that', ' supports',
+                'role assignment', ' and', 'permission validation', ' to', 'securely manage', ' access',
+                'controls.', ' of', 'Done (DoD)**', '**End-to-End Workflows:**', '✅ –', ' Includes',
+                'user role', ' assignment', 'workflows and', ' permission', 'check workflows',
+                '**Automated Tests:**', '✅ –', ' Unit', 'tests for', ' business', 'logic and', ' integration',
+                'tests for', ' role', 'and permission', ' validation'
+            ]
+            
+            let fullContent = ''
+            
+            for (let i = 0; i < testData.length; i++) {
+                const chunk = testData[i]
+                fullContent += chunk
+                
+                // 更新输入框
+                input.value = fullContent
+                
+                // 应用格式化
+                const formattedText = formatGeneratedContent(fullContent)
+                formattedTextArea.value = formattedText
+                
+                try {
+                    const htmlContent = await marked.parse(formattedText, {
+                        breaks: true,
+                        gfm: true,
+                        pedantic: false
+                    })
+                    output.innerHTML = htmlContent
+                } catch (e) {
+                    console.error("Markdown 转换失败:", e)
+                }
+                
+                // 模拟延迟
+                await new Promise(resolve => setTimeout(resolve, 200))
+            }
+        }
+
+        // 页面加载时自动格式化
+        window.onload = function() {
+            formatContent()
+        }
+    </script>
+</body>
+</html>

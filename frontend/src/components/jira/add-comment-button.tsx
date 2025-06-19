@@ -113,12 +113,15 @@ export const GenerateDoDefinitionButton = () => {
 
   // Real-time update comment area (for streaming response)
   const setCommentAreaRealtime = async (text: string) => {
+    // Ensure text has proper formatting
+    const formattedText = formatMarkdownContent(text)
+
     // Update textarea with raw markdown text
     const $commentField = document.querySelector(
       "textarea#comment"
     ) as HTMLTextAreaElement
     if ($commentField) {
-      $commentField.value = text
+      $commentField.value = formattedText
       // Trigger input event
       const event = new Event('input', { bubbles: true })
       $commentField.dispatchEvent(event)
@@ -135,7 +138,7 @@ export const GenerateDoDefinitionButton = () => {
       if (targetElement) {
         try {
           // Let marked handle all markdown-to-HTML conversion
-          const htmlContent = await marked(text, {
+          const htmlContent = await marked(formattedText, {
             breaks: true,        // Convert \n to <br>
             gfm: true,          // GitHub Flavored Markdown
             pedantic: false
@@ -144,16 +147,47 @@ export const GenerateDoDefinitionButton = () => {
           targetElement.innerHTML = htmlContent
         } catch (e) {
           console.error("Markdown conversion failed:", e)
-          console.error("Original text:", text)
-          console.error("Text length:", text.length)
-          // Fallback: simple line break conversion
-          targetElement.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`
+          console.error("Original text:", formattedText)
+          console.error("Text length:", formattedText.length)
+          // Fallback: enhanced line break conversion with proper paragraph handling
+          const fallbackHtml = formattedText
+            .split('\n\n')
+            .map(paragraph => paragraph.trim())
+            .filter(paragraph => paragraph.length > 0)
+            .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+            .join('')
+          targetElement.innerHTML = fallbackHtml
         }
       }
     }
   }
 
+  // Format markdown content to ensure proper structure
+  const formatMarkdownContent = (text: string): string => {
+    if (!text) return text
+
+    let formatted = text.trim()
+
+    // 确保段落标题（独立行的粗体文本）之间有适当的间距
+    // 只在粗体文本是独立行且后面跟着非空行时添加换行
+    formatted = formatted.replace(/^(\*\*[^*]+\*\*)\s*$/gm, '$1\n')
+
+    // Ensure proper spacing between list items
+    formatted = formatted.replace(/^(\s*-\s+\*\*[^*]+\*\*.*?)(\s*-\s+\*\*)/gm, '$1\n$2')
+
+    // 确保句子结束后的段落标题有适当的间距
+    formatted = formatted.replace(/([.!?])\s*\n(\*\*[^*]+\*\*)/g, '$1\n\n$2')
+
+    // Clean up excessive newlines
+    formatted = formatted.replace(/\n{3,}/g, '\n\n')
+
+    return formatted
+  }
+
   const setCommentArea = async (text: string) => {
+    // Ensure text has proper formatting
+    const formattedText = formatMarkdownContent(text)
+
     // Update textarea with raw markdown text
     const $commentField = document.querySelector(
       "textarea#comment"
@@ -163,7 +197,7 @@ export const GenerateDoDefinitionButton = () => {
       return
     }
 
-    $commentField.value = text
+    $commentField.value = formattedText
     // Trigger input event
     const event = new Event('input', { bubbles: true })
     $commentField.dispatchEvent(event)
@@ -180,7 +214,7 @@ export const GenerateDoDefinitionButton = () => {
     if (targetElement) {
       try {
         // Let marked handle all markdown-to-HTML conversion
-        const htmlContent = await marked(text, {
+        const htmlContent = await marked(formattedText, {
           breaks: true,        // Convert \n to <br>
           gfm: true,          // GitHub Flavored Markdown
           pedantic: false
@@ -189,10 +223,16 @@ export const GenerateDoDefinitionButton = () => {
         targetElement.innerHTML = htmlContent
       } catch (e) {
         console.error("Markdown conversion failed:", e)
-        console.error("Original text:", text)
-        console.error("Text length:", text.length)
-        // Fallback: simple line break conversion
-        targetElement.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`
+        console.error("Original text:", formattedText)
+        console.error("Text length:", formattedText.length)
+        // Fallback: enhanced line break conversion with proper paragraph handling
+        const fallbackHtml = formattedText
+          .split('\n\n')
+          .map(paragraph => paragraph.trim())
+          .filter(paragraph => paragraph.length > 0)
+          .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+          .join('')
+        targetElement.innerHTML = fallbackHtml
       }
     }
   }

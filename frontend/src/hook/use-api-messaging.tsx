@@ -29,35 +29,65 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
   const reader = response.body?.getReader()
   const decoder = new TextDecoder()
   let fullContent = ''
-  
+
   if (!reader) {
     throw new Error('无法获取响应流')
   }
-  
+
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
-    
+
     const chunk = decoder.decode(value)
     const lines = chunk.split('\n')
-    
+
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6)
         if (data === '[DONE]') {
-          return fullContent
+          // 在返回前确保内容格式正确
+          const formattedContent = formatGeneratedContent(fullContent)
+          return formattedContent
         }
+
+        // 保持原始格式，不要丢失换行符
         fullContent += data
-        
-        // 调用onChunk回调
+
+        // 调用onChunk回调，传递格式化后的内容
         if (onChunk) {
-          onChunk(data, fullContent)
+          const formattedChunk = formatGeneratedContent(fullContent)
+          onChunk(data, formattedChunk)
         }
       }
     }
   }
-  
-  return fullContent
+
+  // 确保最终内容格式正确
+  const formattedContent = formatGeneratedContent(fullContent)
+  return formattedContent
+}
+
+// 格式化生成的内容，确保正确的换行和段落分隔
+function formatGeneratedContent(content: string): string {
+  if (!content) return content
+
+  // 移除多余的空白字符，但保留必要的换行
+  let formatted = content.trim()
+
+  // 确保段落标题（独立行的粗体文本）之间有适当的间距
+  // 只在粗体文本是独立行且后面跟着非空行时添加换行
+  formatted = formatted.replace(/^(\*\*[^*]+\*\*)\s*$/gm, '$1\n')
+
+  // 确保列表项之间有适当的间距
+  formatted = formatted.replace(/^(\s*-\s+\*\*[^*]+\*\*.*?)(\s*-\s+\*\*)/gm, '$1\n$2')
+
+  // 确保句子结束后的段落标题有适当的间距
+  formatted = formatted.replace(/([.!?])\s*\n(\*\*[^*]+\*\*)/g, '$1\n\n$2')
+
+  // 清理多余的连续换行符（超过2个的）
+  formatted = formatted.replace(/\n{3,}/g, '\n\n')
+
+  return formatted
 }
 
 // 通用API hook - 直接调用后端API

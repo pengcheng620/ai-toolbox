@@ -28,7 +28,7 @@ class ChatStreamRequest(StreamableRequest):
 
     messages: List[ChatMessage] = Field(..., description="Chat messages")
     model: str = Field(default="", description="Model to use (optional)")
-    max_tokens: int = Field(
+    max_completion_tokens: int = Field(
         default=1000, ge=1, le=4000, description="Maximum tokens to generate"
     )
     temperature: float = Field(
@@ -42,7 +42,7 @@ class SimpleChatRequest(StreamableRequest):
     message: str = Field(..., description="User message")
     system_message: str = Field(default="", description="System message (optional)")
     model: str = Field(default="", description="Model to use (optional)")
-    max_tokens: int = Field(
+    max_completion_tokens: int = Field(
         default=1000, ge=1, le=4000, description="Maximum tokens to generate"
     )
     temperature: float = Field(
@@ -78,7 +78,7 @@ async def chat_stream(request: ChatStreamRequest):
             generator = chat_service.generate_chat_stream(
                 messages=messages,
                 model=request.model if request.model else None,
-                max_tokens=request.max_tokens,
+                max_tokens=request.max_completion_tokens,
                 temperature=request.temperature,
             )
             return await create_streaming_response(generator, "Chat generation")
@@ -89,7 +89,7 @@ async def chat_stream(request: ChatStreamRequest):
                 result = await chat_service.generate_simple_chat(
                     message=last_message,
                     model=request.model if request.model else None,
-                    max_tokens=request.max_tokens,
+                    max_tokens=request.max_completion_tokens,
                     temperature=request.temperature,
                 )
                 return result
@@ -117,7 +117,7 @@ async def simple_chat(request: SimpleChatRequest):
             generator = chat_service.generate_chat_stream(
                 messages=messages,
                 model=request.model if request.model else None,
-                max_tokens=request.max_tokens,
+                max_tokens=request.max_completion_tokens,
                 temperature=request.temperature,
             )
             return await create_streaming_response(generator, "Simple chat generation")
@@ -127,7 +127,7 @@ async def simple_chat(request: SimpleChatRequest):
                 message=request.message,
                 system_message=request.system_message if request.system_message else None,
                 model=request.model if request.model else None,
-                max_tokens=request.max_tokens,
+                max_tokens=request.max_completion_tokens,
                 temperature=request.temperature,
             )
             return SimpleChatResponse(**result)

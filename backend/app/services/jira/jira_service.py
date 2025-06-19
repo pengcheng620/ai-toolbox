@@ -18,6 +18,36 @@ class JiraService(BaseAzureAIService):
         super().__init__()
         logger.info("Jira service initialized")
 
+    def _format_dod_content(self, content: str) -> str:
+        """Format Definition of Done content to ensure proper structure and readability."""
+        if not content:
+            return content
+
+        import re
+
+        # Clean up the content
+        formatted = content.strip()
+
+        # Ensure proper spacing between sections (headers)
+        formatted = re.sub(r'(\*\*[^*]+\*\*)\s*([^\n*])', r'\1\n\n\2', formatted)
+
+        # Ensure proper spacing between list items
+        formatted = re.sub(r'^(\s*-\s+\*\*[^*]+\*\*.*?)(\s*-\s+\*\*)', r'\1\n\2', formatted, flags=re.MULTILINE)
+
+        # Ensure proper spacing after sentences that end sections
+        formatted = re.sub(r'([.!?])\s*(\*\*[^*]+\*\*)', r'\1\n\n\2', formatted)
+
+        # Clean up excessive newlines (more than 2 consecutive)
+        formatted = re.sub(r'\n{3,}', '\n\n', formatted)
+
+        # Ensure each major section starts on a new line
+        sections = ['Summary', 'Definition of Done', 'Key Validation Path', 'Disclaimer']
+        for section in sections:
+            pattern = rf'(\S)\s*(\*\*{section}[^*]*\*\*)'
+            formatted = re.sub(pattern, r'\1\n\n\2', formatted)
+
+        return formatted
+
 
 
     async def generate_dod_summary(
@@ -38,7 +68,10 @@ class JiraService(BaseAzureAIService):
             )
 
             if result.get("success"):
-                result["generated_content"] = result["text"]
+                # Ensure proper formatting of the generated content
+                generated_text = result["text"]
+                formatted_content = self._format_dod_content(generated_text)
+                result["generated_content"] = formatted_content
                 result["suggestions"] = prompt_config["suggestions"]
                 del result["text"]  # Remove original key to match expected format
 

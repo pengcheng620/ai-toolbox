@@ -52,13 +52,21 @@ class BaseAzureAIService:
         if self._langchain_client is None:
             # Always use OAuth token authentication
             token = await oauth_service.get_token()
-            self._langchain_client = AzureChatOpenAI(
-                azure_endpoint=settings.azure_openai_endpoint,
-                azure_ad_token=SecretStr(token),
-                api_version=settings.azure_openai_api_version,
-                azure_deployment=settings.azure_openai_deployment_name,
-                temperature=0.7,
-            )
+
+            # Check if the model is o3-mini which doesn't support temperature
+            deployment_name = settings.azure_openai_deployment_name
+            client_params = {
+                "azure_endpoint": settings.azure_openai_endpoint,
+                "azure_ad_token": SecretStr(token),
+                "api_version": settings.azure_openai_api_version,
+                "azure_deployment": deployment_name,
+            }
+
+            # Only set temperature for models that support it
+            if "o3" not in deployment_name.lower():
+                client_params["temperature"] = 0.7
+
+            self._langchain_client = AzureChatOpenAI(**client_params)
             logger.info("LangChain Azure client initialized with OAuth token")
 
         return self._langchain_client
@@ -103,10 +111,18 @@ class BaseAzureAIService:
                 client = await self._get_langchain_client()
 
                 # Update client parameters
-                client.temperature = temperature
-                client.max_tokens = max_tokens
+                # o3-mini model doesn't support temperature parameter
+                model_name = model or settings.azure_openai_deployment_name
 
-                response = await client.ainvoke(messages)
+                # For newer models like o3-mini, use bind to set max_completion_tokens
+                # and exclude temperature if it's an o3 model
+                if "o3" in model_name.lower():
+                    bound_client = client.bind(max_completion_tokens=max_tokens)
+                else:
+                    client.temperature = temperature
+                    bound_client = client.bind(max_completion_tokens=max_tokens, temperature=temperature)
+
+                response = await bound_client.ainvoke(messages)
 
                 result = {
                     "text": response.content,

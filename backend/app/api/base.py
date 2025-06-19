@@ -18,7 +18,7 @@ class GenerateTextRequest(BaseModel):
 
     prompt: str = Field(..., description="Input prompt for text generation")
     model: str = Field(default="", description="Model to use (optional)")
-    max_tokens: int = Field(
+    max_completion_tokens: int = Field(
         default=1000, ge=1, le=4000, description="Maximum tokens to generate"
     )
     temperature: float = Field(
@@ -74,7 +74,7 @@ async def generate_text(request: GenerateTextRequest):
         result = await base_ai_service.generate_text(
             prompt=request.prompt,
             model=request.model or None,
-            max_tokens=request.max_tokens,
+            max_tokens=request.max_completion_tokens,
             temperature=request.temperature,
             system_message=request.system_message or None,
         )

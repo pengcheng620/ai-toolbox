@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira DoD Formatting Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 400px;
+            background-color: #f9f9f9;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #007cba;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jira Definition of Done Formatting Test</h1>
+    
+    <div class="container">
+        <div class="column">
+            <h3>Raw Markdown Input</h3>
+            <textarea id="input" placeholder="Paste the generated_content here...">**Summary**
+
+Implement a feature that allows users to export their data in CSV format. This involves generating the CSV file from user data and ensuring the process integrates smoothly with the existing application.
+
+**Definition of Done (DoD)**
+
+- **End-to-End Workflows:** Covered ✅; validate the complete export flow from user request to file download.
+- **Automated Tests:** Required ✅; include unit tests for CSV generation, integration tests for data retrieval, and API tests for the export endpoint.
+- **Jira Ticket Hygiene:** Complete ✅; ensure the ticket includes a clear description, acceptance criteria, and links to relevant documentation.
+- **Risk Assessment:** Completed ✅; primary considerations include data privacy compliance and performance impact on large user datasets.
+
+**Key Validation Path for Testers**
+
+Validate that a user can successfully export their data by clicking the export button, receiving a correctly formatted CSV file containing accurate user information.
+
+**Disclaimer / Discussion Notes**
+
+- **Note 1:** Ensure that the CSV export handles special characters and large data volumes without timeouts.
+- **Note 2:** Requires stakeholder approval for the final CSV layout and data fields included.
+- **Note 3:** A rollback plan should be prepared in case the export process impacts system performance in production.</textarea>
+            
+            <button onclick="formatContent()">Format & Convert</button>
+        </div>
+        
+        <div class="column">
+            <h3>Formatted HTML Output</h3>
+            <div id="output" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Format markdown content to ensure proper structure
+        function formatMarkdownContent(text) {
+            if (!text) return text
+            
+            let formatted = text.trim()
+            
+            // Ensure proper spacing between sections
+            formatted = formatted.replace(/(\*\*[^*]+\*\*)\s*([^\n*])/g, '$1\n\n$2')
+            
+            // Ensure proper spacing between list items
+            formatted = formatted.replace(/^(\s*-\s+\*\*[^*]+\*\*.*?)(\s*-\s+\*\*)/gm, '$1\n$2')
+            
+            // Ensure proper spacing after paragraphs
+            formatted = formatted.replace(/([.!?])\s*(\*\*[^*]+\*\*)/g, '$1\n\n$2')
+            
+            // Clean up excessive newlines
+            formatted = formatted.replace(/\n{3,}/g, '\n\n')
+            
+            return formatted
+        }
+
+        async function formatContent() {
+            const input = document.getElementById('input').value
+            const output = document.getElementById('output')
+            
+            // Apply our formatting function
+            const formattedText = formatMarkdownContent(input)
+            
+            try {
+                // Convert to HTML using marked
+                const htmlContent = await marked.parse(formattedText, {
+                    breaks: true,        // Convert \n to <br>
+                    gfm: true,          // GitHub Flavored Markdown
+                    pedantic: false
+                })
+                
+                output.innerHTML = htmlContent
+            } catch (e) {
+                console.error("Markdown conversion failed:", e)
+                // Fallback: enhanced line break conversion with proper paragraph handling
+                const fallbackHtml = formattedText
+                    .split('\n\n')
+                    .map(paragraph => paragraph.trim())
+                    .filter(paragraph => paragraph.length > 0)
+                    .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+                    .join('')
+                output.innerHTML = fallbackHtml
+            }
+        }
+
+        // Auto-format on page load
+        window.onload = function() {
+            formatContent()
+        }
+    </script>
+</body>
+</html>

@@ -21,7 +21,7 @@ class GenerateTextRequest(StreamableRequest):
 
     prompt: str = Field(..., description="Input prompt for text generation")
     model: str = Field(default="", description="Model to use (optional)")
-    max_tokens: int = Field(
+    max_completion_tokens: int = Field(
         default=1000, ge=1, le=4000, description="Maximum tokens to generate"
     )
     temperature: float = Field(
@@ -42,7 +42,7 @@ class ChatStreamRequest(StreamableRequest):
 
     messages: List[ChatMessage] = Field(..., description="Chat messages")
     model: str = Field(default="", description="Model to use (optional)")
-    max_tokens: int = Field(
+    max_completion_tokens: int = Field(
         default=1000, ge=1, le=4000, description="Maximum tokens to generate"
     )
     temperature: float = Field(
@@ -137,7 +137,7 @@ async def generate_text(request: GenerateTextRequest):
             generator = azure_ai_service.generate_text_stream(
                 prompt=request.prompt,
                 model=request.model if request.model else None,
-                max_tokens=request.max_tokens,
+                max_tokens=request.max_completion_tokens,
                 temperature=request.temperature,
                 system_message=request.system_message if request.system_message else None,
             )
@@ -147,7 +147,7 @@ async def generate_text(request: GenerateTextRequest):
             result = await azure_ai_service.generate_text(
                 prompt=request.prompt,
                 model=request.model if request.model else None,
-                max_tokens=request.max_tokens,
+                max_tokens=request.max_completion_tokens,
                 temperature=request.temperature,
                 system_message=request.system_message if request.system_message else None,
             )
@@ -174,7 +174,7 @@ async def chat_stream(request: ChatStreamRequest):
             generator = azure_ai_service.generate_chat_stream(
                 messages=messages,
                 model=request.model if request.model else None,
-                max_tokens=request.max_tokens,
+                max_tokens=request.max_completion_tokens,
                 temperature=request.temperature,
             )
             return await create_streaming_response(generator, "Chat generation")
@@ -185,7 +185,7 @@ async def chat_stream(request: ChatStreamRequest):
                 result = await azure_ai_service.generate_text(
                     prompt=last_message,
                     model=request.model if request.model else None,
-                    max_tokens=request.max_tokens,
+                    max_tokens=request.max_completion_tokens,
                     temperature=request.temperature,
                 )
                 return result
@@ -212,21 +212,71 @@ async def generate_jira_definition_of_done(request: JiraDoDefinitionRequest):
 
                 if result.get("success"):
                     content = result.get("generated_content", "")
-                    # Simulate streaming by sending chunks while preserving line breaks
-                    import re
+                    # Simulate streaming by sending chunks while preserving Markdown formatting
+                    import asyncio
 
-                    # Split content into tokens while preserving whitespace and line breaks
-                    tokens = re.findall(r'\S+|\s+', content)
+                    # Use word-based chunking with Markdown protection
+                    def markdown_aware_chunking(text, words_per_chunk=4):
+                        """Split content by words while preserving Markdown syntax"""
+                        chunks = []
+                        words = text.split()
+                        current_chunk = []
 
-                    chunk_size = 3  # Send every 3 tokens
-                    for i in range(0, len(tokens), chunk_size):
-                        chunk_tokens = tokens[i:i + chunk_size]
-                        chunk = "".join(chunk_tokens)  # Preserve original spacing and line breaks
-                        yield chunk
+                        i = 0
+                        while i < len(words):
+                            word = words[i]
 
-                        # Add small delay to simulate real streaming
-                        import asyncio
-                        await asyncio.sleep(0.05)
+                            # Handle different Markdown patterns
+                            if '**' in word:
+                                if word.startswith('**') and word.endswith('**') and len(word) > 4:
+                                    # Complete bold word like **Summary**
+                                    current_chunk.append(word)
+                                elif word.startswith('**') and not word.endswith('**'):
+                                    # Start of bold phrase like **End-to-End
+                                    bold_phrase = [word]
+                                    i += 1
+
+                                    # Keep collecting until we find a word ending with **
+                                    while i < len(words):
+                                        next_word = words[i]
+                                        bold_phrase.append(next_word)
+                                        if next_word.endswith('**'):
+                                            break
+                                        i += 1
+
+                                    # Add the complete bold phrase as a single unit
+                                    current_chunk.extend(bold_phrase)
+                                elif word.endswith('**') and not word.startswith('**'):
+                                    # End of bold phrase like Workflows:**
+                                    current_chunk.append(word)
+                                else:
+                                    # Standalone ** or other cases
+                                    current_chunk.append(word)
+                            else:
+                                # Regular word
+                                current_chunk.append(word)
+
+                            # Check if we should emit a chunk
+                            if len(current_chunk) >= words_per_chunk:
+                                chunks.append(' '.join(current_chunk))
+                                current_chunk = []
+
+                            i += 1
+
+                        # Add remaining words
+                        if current_chunk:
+                            chunks.append(' '.join(current_chunk))
+
+                        return chunks
+
+                    # Generate chunks and stream them
+                    chunks = markdown_aware_chunking(content)
+
+                    for chunk in chunks:
+                        if chunk.strip():
+                            yield chunk + ' '
+                            # Add small delay to simulate real streaming
+                            await asyncio.sleep(0.1)
                 else:
                     yield f"Error: {result.get('error', 'Unknown error')}"
 
