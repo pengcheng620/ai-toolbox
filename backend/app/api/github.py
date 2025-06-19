@@ -1,11 +1,12 @@
 """GitHub API endpoints."""
 
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.services.github_service import github_service
+from app.services.github_api_client import github_api_client
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -64,6 +65,7 @@ class GitHubPRFromJiraRequest(BaseModel):
     description_template: str = Field(
         default="", description="The existing PR description to use as a template."
     )
+    user_token: Optional[str] = Field(None, description="Optional user GitHub token for private repository access")
 
 
 # Response models
@@ -110,6 +112,26 @@ class GitHubReleaseNotesResponse(BaseModel):
     error: str = ""
 
 
+# New request/response models for GitHub API integration
+class GitHubPRDataRequest(BaseModel):
+    """Request model for fetching GitHub PR data via API."""
+
+    pr_url: str = Field(..., description="GitHub PR URL")
+    user_token: Optional[str] = Field(None, description="Optional user GitHub token for private repository access")
+
+
+class GitHubPRDataResponse(BaseModel):
+    """Response model for GitHub PR data."""
+
+    success: bool
+    pr_info: Optional[Dict[str, Any]] = None
+    files_data: Optional[Dict[str, Any]] = None
+    commits_data: Optional[Dict[str, Any]] = None
+    formatted_changes: str = ""
+    formatted_commits: List[str] = []
+    error: str = ""
+
+
 # Endpoints
 @router.post("/pr", response_model=GitHubPRResponse)
 async def generate_github_pr_description(request: GitHubPRRequest):
@@ -139,18 +161,54 @@ async def generate_pr_description_from_jira(request: GitHubPRFromJiraRequest):
             f"Generating GitHub PR description from Jira ticket: {request.jira_ticket_id}"
         )
 
-        result = await github_service.generate_pr_description_from_jira(
-            jira_ticket_id=request.jira_ticket_id,
-            pr_title=request.pr_title,
-            code_changes=request.code_changes,
-            branch_name=request.branch_name,
-            commit_messages=request.commit_messages,
-        )
+        # Check if streaming is requested
+        stream = getattr(request, 'stream', False)
 
-        if not result.get("success"):
-            raise HTTPException(status_code=404, detail=result.get("error"))
+        if stream:
+            # Return streaming response
+            from fastapi.responses import StreamingResponse
 
-        return GitHubPRResponse(**result)
+            async def generate_stream():
+                try:
+                    # Get the generator from the service
+                    async for chunk in github_service.generate_pr_description_from_jira_stream(
+                        jira_ticket_id=request.jira_ticket_id,
+                        pr_title=request.pr_title,
+                        code_changes=request.code_changes,
+                        branch_name=request.branch_name,
+                        commit_messages=request.commit_messages,
+                        description_template=getattr(request, 'description_template', ''),
+                    ):
+                        yield f"data: {chunk}\n\n"
+                    yield "data: [DONE]\n\n"
+                except Exception as e:
+                    logger.error(f"Streaming error: {str(e)}")
+                    yield f"data: Error: {str(e)}\n\n"
+                    yield "data: [DONE]\n\n"
+
+            return StreamingResponse(
+                generate_stream(),
+                media_type="text/plain",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "Connection": "keep-alive",
+                }
+            )
+        else:
+            # Return standard JSON response
+            result = await github_service.generate_pr_description_from_jira(
+                jira_ticket_id=request.jira_ticket_id,
+                pr_title=request.pr_title,
+                code_changes=request.code_changes,
+                branch_name=request.branch_name,
+                commit_messages=request.commit_messages,
+                description_template=getattr(request, 'description_template', ''),
+            )
+
+            if not result.get("success"):
+                raise HTTPException(status_code=404, detail=result.get("error"))
+
+            return GitHubPRResponse(**result)
 
     except HTTPException:
         raise
@@ -215,4 +273,101 @@ async def generate_release_notes(request: GitHubReleaseNotesRequest):
 
     except Exception as e:
         logger.error(f"GitHub release notes generation failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/pr-data", response_model=GitHubPRDataResponse)
+async def fetch_pr_data(request: GitHubPRDataRequest):
+    """Fetch GitHub PR data using GitHub REST API."""
+    try:
+        logger.info(f"Fetching PR data for URL: {request.pr_url}")
+        if request.user_token:
+            logger.info("Using user-provided token for authentication")
+        else:
+            logger.info("Using system token for authentication")
+
+        async with github_api_client as client:
+            # Parse PR URL to extract owner, repo, and PR number
+            pr_info = client.parse_pr_url(request.pr_url)
+
+            if not pr_info:
+                logger.error(f"Invalid PR URL format: {request.pr_url}")
+                return GitHubPRDataResponse(
+                    success=False,
+                    error="Invalid GitHub PR URL format. Please ensure the URL is a valid GitHub PR URL."
+                )
+
+            # Fetch PR files and commits in parallel
+            import asyncio
+
+            base_url = pr_info.get("base_url", None)
+
+            files_task = client.fetch_pr_files(
+                owner=pr_info["owner"],
+                repo=pr_info["repo"],
+                pr_number=pr_info["pr_number"],
+                base_url=base_url,
+                user_token=request.user_token
+            )
+
+            commits_task = client.fetch_pr_commits(
+                owner=pr_info["owner"],
+                repo=pr_info["repo"],
+                pr_number=pr_info["pr_number"],
+                base_url=base_url,
+                user_token=request.user_token
+            )
+
+            files_result, commits_result = await asyncio.gather(
+                files_task, commits_task, return_exceptions=True
+            )
+
+            # Handle exceptions and ensure we have dict results
+            if isinstance(files_result, Exception):
+                logger.error(f"Error fetching files: {str(files_result)}")
+                files_result = {"success": False, "error": str(files_result)}
+            elif not isinstance(files_result, dict):
+                logger.error(f"Unexpected files result type: {type(files_result)}")
+                files_result = {"success": False, "error": "Unexpected response format"}
+
+            if isinstance(commits_result, Exception):
+                logger.error(f"Error fetching commits: {str(commits_result)}")
+                commits_result = {"success": False, "error": str(commits_result)}
+            elif not isinstance(commits_result, dict):
+                logger.error(f"Unexpected commits result type: {type(commits_result)}")
+                commits_result = {"success": False, "error": "Unexpected response format"}
+
+            # Ensure results are dictionaries
+            if not isinstance(files_result, dict):
+                files_result = {"success": False, "error": "Invalid files result"}
+            if not isinstance(commits_result, dict):
+                commits_result = {"success": False, "error": "Invalid commits result"}
+
+            # Prepare response
+            success = files_result.get("success", False) or commits_result.get("success", False)
+
+            response_data = {
+                "success": success,
+                "pr_info": pr_info,
+                "files_data": files_result if files_result.get("success") else None,
+                "commits_data": commits_result if commits_result.get("success") else None,
+                "formatted_changes": files_result.get("formatted_changes", ""),
+                "formatted_commits": commits_result.get("formatted_commits", []),
+                "error": ""
+            }
+
+            # Collect errors
+            errors = []
+            if not files_result.get("success"):
+                errors.append(f"Files: {files_result.get('error', 'Unknown error')}")
+            if not commits_result.get("success"):
+                errors.append(f"Commits: {commits_result.get('error', 'Unknown error')}")
+
+            if errors:
+                response_data["error"] = "; ".join(errors)
+
+            return GitHubPRDataResponse(**response_data)
+
+    except Exception as e:
+        logger.error(f"GitHub PR data fetch failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

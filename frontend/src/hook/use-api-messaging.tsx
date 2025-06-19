@@ -161,9 +161,120 @@ export function useGitHubPRMessaging() {
   return useMessagingApi("/ai/github/pr")
 }
 
-// New hook for generating PR description from Jira
+// New hook for generating PR description from Jira - specialized for JSON response with streaming support
 export function useGitHubPRFromJiraMessaging() {
-  return useMessagingApi("/ai/github/pr-from-jira")
+  const [state, setState] = useState<UseMessagingApiState<any>>({
+    data: null,
+    loading: false,
+    error: null
+  })
+
+  const execute = useCallback(async (
+    body: any,
+    options: { onChunk?: (chunk: string, fullText: string) => void } = {}
+  ): Promise<any | null> => {
+    const { onChunk } = options
+    setState(prev => ({ ...prev, loading: true, error: null }))
+
+    try {
+      console.log(`🚀 GitHub PR from Jira API调用:`, body)
+      console.log(`🚀 API调用时间戳:`, new Date().toISOString())
+
+      // Force streaming if onChunk callback is provided
+      const requestBody = onChunk ? { ...body, stream: true } : body
+
+      const response = await fetch(getApiUrl("/ai/github/pr-from-jira"), {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      console.log(`📡 API响应状态:`, response.status)
+      console.log(`📡 API响应头:`, Object.fromEntries(response.headers.entries()))
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error(`❌ API错误:`, errorText)
+
+        // Provide more specific error messages based on status code
+        let errorMessage = `API调用失败: ${response.status}`
+        switch (response.status) {
+          case 401:
+            errorMessage = "认证失败 - 请检查GitHub token或重新登录"
+            break
+          case 403:
+            errorMessage = "访问被拒绝 - 权限不足或速率限制"
+            break
+          case 404:
+            errorMessage = "资源未找到 - 可能是私有仓库或PR不存在"
+            break
+          case 500:
+            errorMessage = "服务器错误 - 请稍后重试"
+            break
+          case 0:
+          case undefined:
+            errorMessage = "网络连接失败 - 请检查网络连接和后端服务状态"
+            break
+          default:
+            errorMessage = `API调用失败: ${response.status} - ${errorText}`
+        }
+
+        throw new Error(errorMessage)
+      }
+
+      // Check content type to determine how to parse response
+      const contentType = response.headers.get('content-type')
+      console.log(`📡 Content-Type:`, contentType)
+
+      let result
+      if (onChunk && contentType?.includes('text/plain')) {
+        // Handle streaming response with callback
+        console.log("📡 Processing streaming response with callback...")
+        const streamContent = await handleStreamingResponse(response, onChunk)
+        console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
+        result = { generated_content: streamContent }
+      } else if (contentType?.includes('application/json')) {
+        // Handle JSON response
+        result = await response.json()
+        console.log(`✅ JSON响应:`, result)
+      } else if (contentType?.includes('text/plain')) {
+        // Handle streaming response without callback
+        const streamContent = await handleStreamingResponse(response)
+        console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
+        result = { generated_content: streamContent }
+      } else {
+        // Fallback: try JSON first, then text
+        try {
+          result = await response.json()
+          console.log(`✅ Fallback JSON响应:`, result)
+        } catch {
+          const text = await response.text()
+          console.log(`✅ Fallback text响应:`, text.slice(0, 100) + "...")
+          result = { generated_content: text }
+        }
+      }
+
+      setState({ data: result, loading: false, error: null })
+      return result
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "API调用错误"
+      console.error(`❌ API调用失败:`, error)
+      setState({ data: null, loading: false, error: errorMessage })
+      return null
+    }
+  }, [])
+
+  const reset = useCallback(() => {
+    setState({ data: null, loading: false, error: null })
+  }, [])
+
+  return {
+    ...state,
+    execute,
+    reset
+  }
 }
 
 // Jira Definition of Done generation hook - direct API call

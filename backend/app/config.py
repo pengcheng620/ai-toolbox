@@ -97,6 +97,11 @@ class Settings(BaseSettings):
     jira_auth_method: str = Field(default="basic", alias="JIRA_AUTH_METHOD")  # "basic" or "pat"
     jira_personal_access_token: str = Field(default="", alias="JIRA_PERSONAL_ACCESS_TOKEN")
 
+    # GitHub API Integration
+    github_api_token: str = Field(default="", alias="GITHUB_API_TOKEN")
+    github_api_timeout: int = Field(default=30, alias="GITHUB_API_TIMEOUT")
+    github_enable_api: bool = Field(default=True, alias="GITHUB_ENABLE_API")
+
     @property
     def allowed_hosts_list(self) -> List[str]:
         """Get allowed hosts as list."""

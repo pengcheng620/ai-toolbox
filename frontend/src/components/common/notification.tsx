@@ -2,9 +2,7 @@ import { XCircleIcon } from "@heroicons/react/16/solid"
 import { Notification } from "@mantine/core"
 import type { NotificationFactory } from "@mantine/core/lib/components/Notification/Notification"
 import type { Styles } from "@mantine/core/lib/core/styles-api/styles-api.types"
-import React from "react"
-
-import { useStorage } from "@plasmohq/storage/hook"
+import React, { useState, useCallback } from "react"
 
 
 
@@ -72,35 +70,57 @@ const getDefaultNotification = function () {
   } as NotificationConfig
 }
 
-export const useNotification = () => {
-  const [notificationArr, setNotificationArr] = useStorage<
-    NotificationConfig[]
-  >("aw_notification", [])
+// Global notification state to avoid storage quota issues
+let globalNotificationState: NotificationConfig[] = []
+let globalSetters: Array<(notifications: NotificationConfig[]) => void> = []
 
-  const addNotification = async (config: NotificationConfig) => {
+export const useNotification = () => {
+  const [notificationArr, setNotificationArr] = useState<NotificationConfig[]>(globalNotificationState)
+
+  // Register this component's setter
+  React.useEffect(() => {
+    globalSetters.push(setNotificationArr)
+    return () => {
+      globalSetters = globalSetters.filter(setter => setter !== setNotificationArr)
+    }
+  }, [])
+
+  const updateGlobalState = useCallback((newState: NotificationConfig[]) => {
+    globalNotificationState = newState
+    globalSetters.forEach(setter => setter(newState))
+  }, [])
+
+  const addNotification = useCallback(async (config: NotificationConfig) => {
     const newConfig = { ...getDefaultNotification(), ...config }
-    setNotificationArr((prev) => [...prev, newConfig])
+    const newState = [...globalNotificationState, newConfig]
+    updateGlobalState(newState)
+
     setTimeout(() => {
       console.log("setTimeout::removeNotification", config.title)
       removeNotification(newConfig)
     }, newConfig.time)
-  }
+  }, [updateGlobalState])
 
-  const removeNotification = async (config: NotificationConfig) => {
+  const removeNotification = useCallback(async (config: NotificationConfig) => {
     console.log("removeNotification", config)
-    setNotificationArr((prev) =>
-      prev.map((notification) =>
-        notification.id === config.id
-          ? { ...notification, fadeOut: true }
-          : notification
-      )
+
+    // First, mark as fading out
+    const fadeOutState = globalNotificationState.map((notification) =>
+      notification.id === config.id
+        ? { ...notification, fadeOut: true }
+        : notification
     )
+    updateGlobalState(fadeOutState)
+
+    // Then remove after animation
     setTimeout(() => {
-      setNotificationArr((prev) =>
-        prev.filter((notification) => notification.id !== config.id)
+      const filteredState = globalNotificationState.filter(
+        (notification) => notification.id !== config.id
       )
+      updateGlobalState(filteredState)
     }, 500) // Match the CSS transition duration
-  }
+  }, [updateGlobalState])
+
   return {
     notificationArr,
     addNotification,

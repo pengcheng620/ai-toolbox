@@ -6,6 +6,7 @@ import type {
 } from "plasmo"
 import React from "react"
 import { createRoot } from "react-dom/client"
+import { AddDescriptionDemo } from "~components/github"
 import { AddDescription } from "~components/github/add-description"
 
 import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
@@ -62,7 +63,8 @@ export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({
 }
 
 const PlasmoOverlay = () => {
-  return <AddDescription />
+  // return <AddDescription />
+  return <AddDescriptionDemo />
 }
 
 export default PlasmoOverlay
