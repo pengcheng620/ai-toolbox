@@ -10,77 +10,63 @@ function getApiUrl(endpoint: string): string {
 }
 
 // 处理流式响应
-async function handleStreamingResponse(response: Response): Promise<string> {
+async function handleStreamingResponse(
+  res: PlasmoMessaging.Response,
+  response: Response
+) {
   const reader = response.body?.getReader()
   const decoder = new TextDecoder()
-  let fullContent = ''
-  
+
   if (!reader) {
-    throw new Error('无法获取响应流')
+    throw new Error("无法获取响应流")
   }
-  
+
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
-    
+
     const chunk = decoder.decode(value)
-    const lines = chunk.split('\n')
-    
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6)
-        if (data === '[DONE]') {
-          return fullContent
-        }
-        fullContent += data
-      }
-    }
+    // Send chunk to the client-side
+    res.send({ chunk })
   }
-  
-  return fullContent
 }
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   console.log("🎯 Background: 收到GitHub消息", req.body)
-  
+
+  const { endpoint, ...requestData } = req.body
+  const targetEndpoint = endpoint || "/ai/github/pr" // Fallback to old endpoint
+
   try {
-    // 确保请求体包含stream参数
-    const requestBody = { ...req.body, stream: true }
-    
-    console.log("🚀 Background: 调用GitHub API (流式)", requestBody)
-    
-    const response = await fetch(getApiUrl("/ai/github/pr"), {
+    const requestBody = { ...requestData, stream: true }
+
+    console.log(`🚀 Background: Calling GitHub API at ${targetEndpoint}`, requestBody)
+
+    const response = await fetch(getApiUrl(targetEndpoint), {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(requestBody)
     })
 
-    console.log("📡 Background: GitHub API响应状态", response.status)
+    console.log(
+      `📡 Background: GitHub API response status from ${targetEndpoint}`,
+      response.status
+    )
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error("❌ Background: GitHub API错误", errorText)
-      throw new Error(`API调用失败: ${response.status} - ${errorText}`)
+      console.error(`❌ Background: GitHub API error from ${targetEndpoint}`, errorText)
+      throw new Error(`API call failed: ${response.status} - ${errorText}`)
     }
 
-    // 处理流式响应
-    const streamContent = await handleStreamingResponse(response)
-    console.log("✅ Background: GitHub流式响应完成", streamContent.slice(0, 100) + "...")
-    
-    const result = { generated_description: streamContent }
-    
-    res.send({
-      success: true,
-      data: result
-    })
+    // Handle streaming response by sending chunks back to the requester
+    await handleStreamingResponse(res, response)
   } catch (error) {
-    console.error("❌ Background: GitHub错误", error)
-    res.send({
-      success: false,
-      error: error.message
-    })
+    console.error(`❌ Background: GitHub error for ${targetEndpoint}`, error)
+    // Send a final error message if something goes wrong
+    res.send({ error: error.message })
   }
 }
 

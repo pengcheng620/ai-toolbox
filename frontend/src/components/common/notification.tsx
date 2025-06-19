@@ -27,13 +27,14 @@ interface NotificationConfig {
   title?: string
   message?: string
   fadeOut?: boolean
-  type: "info" | "warning" | "error"
+  type: "info" | "warning" | "error" | "success"
 }
 
 const notificationTypeMap = {
   info: "blue",
   warning: "yellow",
-  error: "red"
+  error: "red",
+  success: "green"
 }
 
 const generateRandomID = () => {

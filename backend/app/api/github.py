@@ -51,6 +51,21 @@ class GitHubReleaseNotesRequest(BaseModel):
     )
 
 
+class GitHubPRFromJiraRequest(BaseModel):
+    """Request model for generating GitHub PR description from a Jira ticket."""
+
+    jira_ticket_id: str = Field(..., description="Jira ticket ID, e.g., 'PROJ-123'")
+    pr_title: str = Field(..., description="Pull Request title")
+    code_changes: str = Field(..., description="Code changes summary/diff")
+    branch_name: str = Field(default="", description="Branch name")
+    commit_messages: List[str] = Field(
+        default_factory=list, description="List of commit messages from the PR"
+    )
+    description_template: str = Field(
+        default="", description="The existing PR description to use as a template."
+    )
+
+
 # Response models
 class GitHubPRResponse(BaseModel):
     """Response model for GitHub PR description generation."""
@@ -113,6 +128,36 @@ async def generate_github_pr_description(request: GitHubPRRequest):
 
     except Exception as e:
         logger.error(f"GitHub PR description generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/pr-from-jira", response_model=GitHubPRResponse)
+async def generate_pr_description_from_jira(request: GitHubPRFromJiraRequest):
+    """Generate GitHub PR description from Jira ticket and code changes."""
+    try:
+        logger.info(
+            f"Generating GitHub PR description from Jira ticket: {request.jira_ticket_id}"
+        )
+
+        result = await github_service.generate_pr_description_from_jira(
+            jira_ticket_id=request.jira_ticket_id,
+            pr_title=request.pr_title,
+            code_changes=request.code_changes,
+            branch_name=request.branch_name,
+            commit_messages=request.commit_messages,
+        )
+
+        if not result.get("success"):
+            raise HTTPException(status_code=404, detail=result.get("error"))
+
+        return GitHubPRResponse(**result)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            f"GitHub PR description generation from Jira failed: {str(e)}"
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 

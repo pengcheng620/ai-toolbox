@@ -562,6 +562,51 @@ GET /api/jira/issue/UC-70875/basic
 
 ---
 
+### 8. GitHub Integration
+
+#### POST /ai/github/pr-from-jira
+
+Generates a GitHub Pull Request description by combining details from a Jira ticket and the code changes in the PR.
+
+**请求体**:
+```json
+{
+  "jira_ticket_id": "PROJ-123",
+  "pr_title": "feat: Implement new login flow",
+  "code_changes": "diff --git a/file.py b/file.py...",
+  "branch_name": "feature/PROJ-123-new-login",
+  "commit_messages": [
+    "feat: add initial login structure",
+    "fix: correct typo in login view"
+  ]
+}
+```
+
+**响应体 (Success 200 OK)**:
+```json
+{
+  "generated_description": "### Description... (AI generated content)",
+  "suggested_title": "feat(auth): Implement new user login flow based on PROJ-123",
+  "model": "gpt-4",
+  "tokens_used": 1520,
+  "error": ""
+}
+```
+
+**错误响应 (404 Not Found)**:
+```json
+{
+  "detail": "Failed to retrieve Jira details: Jira ticket PROJ-123 not found or access denied."
+}
+```
+
+**状态码**:
+- `200`: 成功
+- `404`: Jira Ticket 不存在或无权访问
+- `500`: 服务器内部错误
+
+---
+
 ## 错误处理
 
 ### 错误响应格式

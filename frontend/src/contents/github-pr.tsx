@@ -1,3 +1,4 @@
+import cssText from "data-text:~style.css"
 import type {
   PlasmoCSConfig,
   PlasmoCSUIJSXContainer,
@@ -5,6 +6,7 @@ import type {
 } from "plasmo"
 import React from "react"
 import { createRoot } from "react-dom/client"
+import { AddDescription } from "~components/github/add-description"
 
 import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
 
@@ -16,14 +18,23 @@ export const config: PlasmoCSConfig = {
   matches: [
     "https://github.com/*/pull/*",
     // "http://localhost:8887/*"
+    "https://git.autodesk.com/*/pull/*"
+
   ]
+}
+
+export const getStyle = () => {
+  const style = document.createElement("style")
+  style.textContent = cssText
+  return style
 }
 
 export const getRootContainer = () =>
   new Promise((resolve) => {
     console.log("getRootContainer")
     const checkInterval = setInterval(() => {
-      // const rootContainerParent = document.querySelector(".timeline-comment-header > .timeline-comment-actions > details > details-menu")
+      console.log("checkInterval")
+      // const rootContainerParent = document.querySelector("div.tabnav.comment-form-head");
       // if (rootContainerParent) {
       //   clearInterval(checkInterval)
       //   const rootContainer = document.createElement("div")
@@ -31,6 +42,14 @@ export const getRootContainer = () =>
       //   rootContainerParent.append(rootContainer)
       //   resolve(rootContainer)
       // }
+      const rootContainerParent = document.querySelector(".timeline-comment-header > .timeline-comment-actions > details > details-menu")
+      if (rootContainerParent) {
+        clearInterval(checkInterval)
+        const rootContainer = document.createElement("div")
+        rootContainer.className = "aui-buttons pluggable-ops"
+        rootContainerParent.append(rootContainer)
+        resolve(rootContainer)
+      }
     }, 137)
   })
 
@@ -43,7 +62,7 @@ export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({
 }
 
 const PlasmoOverlay = () => {
-  return <GenerateDoDefinitionButton />
+  return <AddDescription />
 }
 
 export default PlasmoOverlay

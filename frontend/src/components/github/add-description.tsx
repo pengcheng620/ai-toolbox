@@ -1,114 +1,120 @@
-import React, { useEffect, useState } from "react"
-
+import React, { useEffect } from "react"
 import { useNotification } from "~components/common/notification"
-import { GITHUB_BTN_DES_GEN } from "./github-servers"
-import { useGitHubPRMessaging } from "~hook/use-api-messaging"
-import { getButtonStyles } from "../../../lib/utils/styles"
+import { useGitHubPRFromJiraMessaging } from "~hook/use-api-messaging"
 
 import { SparklesIcon } from "../../../lib/icons/heroicon"
+import { getGitHubPageStrategy } from "../../../lib/utils/github"
+import styles from "./add-description.module.css"
 
 export const AddDescription = () => {
   const { addNotification } = useNotification()
-  const { execute, loading, error } = useGitHubPRMessaging()
-  const [ticket, setTicket] = useState("")
-  const [streamingContent, setStreamingContent] = useState("")
+  const { execute, loading, error } = useGitHubPRFromJiraMessaging()
 
-  useEffect(() => {
-    setTicket(location.pathname.match(/UC-\d+/)?.[0] || "")
-  }, [])
-
-  // 监听错误变化并显示通知
+  // Monitor error changes and show notifications
   useEffect(() => {
     if (error) {
       addNotification({
         type: "error",
-        title: "生成失败",
+        title: "Generation Failed",
         message: error
       })
     }
   }, [error, addNotification])
 
   const handleClick = async () => {
-    // 获取页面中的描述文本
-    const descriptionElement = document.querySelector("#description-val")
-    const description = descriptionElement?.textContent || ""
-    
-    if (!description.trim()) {
+    if (loading) return
+
+    const strategy = getGitHubPageStrategy()
+
+    // 1. Get PR title
+    const prTitle = strategy.getPRTitle()
+    if (!prTitle) {
       addNotification({
         type: "warning",
-        title: "警告",
-        message: "未找到任务描述，请确保页面已完全加载"
+        title: "Missing Title",
+        message: "Could not detect a Pull Request title on the page."
       })
       return
     }
 
-    await handleGenerate(description)
-  }
+    // 2. Get Jira ticket
+    let jiraTicketId = strategy.extractJiraTicketId()
 
-  const handleGenerate = async (description: string) => {
-    if (loading) return
-    
-    console.log("🚀 开始生成GitHub PR (流式响应)...")
-    console.log("任务描述:", description)
-    
-    // 清空之前的流式内容
-    setStreamingContent("")
-    
-    addNotification({
-      type: "info", 
-      title: "生成中",
-      message: "正在实时生成PR描述..."
-    })
-
-    // 从GitHub页面获取相关信息
-    const prTitleInput = document.querySelector("input[name='pull_request[title]']") as HTMLInputElement
-    const prTitle = prTitleInput?.value || ""
-    const branchName = location.pathname.split("/compare/")[1]?.split("?")[0] || ""
-    
-    // 使用Plasmo Messaging API调用后台脚本，默认使用流式响应
-    const result = await execute({
-      pr_title: prTitle,
-      code_changes: description,
-      branch_name: branchName,
-      commit_messages: []
-    }, {
-      onChunk: (chunk: string, fullText: string) => {
-        console.log("📝 收到流式内容:", chunk)
-        setStreamingContent(fullText)
-        // 实时更新PR描述区域
-        setCommentAreaRealtime(fullText)
+    if (!jiraTicketId) {
+      jiraTicketId = window.prompt(
+        "Could not automatically detect a Jira ticket ID. Please enter one (e.g., PROJ-123):"
+      )
+      if (!jiraTicketId) {
+        addNotification({
+          type: "warning",
+          title: "Cancelled",
+          message: "Jira ticket ID is required for generation."
+        })
+        return
       }
-    })
-
-    // 如果成功，确保最终内容已设置
-    if (result) {
-      console.log("✅ 生成成功:", result)
-      const finalContent = result.generated_description || streamingContent
-      // 确保最终内容已正确设置
-      await setCommentArea(finalContent)
-      addNotification({
-        type: "info",
-        title: "生成成功",
-        message: "PR描述已生成并填入表单"
-      })
-      setStreamingContent("")
-    } else {
-      console.error("❌ 生成失败，结果为空")
     }
+
+    // 3. Get code changes, branch name, and commit messages
+    const codeChanges = strategy.getCodeChanges()
+    const branchName = strategy.getBranchName()
+    const commitMessages = strategy.getCommitMessages()
+    const descriptionTemplate = strategy.getDescriptionTemplate()
+
+    if (!codeChanges) {
+      addNotification({
+        type: "warning",
+        title: "No Changes Found",
+        message: "Could not detect any code changes on the page."
+      })
+    }
+
+    await handleGenerate({
+      jira_ticket_id: jiraTicketId,
+      pr_title: prTitle,
+      code_changes: codeChanges,
+      branch_name: branchName,
+      commit_messages: commitMessages,
+      description_template: descriptionTemplate,
+    })
   }
 
-  // 实时更新PR描述区域（用于流式响应）
-  const setCommentAreaRealtime = async (text: string) => {
-    const $desTextarea = document.querySelector(
-      "textarea#pull_request_body"
-    ) as HTMLTextAreaElement
-    if ($desTextarea) {
-      $desTextarea.value = text
-      $desTextarea.innerText = text
-      
-      // 触发输入事件以确保React等框架能检测到变化
-      const event = new Event('input', { bubbles: true })
-      $desTextarea.dispatchEvent(event)
+  const handleGenerate = async (payload: {
+    jira_ticket_id: string
+    pr_title: string
+    code_changes: string
+    branch_name: string
+    commit_messages: string[]
+    description_template: string
+  }) => {
+    if (loading) return
+
+    console.log("🚀 Starting GitHub PR generation from Jira...", payload)
+
+    addNotification({
+      type: "info",
+      title: "Generating",
+      message: "Fetching Jira, analyzing changes, and generating PR description..."
+    })
+
+    const result = await execute(payload)
+
+    if (result?.generated_description) {
+      console.log("✅ Generation successful:", result)
+      await setCommentArea(result.generated_description)
+      if (result.suggested_title) {
+        addNotification({
+          type: "info",
+          title: "Suggested Title",
+          message: `AI suggests a better title: "${result.suggested_title}"`
+        })
+      }
+      addNotification({
+        type: "success",
+        title: "Generation Successful",
+        message: "PR description has been generated and filled."
+      })
+    } else {
+      console.error("❌ Generation failed, result is empty or has an error")
     }
   }
 
@@ -117,31 +123,45 @@ export const AddDescription = () => {
       "textarea#pull_request_body"
     ) as HTMLTextAreaElement
     if (!$desTextarea) {
-      console.warn("未找到PR描述文本框")
+      console.warn("PR description textarea not found")
       return
     }
     $desTextarea.value = text
     $desTextarea.innerText = text
-    
-    // 触发输入事件以确保React等框架能检测到变化
-    const event = new Event('input', { bubbles: true })
+
+    const event = new Event("input", { bubbles: true })
     $desTextarea.dispatchEvent(event)
   }
 
+  const LoadingSpinner = () => (
+    <svg className={styles.spinner} viewBox="0 0 16 16" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        d="M8 2.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2.046 8A5.954 5.954 0 018 2.046v.033a.75.75 0 010 1.434V4.5a3.5 3.5 0 106.954 0V3.516a.75.75 0 110-1.434v-.033A5.954 5.954 0 0113.954 8h-.033a.75.75 0 01-1.434 0H12.5a3.5 3.5 0 100 6.954h.016a.75.75 0 111.434 0h.033A5.954 5.954 0 018 13.954v.033a.75.75 0 010-1.434V12.5a3.5 3.5 0 10-6.954 0v.016a.75.75 0 11-1.434 0v.033A5.954 5.954 0 012.046 8z"
+      />
+    </svg>
+  )
+
   return (
-    <div 
-      className={getButtonStyles(loading)}
+    <div
+      className="dropdown-item"
       onClick={handleClick}
-    >
-      <a
-        title={`${GITHUB_BTN_DES_GEN.tooltip} (实时生成)`}
-        className="plasmo-flex plasmo-items-center plasmo-px-3 plasmo-py-2 plasmo-rounded-md plasmo-text-sm"
-      >
-        <SparklesIcon className="plasmo-w-5 plasmo-h-5 plasmo-mr-2" />
-        <span className="trigger-label" title={GITHUB_BTN_DES_GEN.tooltip}>
-          {loading ? "实时生成中..." : GITHUB_BTN_DES_GEN.name}
-        </span>
-      </a>
+      style={{
+        cursor: loading ? "not-allowed" : "pointer",
+        opacity: loading ? 0.6 : 1
+      }}
+      title="Generate PR description from a Jira ticket and code changes">
+      {loading ? (
+        <>
+          <LoadingSpinner />
+          <span>Generating...</span>
+        </>
+      ) : (
+        <>
+          <SparklesIcon className={styles.icon} />
+          <span>AI Generate from Jira</span>
+        </>
+      )}
     </div>
   )
 }

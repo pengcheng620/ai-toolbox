@@ -1,6 +1,9 @@
 """GitHub prompts module."""
 
-from app.prompts.github.pr_description import PR_DESCRIPTION_PROMPT
+from app.prompts.github.pr_description import (
+    PR_DESCRIPTION_PROMPT,
+    PR_DESCRIPTION_FROM_JIRA_PROMPT,
+)
 from app.prompts.github.commit_message import COMMIT_MESSAGE_PROMPT
 from app.prompts.github.code_review import CODE_REVIEW_PROMPT
 from app.prompts.github.release_notes import RELEASE_NOTES_PROMPT
@@ -10,6 +13,7 @@ class GitHubPrompts:
     """GitHub prompts collection."""
     
     PR_DESCRIPTION = PR_DESCRIPTION_PROMPT
+    PR_DESCRIPTION_FROM_JIRA = PR_DESCRIPTION_FROM_JIRA_PROMPT
     COMMIT_MESSAGE = COMMIT_MESSAGE_PROMPT
     CODE_REVIEW = CODE_REVIEW_PROMPT
     RELEASE_NOTES = RELEASE_NOTES_PROMPT

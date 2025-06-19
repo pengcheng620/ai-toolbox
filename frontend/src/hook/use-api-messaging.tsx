@@ -17,7 +17,11 @@ const API_VERSION = "/api/v1"
 
 // 构建完整API URL
 function getApiUrl(endpoint: string): string {
-  return `${API_BASE_URL}${API_VERSION}${endpoint}`
+  // Robustly join URL parts, avoiding double slashes.
+  const joinedPath = [API_VERSION, endpoint]
+    .join("/")
+    .replace(/\/+/g, "/")
+  return `${API_BASE_URL}${joinedPath}`
 }
 
 // 处理流式响应
@@ -124,7 +128,12 @@ export function useMessagingApi<T = any>(
 
 // GitHub PR 生成 hook - 直接API调用
 export function useGitHubPRMessaging() {
-  return useMessagingApi("/ai/github/generate")
+  return useMessagingApi("/ai/github/pr")
+}
+
+// New hook for generating PR description from Jira
+export function useGitHubPRFromJiraMessaging() {
+  return useMessagingApi("/ai/github/pr-from-jira")
 }
 
 // Jira Definition of Done generation hook - direct API call

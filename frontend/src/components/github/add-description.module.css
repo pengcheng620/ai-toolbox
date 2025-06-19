@@ -1,0 +1,17 @@
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+  margin-right: 8px;
+}
+
+.spinner {
+  composes: icon;
+  animation: spin 1s linear infinite;
+} 

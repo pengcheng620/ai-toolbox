@@ -7,6 +7,7 @@ from app.services.base_ai import BaseAzureAIService
 from app.config import settings
 from app.utils.logger import get_logger
 from app.prompts.github import github_prompts
+from app.services.jira.jira_api_client import jira_api_client
 
 logger = get_logger(__name__)
 
@@ -191,6 +192,89 @@ class GitHubService(BaseAzureAIService):
             logger.error(f"GitHub task description generation failed: {str(e)}")
             return {
                 "text": "",
+                "model": settings.azure_openai_deployment_name,
+                "tokens_used": 0,
+                "success": False,
+                "error": str(e),
+            }
+
+    async def generate_pr_description_from_jira(
+        self,
+        jira_ticket_id: str,
+        pr_title: str,
+        code_changes: str,
+        branch_name: str = "",
+        commit_messages: Optional[List[str]] = None,
+        description_template: str = "",
+    ) -> Dict[str, Any]:
+        """Generate GitHub PR description from Jira ticket and code changes."""
+        try:
+            # 1. Get Jira ticket details
+            async with jira_api_client as client:
+                jira_details_result = await client.get_issue_details(
+                    issue_key=jira_ticket_id,
+                    include_comments=False,
+                    include_attachments=False,
+                )
+
+            if not jira_details_result.get("success"):
+                error_msg = jira_details_result.get(
+                    "error", f"Jira ticket {jira_ticket_id} not found or access denied."
+                )
+                logger.error(f"Failed to retrieve Jira details: {error_msg}")
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "generated_description": "",
+                    "suggested_title": pr_title,
+                    "model": settings.azure_openai_deployment_name,
+                    "tokens_used": 0,
+                }
+            
+            jira_details = jira_details_result.get("data", {})
+            
+            # 2. Combine Jira details with other info for the prompt
+            jira_summary = jira_details.get("summary", "No summary found.")
+            jira_description = jira_details.get("description", "No description found.")
+            
+            commit_messages_str = "\\n".join(
+                f"- {msg}" for msg in commit_messages
+            ) if commit_messages else "No commit messages provided."
+
+            # Use a dedicated prompt that knows how to fill a template
+            prompt_config = github_prompts.PR_DESCRIPTION_FROM_JIRA
+            prompt_func: Callable = prompt_config["generate_prompt"]  # type: ignore
+            prompt = prompt_func(
+                pr_title=pr_title,
+                jira_ticket_id=jira_ticket_id,
+                jira_summary=jira_summary,
+                jira_description=jira_description,
+                branch_name=branch_name,
+                code_changes=code_changes,
+                commit_messages=commit_messages_str,
+                description_template=description_template,
+            )
+
+            result = await self.generate_text(
+                prompt=prompt,
+                system_message=str(prompt_config["system_message"]),
+                max_tokens=2000,
+                temperature=0.7,
+            )
+
+            if result.get("success"):
+                result["generated_description"] = result["text"]
+                result["suggested_title"] = pr_title or jira_summary or "feat: New feature"
+                del result["text"]
+
+            logger.info("GitHub PR description from Jira generated successfully")
+            return result
+
+        except Exception as e:
+            logger.error(f"GitHub PR description generation from Jira failed: {str(e)}")
+            return {
+                "generated_description": "",
+                "suggested_title": pr_title or "PR Title",
                 "model": settings.azure_openai_deployment_name,
                 "tokens_used": 0,
                 "success": False,
