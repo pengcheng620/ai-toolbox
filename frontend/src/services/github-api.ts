@@ -48,70 +48,17 @@ class GitHubAPIService {
     return `${this.baseUrl}${this.apiVersion}${endpoint}`
   }
 
-  /**
-   * Extract user GitHub token from the current page
-   */
-  private extractUserToken(): string | null {
-    try {
-      // Strategy 1: Try to extract from page meta tags
-      const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      if (metaToken) {
-        console.log("🔑 Found CSRF token from meta tag")
-        return metaToken
-      }
 
-      // Strategy 2: Try to extract from global variables
-      const windowAny = window as any
-      if (windowAny.__INITIAL_DATA__?.user?.token) {
-        console.log("🔑 Found token from window.__INITIAL_DATA__")
-        return windowAny.__INITIAL_DATA__.user.token
-      }
-
-      // Strategy 3: Try to extract from GitHub's global variables
-      if (windowAny.github?.token) {
-        console.log("🔑 Found token from window.github")
-        return windowAny.github.token
-      }
-
-      // Strategy 4: Try to extract authenticity token
-      const authenticityToken = document.querySelector('input[name="authenticity_token"]')?.getAttribute('value')
-      if (authenticityToken) {
-        console.log("🔑 Found authenticity token from form input")
-        return authenticityToken
-      }
-
-      console.log("⚠️ No user token found on page")
-      return null
-    } catch (error) {
-      console.error("❌ Error extracting user token:", error)
-      return null
-    }
-  }
 
   /**
    * Fetch PR data using GitHub REST API via backend
    */
-  async fetchPRData(prUrl: string, userToken?: string): Promise<GitHubAPIResponse> {
+  async fetchPRData(prUrl: string): Promise<GitHubAPIResponse> {
     try {
       console.log("🚀 Fetching PR data via GitHub API:", prUrl)
 
-      // If no userToken provided, try to extract from page
-      const tokenToUse = userToken || this.extractUserToken()
-      if (tokenToUse) {
-        // Log token usage but not the actual token for security
-        const tokenPreview = tokenToUse.length > 8 ? `${tokenToUse.substring(0, 8)}...` : "***"
-        console.log(`🔑 Using user token for API request (preview: ${tokenPreview})`)
-      } else {
-        console.log("⚠️ No user token available, using system token")
-      }
-
-      const requestBody: any = {
+      const requestBody = {
         pr_url: prUrl
-      }
-
-      // Add user token if available
-      if (tokenToUse) {
-        requestBody.user_token = tokenToUse
       }
 
       const response = await fetch(this.getApiUrl("/ai/github/pr-data"), {

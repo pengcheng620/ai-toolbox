@@ -1,6 +1,5 @@
 """GitHub API endpoints."""
 
-import logging
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -65,7 +64,7 @@ class GitHubPRFromJiraRequest(BaseModel):
     description_template: str = Field(
         default="", description="The existing PR description to use as a template."
     )
-    user_token: Optional[str] = Field(None, description="Optional user GitHub token for private repository access")
+    stream: bool = Field(default=False, description="Enable streaming response")
 
 
 # Response models
@@ -117,7 +116,6 @@ class GitHubPRDataRequest(BaseModel):
     """Request model for fetching GitHub PR data via API."""
 
     pr_url: str = Field(..., description="GitHub PR URL")
-    user_token: Optional[str] = Field(None, description="Optional user GitHub token for private repository access")
 
 
 class GitHubPRDataResponse(BaseModel):
@@ -162,7 +160,7 @@ async def generate_pr_description_from_jira(request: GitHubPRFromJiraRequest):
         )
 
         # Check if streaming is requested
-        stream = getattr(request, 'stream', False)
+        stream = request.stream
 
         if stream:
             # Return streaming response
@@ -177,9 +175,11 @@ async def generate_pr_description_from_jira(request: GitHubPRFromJiraRequest):
                         code_changes=request.code_changes,
                         branch_name=request.branch_name,
                         commit_messages=request.commit_messages,
-                        description_template=getattr(request, 'description_template', ''),
+                        description_template=request.description_template,
                     ):
-                        yield f"data: {chunk}\n\n"
+                        # Preserve newlines in the chunk by encoding them
+                        encoded_chunk = chunk.replace('\n', '\\n')
+                        yield f"data: {encoded_chunk}\n\n"
                     yield "data: [DONE]\n\n"
                 except Exception as e:
                     logger.error(f"Streaming error: {str(e)}")
@@ -202,7 +202,7 @@ async def generate_pr_description_from_jira(request: GitHubPRFromJiraRequest):
                 code_changes=request.code_changes,
                 branch_name=request.branch_name,
                 commit_messages=request.commit_messages,
-                description_template=getattr(request, 'description_template', ''),
+                description_template=request.description_template,
             )
 
             if not result.get("success"):
@@ -281,10 +281,7 @@ async def fetch_pr_data(request: GitHubPRDataRequest):
     """Fetch GitHub PR data using GitHub REST API."""
     try:
         logger.info(f"Fetching PR data for URL: {request.pr_url}")
-        if request.user_token:
-            logger.info("Using user-provided token for authentication")
-        else:
-            logger.info("Using system token for authentication")
+        logger.info("Using system token for authentication")
 
         async with github_api_client as client:
             # Parse PR URL to extract owner, repo, and PR number
@@ -306,42 +303,40 @@ async def fetch_pr_data(request: GitHubPRDataRequest):
                 owner=pr_info["owner"],
                 repo=pr_info["repo"],
                 pr_number=pr_info["pr_number"],
-                base_url=base_url,
-                user_token=request.user_token
+                base_url=base_url
             )
 
             commits_task = client.fetch_pr_commits(
                 owner=pr_info["owner"],
                 repo=pr_info["repo"],
                 pr_number=pr_info["pr_number"],
-                base_url=base_url,
-                user_token=request.user_token
+                base_url=base_url
             )
 
-            files_result, commits_result = await asyncio.gather(
+            files_result_raw, commits_result_raw = await asyncio.gather(
                 files_task, commits_task, return_exceptions=True
             )
 
             # Handle exceptions and ensure we have dict results
-            if isinstance(files_result, Exception):
-                logger.error(f"Error fetching files: {str(files_result)}")
-                files_result = {"success": False, "error": str(files_result)}
-            elif not isinstance(files_result, dict):
-                logger.error(f"Unexpected files result type: {type(files_result)}")
+            files_result: Dict[str, Any]
+            if isinstance(files_result_raw, Exception):  # type: ignore
+                logger.error(f"Error fetching files: {str(files_result_raw)}")  # type: ignore
+                files_result = {"success": False, "error": str(files_result_raw)}  # type: ignore
+            elif not isinstance(files_result_raw, dict):  # type: ignore
+                logger.error(f"Unexpected files result type: {type(files_result_raw)}")  # type: ignore
                 files_result = {"success": False, "error": "Unexpected response format"}
+            else:
+                files_result = files_result_raw  # type: ignore
 
-            if isinstance(commits_result, Exception):
-                logger.error(f"Error fetching commits: {str(commits_result)}")
-                commits_result = {"success": False, "error": str(commits_result)}
-            elif not isinstance(commits_result, dict):
-                logger.error(f"Unexpected commits result type: {type(commits_result)}")
+            commits_result: Dict[str, Any]
+            if isinstance(commits_result_raw, Exception):  # type: ignore
+                logger.error(f"Error fetching commits: {str(commits_result_raw)}")  # type: ignore
+                commits_result = {"success": False, "error": str(commits_result_raw)}  # type: ignore
+            elif not isinstance(commits_result_raw, dict):  # type: ignore
+                logger.error(f"Unexpected commits result type: {type(commits_result_raw)}")  # type: ignore
                 commits_result = {"success": False, "error": "Unexpected response format"}
-
-            # Ensure results are dictionaries
-            if not isinstance(files_result, dict):
-                files_result = {"success": False, "error": "Invalid files result"}
-            if not isinstance(commits_result, dict):
-                commits_result = {"success": False, "error": "Invalid commits result"}
+            else:
+                commits_result = commits_result_raw  # type: ignore
 
             # Prepare response
             success = files_result.get("success", False) or commits_result.get("success", False)

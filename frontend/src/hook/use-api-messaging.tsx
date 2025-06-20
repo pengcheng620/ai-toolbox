@@ -24,6 +24,29 @@ function getApiUrl(endpoint: string): string {
   return `${API_BASE_URL}${joinedPath}`
 }
 
+// Enhanced error handling for API responses
+function createAPIError(response: Response, errorText: string): Error {
+  const status = response.status
+  const statusText = response.statusText
+
+  // Create specific error messages based on status codes
+  if (status === 401) {
+    return new Error("Authentication failed. Please check your credentials.")
+  } else if (status === 403) {
+    return new Error("Access denied. This may be a private repository or insufficient permissions.")
+  } else if (status === 404) {
+    return new Error("Resource not found. Please check your input.")
+  } else if (status === 429) {
+    return new Error("Rate limit exceeded. Please try again later.")
+  } else if (status >= 500) {
+    return new Error("Server error. Please try again later.")
+  } else if (status >= 400) {
+    return new Error(`Client error (${status}): ${errorText || statusText}`)
+  } else {
+    return new Error(`API call failed (${status}): ${errorText || statusText}`)
+  }
+}
+
 // 处理流式响应
 async function handleStreamingResponse(response: Response, onChunk?: (chunk: string, fullText: string) => void): Promise<string> {
   const reader = response.body?.getReader()
@@ -34,29 +57,42 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
     throw new Error('无法获取响应流')
   }
 
+  console.log('📡 Starting streaming response processing...')
+  let chunkCount = 0
+
   while (true) {
     const { done, value } = await reader.read()
-    if (done) break
+    if (done) {
+      console.log(`✅ Streaming completed after ${chunkCount} chunks`)
+      break
+    }
 
+    chunkCount++
     const chunk = decoder.decode(value)
+    console.log(`📦 Chunk ${chunkCount}:`, chunk.slice(0, 100) + (chunk.length > 100 ? '...' : ''))
+
     const lines = chunk.split('\n')
 
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6)
         if (data === '[DONE]') {
+          console.log('🏁 Received [DONE] marker, finishing stream')
           // 在返回前确保内容格式正确
           const formattedContent = formatGeneratedContent(fullContent)
           return formattedContent
         }
 
-        // 保持原始格式，不要丢失换行符
-        fullContent += data
+        // 解码换行符并保持原始格式
+        const decodedData = data.replace(/\\n/g, '\n')
+        fullContent += decodedData
+        console.log(`📝 Current content length: ${fullContent.length}`)
 
         // 调用onChunk回调，传递格式化后的内容
         if (onChunk) {
           const formattedChunk = formatGeneratedContent(fullContent)
-          onChunk(data, formattedChunk)
+          console.log(`🔄 Calling onChunk callback with ${formattedChunk.length} chars`)
+          onChunk(decodedData, formattedChunk)
         }
       }
     }
@@ -64,6 +100,7 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
 
   // 确保最终内容格式正确
   const formattedContent = formatGeneratedContent(fullContent)
+  console.log(`✅ Final formatted content: ${formattedContent.length} chars`)
   return formattedContent
 }
 
@@ -229,23 +266,30 @@ export function useGitHubPRFromJiraMessaging() {
       console.log(`📡 Content-Type:`, contentType)
 
       let result
-      if (onChunk && contentType?.includes('text/plain')) {
-        // Handle streaming response with callback
+      // Enhanced streaming detection - check if streaming was requested
+      const isStreamingRequested = requestBody.stream === true
+      console.log(`📡 Streaming requested: ${isStreamingRequested}, Content-Type: ${contentType}`)
+
+      if (isStreamingRequested && onChunk) {
+        // Handle streaming response with callback - relaxed content-type check
         console.log("📡 Processing streaming response with callback...")
         const streamContent = await handleStreamingResponse(response, onChunk)
         console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
         result = { generated_content: streamContent }
-      } else if (contentType?.includes('application/json')) {
-        // Handle JSON response
-        result = await response.json()
-        console.log(`✅ JSON响应:`, result)
-      } else if (contentType?.includes('text/plain')) {
+      } else if (isStreamingRequested) {
         // Handle streaming response without callback
+        console.log("📡 Processing streaming response without callback...")
         const streamContent = await handleStreamingResponse(response)
         console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
         result = { generated_content: streamContent }
+      } else if (contentType?.includes('application/json')) {
+        // Handle JSON response
+        console.log("📡 Processing JSON response...")
+        result = await response.json()
+        console.log(`✅ JSON响应:`, result)
       } else {
         // Fallback: try JSON first, then text
+        console.log("📡 Processing fallback response...")
         try {
           result = await response.json()
           console.log(`✅ Fallback JSON响应:`, result)

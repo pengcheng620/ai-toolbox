@@ -36,6 +36,24 @@ alwaysApply: true
 - For any features related to jira, sprint-planning, or github, always check all related files and folders.
 - Do not implement features only on one side (frontend or backend).
 
+## React Development Best Practices
+
+- **Prefer custom hooks over class-based services**: Use functions starting with `use` for React components instead of class-based services.
+- **Follow modern React patterns**: Use functional components, hooks, and modern React best practices.
+- **Use functional programming approaches**: Prefer functional programming patterns where appropriate.
+- **Component responsibility separation**:
+  - Components (frontend/src/components/) should only handle page processing and user interaction
+  - Business logic services should be placed in frontend/src/services/ folder, organized by functionality
+  - DOM manipulation utilities should be moved from React components to service files
+- **Error handling architecture**:
+  - Centralized error handling in API layer (frontend/src/hook/ or service layer)
+  - Component layer should only handle UI-related error display
+  - Use unified error format and messages
+- **Streaming implementation guidelines**:
+  - Check request intent (stream: true) and not only rely on content-type
+  - Enhance debugging logs for better troubleshooting
+  - Provide testing tools for isolated debugging
+
 ## Third-Party Dependency Rules
 
 - When adding or upgrading dependencies, always update the corresponding lock files (e.g., pnpm-lock.yaml, uv.lock).

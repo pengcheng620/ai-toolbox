@@ -31,31 +31,20 @@ class GitHubAPIClient:
         if self.session:
             await self.session.close()
             
-    def _get_headers(self, user_token: Optional[str] = None) -> Dict[str, str]:
-        """Get headers for GitHub API requests with token priority: user_token > system_token > none."""
+    def _get_headers(self) -> Dict[str, str]:
+        """Get headers for GitHub API requests using system token if available."""
         headers = {
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "AI-Toolbox/1.0"
         }
 
-        # Token priority: user_token > system_token > none
-        token_to_use = None
-        token_source = "none"
-
-        if user_token:
-            token_to_use = user_token
-            token_source = "user"
-        else:
-            system_token = getattr(settings, 'github_api_token', None)
-            if system_token:
-                token_to_use = system_token
-                token_source = "system"
-
-        if token_to_use:
-            headers["Authorization"] = f"token {token_to_use}"
-            # Log token source and partial token for debugging (security safe)
-            token_preview = f"{token_to_use[:8]}..." if len(token_to_use) > 8 else "***"
-            logger.info(f"Using GitHub API token from {token_source} source (preview: {token_preview})")
+        # Use system token if available
+        system_token = getattr(settings, 'github_api_token', None)
+        if system_token:
+            headers["Authorization"] = f"token {system_token}"
+            # Log partial token for debugging (security safe)
+            token_preview = f"{system_token[:8]}..." if len(system_token) > 8 else "***"
+            logger.info(f"Using GitHub API system token (preview: {token_preview})")
         else:
             logger.warning("No GitHub API token available - using unauthenticated requests")
 
@@ -95,7 +84,7 @@ class GitHubAPIClient:
             logger.error(f"Error parsing PR URL {pr_url}: {str(e)}")
             return None
             
-    async def fetch_pr_files(self, owner: str, repo: str, pr_number: str, base_url: Optional[str] = None, user_token: Optional[str] = None) -> Dict[str, Any]:
+    async def fetch_pr_files(self, owner: str, repo: str, pr_number: str, base_url: Optional[str] = None) -> Dict[str, Any]:
         """Fetch PR file changes from GitHub API."""
         try:
             if not self.session:
@@ -106,7 +95,7 @@ class GitHubAPIClient:
 
             api_base = base_url or self.base_url
             url = f"{api_base}/repos/{owner}/{repo}/pulls/{pr_number}/files"
-            headers = self._get_headers(user_token)
+            headers = self._get_headers()
 
             logger.info(f"Fetching PR files from: {url}")
 
@@ -150,7 +139,7 @@ class GitHubAPIClient:
                 "error": f"Network error: {str(e)}"
             }
             
-    async def fetch_pr_commits(self, owner: str, repo: str, pr_number: str, base_url: Optional[str] = None, user_token: Optional[str] = None) -> Dict[str, Any]:
+    async def fetch_pr_commits(self, owner: str, repo: str, pr_number: str, base_url: Optional[str] = None) -> Dict[str, Any]:
         """Fetch PR commits from GitHub API."""
         try:
             if not self.session:
@@ -161,7 +150,7 @@ class GitHubAPIClient:
 
             api_base = base_url or self.base_url
             url = f"{api_base}/repos/{owner}/{repo}/pulls/{pr_number}/commits"
-            headers = self._get_headers(user_token)
+            headers = self._get_headers()
 
             logger.info(f"Fetching PR commits from: {url}")
 

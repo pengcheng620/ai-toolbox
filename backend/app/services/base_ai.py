@@ -1,7 +1,7 @@
 """Base Azure AI service with client management."""
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, AsyncIterator
 
 from openai import AsyncAzureOpenAI
 from langchain_openai import AzureChatOpenAI
@@ -168,6 +168,73 @@ class BaseAzureAIService:
             "error": "Unexpected error in retry loop",
         }
 
+    async def generate_text_stream(
+        self,
+        prompt: str,
+        model: Optional[str] = None,
+        max_tokens: int = 1000,
+        temperature: float = 0.7,
+        system_message: Optional[str] = None,
+        max_retries: int = 2,
+    ) -> AsyncIterator[str]:
+        """Generate streaming text using Azure OpenAI."""
+        model_name = model or settings.azure_openai_deployment_name
+
+        for attempt in range(max_retries + 1):
+            try:
+                # Get Azure OpenAI client
+                client = await self._get_azure_client()
+
+                # Prepare messages
+                messages = []
+                if system_message:
+                    messages.append({"role": "system", "content": system_message})
+                messages.append({"role": "user", "content": prompt})
+
+                # Create streaming completion
+                # For o3-mini model, use max_completion_tokens instead of max_tokens
+                # and exclude temperature if it's an o3 model
+                completion_params = {
+                    "model": model_name,
+                    "messages": messages,
+                    "stream": True,
+                }
+
+                if "o3" in model_name.lower():
+                    completion_params["max_completion_tokens"] = max_tokens
+                else:
+                    completion_params["max_tokens"] = max_tokens
+                    completion_params["temperature"] = temperature
+
+                stream = await client.chat.completions.create(**completion_params)
+
+                async for chunk in stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        content = chunk.choices[0].delta.content
+                        yield content
+
+                logger.info(f"Streaming text generated successfully using model {model_name}")
+                return
+
+            except Exception as e:
+                error_str = str(e)
+                logger.error(f"Streaming generation attempt {attempt + 1} failed: {error_str}")
+
+                # Check if this is an authentication error and we have retries left
+                if self._is_auth_error(error_str) and attempt < max_retries:
+                    logger.info(f"Authentication error detected, refreshing auth and retrying (attempt {attempt + 1}/{max_retries})")
+                    try:
+                        await self.refresh_auth()
+                        continue  # Retry with new token
+                    except Exception as refresh_error:
+                        logger.error(f"Auth refresh failed: {str(refresh_error)}")
+                        # Continue to final error handling
+
+                # If this is the last attempt or not an auth error, raise error
+                if attempt == max_retries:
+                    logger.error(f"All {max_retries + 1} attempts failed for streaming generation")
+                    raise Exception(f"Streaming generation failed: {error_str}")
+
     async def refresh_auth(self):
         """Refresh OAuth authentication tokens."""
         try:
@@ -184,4 +251,4 @@ class BaseAzureAIService:
 
 
 # Global base AI service instance
-base_ai_service = BaseAzureAIService() 
+base_ai_service = BaseAzureAIService()
