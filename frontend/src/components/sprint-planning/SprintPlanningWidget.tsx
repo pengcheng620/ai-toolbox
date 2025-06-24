@@ -6,6 +6,7 @@ import { useSprintPlanning, useBoardDetection } from "~hook/use-sprint-planning"
 import { useNotification } from "~components/common/notification"
 import { TeamWorkloadTable } from "./TeamWorkloadTable"
 import { HolidayImpactPanel } from "./HolidayImpactPanel"
+import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
   onClose,
@@ -68,13 +69,14 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
   useEffect(() => {
     initializeWidget()
   }, [])
-
+  
+  const apiConfig = getApiConfigSync()
   const initializeWidget = async () => {
     try {
       // Health check first to verify backend connection
       console.log("🔍 Testing backend connection...")
       try {
-        const healthCheck = await fetch("http://localhost:8000/api/v1/ai/health")
+        const healthCheck = await fetch(apiConfig.endpoints.ai.health)
         console.log("🔍 Backend API health check:", healthCheck.status)
       } catch (error) {
         console.error("🔍 Backend API connection failed:", error)

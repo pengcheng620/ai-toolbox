@@ -5,6 +5,7 @@ import { useNotification } from "~components/common/notification"
 import { useJiraDoDefinitionMessaging } from "~hook/use-api-messaging"
 
 import { SparklesIcon } from "../../../lib/icons/heroicon"
+import { getApiConfig, getApiConfigSync } from "../../../lib/config/api-config"
 
 export const GenerateDoDefinitionButton = () => {
   const { addNotification } = useNotification()
@@ -61,7 +62,8 @@ export const GenerateDoDefinitionButton = () => {
     // First test health check to verify messaging system is working
     console.log("🔍 Testing messaging system connection...")
     try {
-      const healthCheck = await fetch("http://localhost:8000/api/v1/ai/health")
+      const apiConfig = getApiConfigSync()
+      const healthCheck = await fetch(apiConfig.endpoints.ai.health)
       console.log("🔍 Backend API health check:", healthCheck.status)
     } catch (error) {
       console.error("🔍 Backend API connection failed:", error)

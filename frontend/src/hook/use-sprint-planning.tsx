@@ -5,6 +5,7 @@ import type {
   UseSprintPlanningReturn 
 } from "~types/sprint-planning"
 import { useSprintPlanningMessaging, useMessagingApi } from "~hook/use-api-messaging"
+import { getApiConfigSync } from "../../lib/config/api-config"
 
 interface UseSprintPlanningOptions {
   enableStreaming?: boolean
@@ -105,7 +106,8 @@ export function useBoardDetection() {
         setBoardId(detection.boardId)
         
         // Fetch board info from API using standard pattern
-        const apiUrl = `http://localhost:8000/api/v1/sprint-planning/board-info/${detection.boardId}`
+        const apiConfig = getApiConfigSync()
+        const apiUrl = apiConfig.endpoints.sprintPlanning.boardInfo(detection.boardId)
         const response = await fetch(apiUrl)
         
         if (response.ok) {
@@ -130,7 +132,8 @@ export function useBoardDetection() {
     
     try {
       setLoading(true)
-      const apiUrl = `http://localhost:8000/api/v1/sprint-planning/board-info/${boardId}`
+      const apiConfig = getApiConfigSync()
+      const apiUrl = apiConfig.endpoints.sprintPlanning.boardInfo(boardId)
       const response = await fetch(apiUrl)
       
       if (response.ok) {
