@@ -96,14 +96,14 @@ alwaysApply: true
 - Adding an API only in backend/app/api/ without updating docs/api-documentation.md.
 - Modifying jira-related features in a single file only.
 
-**All rules must be strictly followed. Any violation is considered an error.**
-
-# API Configuration Management Rules For Frontend Project
-
-## Core Principles
-
-### Centralized Configuration
+### Centralized Configuration For Frontend Project
 - **ALWAYS** use the centralized API configuration from `frontend/lib/config/api-config.ts`
 - **NEVER** hard-code API URLs or endpoints directly in components, services, or background scripts
 - **ALWAYS** import and use `getApiConfigSync()` or the appropriate config method
+
+**All rules must be strictly followed. Any violation is considered an error.**
+
+
+
+
 
