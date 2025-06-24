@@ -1,4 +1,3 @@
-
 // 默认配置 - 支持环境变量覆盖
 const DEFAULT_BASE_URL = "http://localhost:8000"
 
@@ -6,7 +5,6 @@ const DEFAULT_BASE_URL = "http://localhost:8000"
 export interface ApiConfig {
   baseUrl: string
   endpoints: {
-    health: string
     ai: {
       health: string
       github: {
@@ -27,7 +25,6 @@ function buildApiConfig(baseUrl: string): ApiConfig {
     return {
       baseUrl,
       endpoints: {
-        health: `${baseUrl}/health`,
         ai: {
           health: `${baseUrl}/api/v1/ai/health`,
           github: {
