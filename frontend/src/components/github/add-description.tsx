@@ -10,7 +10,7 @@ import { SparklesIcon } from "../../../lib/icons/heroicon"
 import { getGitHubPageStrategy } from "../../../lib/utils/github"
 import { useGitHubDOM } from "../../hooks/useGitHubDOM"
 import styles from "./add-description.module.css"
-import { getApiConfigSync } from "lib/config/api-config"
+import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const AddDescription = () => {
   const { addNotification } = useNotification()

@@ -5,7 +5,7 @@ import { useNotification } from "~components/common/notification"
 import { useJiraDoDefinitionMessaging } from "~hook/use-api-messaging"
 
 import { SparklesIcon } from "../../../lib/icons/heroicon"
-import { getApiConfig, getApiConfigSync } from "../../../lib/config/api-config"
+import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const GenerateDoDefinitionButton = () => {
   const { addNotification } = useNotification()
