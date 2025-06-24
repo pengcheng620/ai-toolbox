@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-
+import { getApiConfigSync } from "../../lib/config/api-config"
 export interface UseMessagingApiState<T> {
   data: T | null
   loading: boolean
@@ -11,8 +11,9 @@ export interface UseMessagingApiReturn<T> extends UseMessagingApiState<T> {
   reset: () => void
 }
 
+const apiConfig = getApiConfigSync()
 // API配置
-const API_BASE_URL = "http://localhost:8000"
+const API_BASE_URL = apiConfig.baseUrl
 const API_VERSION = "/api/v1"
 
 // 构建完整API URL

@@ -1,9 +1,13 @@
+import { getApiConfigSync } from "../config/api-config"
+
 // 调试工具
 export class ApiDebugger {
   private baseUrl: string
+  private apiConfig = getApiConfigSync()
 
-  constructor(baseUrl: string = "http://localhost:8000") {
-    this.baseUrl = baseUrl
+  constructor(baseUrl?: string) {
+    // 如果传入了baseUrl，则使用传入的；否则使用配置文件中的
+    this.baseUrl = baseUrl || this.apiConfig.baseUrl
   }
 
   // 测试后端连接

@@ -1,9 +1,14 @@
+import { getApiConfigSync } from "./lib/config/api-config"
+
+// 获取API配置
+const apiConfig = getApiConfigSync()
+const API_BASE_URL = apiConfig.baseUrl
+
 export {}
 
 console.log("🎉 AI Toolbox 后台脚本已启动")
 
 // API配置
-const API_BASE_URL = "http://localhost:8000"
 const API_VERSION = "/api/v1"
 
 // 构建完整API URL

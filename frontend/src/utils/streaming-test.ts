@@ -4,6 +4,7 @@
  */
 
 import { useGitHubPRFromJiraMessaging } from "../hook/use-api-messaging"
+import { getApiConfigSync } from "../../lib/config/api-config"
 
 export interface StreamingTestResult {
   success: boolean
@@ -95,7 +96,8 @@ export class StreamingTester {
         stream: true
       }
 
-      const response = await fetch("http://localhost:8000/api/v1/ai/github/pr-from-jira", {
+      const apiConfig = getApiConfigSync()
+      const response = await fetch(apiConfig.endpoints.ai.github.prFromJira, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

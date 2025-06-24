@@ -8,13 +8,15 @@ import type {
   BoardInfoResponse,
   SprintDataResponse
 } from "~types/sprint-planning"
+import { getApiConfigSync } from "../../lib/config/api-config"
 
 export class SprintAPIClient {
   private static instance: SprintAPIClient
   private baseUrl: string
+  private apiConfig = getApiConfigSync()
   
   private constructor() {
-    this.baseUrl = "http://localhost:8000/api/v1"
+    this.baseUrl = this.apiConfig.baseUrl + "/api/v1"
   }
   
   public static getInstance(): SprintAPIClient {

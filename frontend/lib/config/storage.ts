@@ -1,4 +1,10 @@
 import { Storage } from "@plasmohq/storage"
+import { getApiConfigSync } from "./api-config"
+
+
+const apiConfig = getApiConfigSync()
+// 默认API Base URL
+const DEFAULT_API_BASE_URL = apiConfig.baseUrl
 
 // 存储键名常量
 export const STORAGE_KEYS = {
@@ -39,7 +45,7 @@ export const storage = new Storage({
 // 存储工具函数
 export class StorageHelper {
   static async getApiBaseUrl(): Promise<string> {
-    return await storage.get(STORAGE_KEYS.API_BASE_URL) || "http://localhost:8000"
+    return await storage.get(STORAGE_KEYS.API_BASE_URL) || DEFAULT_API_BASE_URL
   }
 
   static async setApiBaseUrl(url: string): Promise<void> {

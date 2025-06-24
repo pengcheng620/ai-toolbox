@@ -1,7 +1,11 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
+import { getApiConfigSync } from "../../lib/config/api-config"
+
+// 获取API配置
+const apiConfig = getApiConfigSync()
 
 // API配置
-const API_BASE_URL = "http://localhost:8000"
+const API_BASE_URL = apiConfig.baseUrl
 const API_VERSION = "/api/v1"
 
 // 构建完整API URL
@@ -15,7 +19,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   try {
     console.log("🚀 Background: 调用健康检查API")
     
-    const response = await fetch(getApiUrl("/ai/health"))
+    const response = await fetch(apiConfig.endpoints.ai.health)
     
     console.log("📡 Background: 健康检查响应状态", response.status)
     

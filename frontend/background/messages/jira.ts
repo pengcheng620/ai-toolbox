@@ -1,10 +1,14 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
+import { getApiConfigSync } from "../../lib/config/api-config"
+
+// 获取API配置
+const apiConfig = getApiConfigSync()
 
 // 添加启动日志
 console.log("🎯 Jira消息处理器已加载")
 
 // API配置
-const API_BASE_URL = "http://localhost:8000"
+const API_BASE_URL = apiConfig.baseUrl
 const API_VERSION = "/api/v1"
 
 // 构建完整API URL

@@ -10,6 +10,7 @@ import { SparklesIcon } from "../../../lib/icons/heroicon"
 import { getGitHubPageStrategy } from "../../../lib/utils/github"
 import { useGitHubDOM } from "../../hooks/useGitHubDOM"
 import styles from "./add-description.module.css"
+import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const AddDescription = () => {
   const { addNotification } = useNotification()
@@ -91,10 +92,11 @@ export const AddDescription = () => {
     return await githubDOM.activateEditModeImmediately()
   }
 
+  const apiConfig = getApiConfigSync()
   // Function to check API connectivity
   const checkAPIConnectivity = async (): Promise<boolean> => {
     try {
-      const response = await fetch("http://localhost:8000/api/v1/ai/health", {
+      const response = await fetch(apiConfig.endpoints.ai.health, {
         method: "GET",
         timeout: 5000
       } as any)
