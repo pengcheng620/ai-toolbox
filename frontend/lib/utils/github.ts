@@ -315,8 +315,22 @@ class PublicGitHubStrategy implements GitHubPageStrategy {
         case 'ol':
           const listItems = child.querySelectorAll('li')
           listItems.forEach(li => {
-            const bullet = tagName === 'ul' ? '-' : '1.'
-            content += `${bullet} ${li.textContent?.trim()}\n`
+            // Check if this is a checkbox list item
+            const checkbox = li.querySelector('input[type="checkbox"]') as HTMLInputElement
+            if (checkbox) {
+              // This is a markdown checkbox - preserve the checkbox format
+              const isChecked = checkbox.checked
+              const checkboxText = isChecked ? '[x]' : '[ ]'
+              const itemText = li.textContent?.trim() || ''
+              // Remove any existing checkbox symbols from the text content
+              const cleanText = itemText.replace(/^[\[\]x\s]*/, '').trim()
+              content += `- ${checkboxText} ${cleanText}\n`
+            } else {
+              // Regular list item
+              const bullet = tagName === 'ul' ? '-' : '1.'
+              const itemText = li.textContent?.trim() || ''
+              content += `${bullet} ${itemText}\n`
+            }
           })
           content += '\n'
           break

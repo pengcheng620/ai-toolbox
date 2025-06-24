@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react"
+import { Modal, Button, Text } from "@mantine/core"
 import { useNotification } from "~components/common/notification"
 import { useGitHubPRFromJiraMessaging } from "~hook/use-api-messaging"
 
 import {
   fetchPRCommitMessages,
-  fetchPRFileChanges
+  fetchPRFileChanges,
+  type ParsedFile,
+  type ParsedCommit
 } from "../../services/github-pr-page-service"
 import { SparklesIcon } from "../../../lib/icons/heroicon"
 import { getGitHubPageStrategy } from "../../../lib/utils/github"
@@ -13,12 +16,39 @@ import styles from "./add-description.module.css"
 import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const AddDescription = () => {
-  const { addNotification } = useNotification()
+  const { showError, showWarning } = useNotification()
   const { execute, loading, error } = useGitHubPRFromJiraMessaging()
   const githubDOM = useGitHubDOM()
   const [originalContent, setOriginalContent] = useState<string>("")
   const [hasGeneratedContent, setHasGeneratedContent] = useState(false)
   const [streamingContent, setStreamingContent] = useState("")
+
+  // Modal state for replacing alert() calls
+  const [modalState, setModalState] = useState<{
+    opened: boolean
+    title: string
+    content: string
+    type: 'info' | 'success' | 'error'
+  }>({
+    opened: false,
+    title: '',
+    content: '',
+    type: 'info'
+  })
+
+  // Helper function to show modal instead of alert()
+  const showModal = (title: string, content: string, type: 'info' | 'success' | 'error' = 'info') => {
+    setModalState({
+      opened: true,
+      title,
+      content,
+      type
+    })
+  }
+
+  const closeModal = () => {
+    setModalState(prev => ({ ...prev, opened: false }))
+  }
 
   // Store original content before generation
   const storeOriginalContent = () => {
@@ -47,26 +77,16 @@ export const AddDescription = () => {
       // No notification needed - user can see the content change directly
     } catch (error) {
       console.error("Error reverting content:", error)
-      addNotification({
-        type: "error",
-        title: "Revert Failed",
-        message: "Failed to revert content. Please manually restore if needed.",
-        time: 5000 // Longer duration for errors
-      })
+      showError("Revert Failed", "Failed to revert content. Please manually restore if needed.")
     }
   }
 
   // Monitor error changes and show notifications
   useEffect(() => {
     if (error && !loading) {
-      addNotification({
-        type: "error",
-        title: "Generation Failed",
-        message: error,
-        time: 5000 // Longer duration for errors
-      })
+      showError("Generation Failed", error)
     }
-  }, [error, loading, addNotification])
+  }, [error, loading, showError])
 
   // Manage revert button in GitHub edit interface
   useEffect(() => {
@@ -113,12 +133,7 @@ export const AddDescription = () => {
     // Check API connectivity first
     const isAPIConnected = await checkAPIConnectivity()
     if (!isAPIConnected) {
-      addNotification({
-        type: "error",
-        title: "Connection Failed",
-        message: "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.",
-        time: 6000 // Longer duration for connection errors
-      })
+      showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.")
       return
     }
 
@@ -130,25 +145,13 @@ export const AddDescription = () => {
     // Get PR title
     const prTitle = strategy.getPRTitle()
     if (!prTitle) {
-      addNotification({
-        type: "warning",
-        title: "Missing Title",
-        message: "Could not detect a Pull Request title on the page.",
-        time: 4000 // Moderate duration for warnings
-      })
+      showWarning("Missing Title", "Could not detect a Pull Request title on the page.")
       return
     }
 
     // Activate edit mode before API call
-    const editModeActivated = await activateEditModeImmediately()
-    if (!editModeActivated) {
-      addNotification({
-        type: "warning",
-        title: "Edit Mode Failed",
-        message: "Could not activate edit mode. Continuing with fallback method.",
-        time: 4000 // Moderate duration for warnings
-      })
-    }
+    await activateEditModeImmediately()
+    // Edit mode failure is handled gracefully with fallback - no notification needed
 
     // Get Jira ticket
     let jiraTicketId = strategy.extractJiraTicketId()
@@ -157,12 +160,7 @@ export const AddDescription = () => {
         "Could not automatically detect a Jira ticket ID. Please enter one (e.g., PROJ-123):"
       )
       if (!jiraTicketId) {
-        addNotification({
-          type: "warning",
-          title: "Cancelled",
-          message: "Jira ticket ID is required for generation.",
-          time: 4000 // Moderate duration for warnings
-        })
+        // User cancelled - no notification needed, this is intentional
         return
       }
     }
@@ -173,13 +171,40 @@ export const AddDescription = () => {
     const commitMessages = await strategy.getCommitMessages()
     const descriptionTemplate = strategy.getDescriptionTemplate()
 
-    if (!codeChanges) {
-      addNotification({
-        type: "warning",
-        title: "No Changes Found",
-        message: "Could not detect any code changes on the page.",
-        time: 4000 // Moderate duration for warnings
-      })
+    // Remove warning for no changes - this is optional data and generation can proceed
+
+    // Fetch enhanced data structures silently
+    console.log("🔍 Fetching enhanced PR data...")
+    let filesChanged = null
+    let commits = null
+
+    // Fetch file changes silently - no notifications for optional data
+    try {
+      console.log("📁 Fetching detailed file changes...")
+      filesChanged = await fetchPRFileChanges()
+      console.log(`✅ Fetched ${filesChanged.length} file changes`)
+    } catch (error) {
+      console.warn("⚠️ Failed to fetch file changes:", error)
+      // Continue without file changes - this is optional data, no notification needed
+    }
+
+    // Fetch commit information silently - no notifications for optional data
+    try {
+      console.log("📝 Fetching detailed commit information...")
+      commits = await fetchPRCommitMessages()
+      console.log(`✅ Fetched ${commits.length} commits`)
+    } catch (error) {
+      console.warn("⚠️ Failed to fetch commits:", error)
+      // Continue without commits - this is optional data, no notification needed
+    }
+
+    // Log enhanced features to console only
+    const enhancedFeatures = []
+    if (filesChanged && filesChanged.length > 0) enhancedFeatures.push(`${filesChanged.length} files`)
+    if (commits && commits.length > 0) enhancedFeatures.push(`${commits.length} commits`)
+
+    if (enhancedFeatures.length > 0) {
+      console.log(`✅ Enhanced analysis ready: ${enhancedFeatures.join(", ")}`)
     }
 
     await handleGenerate({
@@ -189,6 +214,8 @@ export const AddDescription = () => {
       branch_name: branchName,
       commit_messages: commitMessages,
       description_template: descriptionTemplate,
+      files_changed: filesChanged,
+      commits: commits,
     })
   }
 
@@ -199,6 +226,8 @@ export const AddDescription = () => {
     branch_name: string
     commit_messages: string[]
     description_template: string
+    files_changed?: ParsedFile[] | null
+    commits?: ParsedCommit[] | null
   }) => {
     if (loading) return
 
@@ -232,23 +261,19 @@ export const AddDescription = () => {
         })
       }
 
-      // Extract description and title from result
+      // Extract description from result
       let description = streamingContent || null
-      let suggestedTitle = null
 
       if (result) {
         // Try different response formats
         if (result.generated_description) {
           description = result.generated_description
-          suggestedTitle = result.suggested_title
         } else if (result.generated_content) {
           description = result.generated_content
-          suggestedTitle = result.suggested_title
         } else if (typeof result === 'string') {
           description = result
         } else if (result.text) {
           description = result.text
-          suggestedTitle = result.suggested_title
         } else {
           // Check for alternative text properties
           const textProperties = ['content', 'message', 'response', 'data']
@@ -274,24 +299,13 @@ export const AddDescription = () => {
           }
         }
 
-        if (suggestedTitle) {
-          addNotification({
-            type: "info",
-            title: "Suggested Title",
-            message: `AI suggests a better title: "${suggestedTitle}"`,
-            time: 4000 // Moderate duration for info
-          })
-        }
+        // Suggested title is handled by the UI directly - no notification needed
+        // User can see the suggested title in the interface
 
         // No success notification needed - user can see the generated content directly
       } else {
         console.error("Generation failed, no valid description found")
-        addNotification({
-          type: "error",
-          title: "Generation Failed",
-          message: "Failed to generate description content. Please try again.",
-          time: 5000
-        })
+        showError("Generation Failed", "Failed to generate description content. Please try again.")
       }
     } catch (error) {
       console.error("Generation error:", error)
@@ -309,18 +323,28 @@ export const AddDescription = () => {
         console.warn(
           "⚠️ No file changes found. The page structure might have changed, or there are no file changes in this PR."
         )
-        alert("Could not find any file changes. See console for details.")
+        showModal(
+          "No File Changes Found",
+          "Could not find any file changes. The page structure might have changed, or there are no file changes in this PR. Check the console for more details.",
+          'info'
+        )
         return
       }
 
       console.log(`✅ Success! Found ${fileChanges.length} file(s):`)
       console.table(fileChanges)
-      alert(
-        `Success! Found ${fileChanges.length} file(s). Check the console for the full list.`
+      showModal(
+        "File Fetching Test Successful",
+        `Success! Found ${fileChanges.length} file(s). Check the console for the full list of files and their details.`,
+        'success'
       )
     } catch (error) {
       console.error("❌ An error occurred during the file fetching test:", error)
-      alert("An unexpected error occurred. Check the console for details.")
+      showModal(
+        "File Fetching Test Failed",
+        "An unexpected error occurred during the file fetching test. Check the console for detailed error information.",
+        'error'
+      )
     }
   }
 
@@ -333,18 +357,28 @@ export const AddDescription = () => {
         console.warn(
           "⚠️ No commits found. The page structure might have changed, or there are no commits in this PR."
         )
-        alert("Could not find any commits. See console for details.")
+        showModal(
+          "No Commits Found",
+          "Could not find any commits. The page structure might have changed, or there are no commits in this PR. Check the console for more details.",
+          'info'
+        )
         return
       }
 
       console.log(`✅ Success! Found ${commits.length} commit(s):`)
       console.table(commits)
-      alert(
-        `Success! Found ${commits.length} commit(s). Check the console for the full list.`
+      showModal(
+        "Commit Fetching Test Successful",
+        `Success! Found ${commits.length} commit(s). Check the console for the full list of commits and their details.`,
+        'success'
       )
     } catch (error) {
       console.error("❌ An error occurred during the commit fetching test:", error)
-      alert("An unexpected error occurred. Check the console for details.")
+      showModal(
+        "Commit Fetching Test Failed",
+        "An unexpected error occurred during the commit fetching test. Check the console for detailed error information.",
+        'error'
+      )
     }
   }
 
@@ -395,6 +429,26 @@ export const AddDescription = () => {
         <span style={{ width: "1.25rem", textAlign: "center" }}>📝</span>
         <span>Test Fetch Commits</span>
       </div>
+
+      {/* Modal for replacing alert() calls */}
+      <Modal
+        opened={modalState.opened}
+        onClose={closeModal}
+        title={modalState.title}
+        centered
+        size="md"
+      >
+        <Text size="sm" style={{ marginBottom: '1rem' }}>
+          {modalState.content}
+        </Text>
+        <Button
+          onClick={closeModal}
+          color={modalState.type === 'error' ? 'red' : modalState.type === 'success' ? 'green' : 'blue'}
+          fullWidth
+        >
+          OK
+        </Button>
+      </Modal>
     </>
   )
 }

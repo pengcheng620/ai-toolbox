@@ -18,7 +18,7 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
   const [streamingText, setStreamingText] = useState<string>("")
 
   // Use custom hooks
-  const { addNotification } = useNotification()
+  const { showError, showWarning, showInfo } = useNotification()
   const boardDetection = useBoardDetection()
   const sprintPlanning = useSprintPlanning({
     enableStreaming: true,
@@ -27,44 +27,26 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
     },
     onStreamComplete: (response) => {
       console.log("✅ Streaming completed:", response)
-      addNotification({
-        type: "info",
-        title: "分析完成",
-        message: "Sprint 规划分析已完成，可以查看详细建议和工作负载分布"
-      })
+      // Success notification minimized - users can see results directly
     },
     onStreamError: (error) => {
       console.error("❌ Sprint Planning streaming error:", error)
-      addNotification({
-        type: "error", 
-        title: "分析失败",
-        message: error
-      })
+      showError("分析失败", error)
     }
   })
 
   // Monitor error changes and display notifications
   useEffect(() => {
     if (sprintPlanning.error) {
-      console.error("Sprint Planning API Error:", sprintPlanning.error)
-      addNotification({
-        type: "error",
-        title: "Sprint Planning 失败",
-        message: sprintPlanning.error
-      })
+      showError("Sprint Planning 失败", sprintPlanning.error)
     }
-  }, [sprintPlanning.error, addNotification])
+  }, [sprintPlanning.error, showError])
 
   useEffect(() => {
     if (boardDetection.error) {
-      console.error("Board Detection Error:", boardDetection.error)
-      addNotification({
-        type: "error",
-        title: "Board 检测失败",
-        message: boardDetection.error
-      })
+      showError("Board 检测失败", boardDetection.error)
     }
-  }, [boardDetection.error, addNotification])
+  }, [boardDetection.error, showError])
 
   useEffect(() => {
     initializeWidget()
@@ -80,19 +62,11 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
         console.log("🔍 Backend API health check:", healthCheck.status)
       } catch (error) {
         console.error("🔍 Backend API connection failed:", error)
-        addNotification({
-          type: "error",
-          title: "连接失败",
-          message: "无法连接到后端 API 服务器，请确保服务器正在运行"
-        })
+        showError("连接失败", "无法连接到后端 API 服务器，请确保服务器正在运行")
         return
       }
 
-      addNotification({
-        type: "info",
-        title: "开始分析",
-        message: "正在检测 Board ID 和解析 Sprint 数据..."
-      })
+      showInfo("开始分析", "正在检测 Board ID 和解析 Sprint 数据...")
 
       // Step 1: Detect board ID
       console.log("🔍 Detecting board ID...")
@@ -110,11 +84,7 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
 
       if (domData.error) {
         console.warn("⚠️ DOM parsing warning:", domData.error)
-        addNotification({
-          type: "warning",
-          title: "解析警告",
-          message: domData.error
-        })
+        showWarning("解析警告", domData.error)
       }
 
       setSprintData(domData.sprintData)
@@ -124,11 +94,7 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
       // Step 3: Analyze with backend (if we have data)
       if (domData.sprintData && domData.teamMembers) {
         console.log("🤖 Analyzing sprint planning...")
-        addNotification({
-          type: "info",
-          title: "AI 分析中",
-          message: "正在使用 AI 分析 Sprint 数据并生成建议..."
-        })
+        showInfo("AI 分析中", "正在使用 AI 分析 Sprint 数据并生成建议...")
 
         await sprintPlanning.analyze({
           boardId: boardDetection.boardId,
@@ -137,21 +103,13 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
           includeAIRecommendations: true
         })
       } else {
-        addNotification({
-          type: "warning",
-          title: "数据不完整",
-          message: "Sprint 数据或团队成员信息不完整，部分功能可能不可用"
-        })
+        showWarning("数据不完整", "Sprint 数据或团队成员信息不完整，部分功能可能不可用")
       }
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "初始化失败"
       console.error("❌ Widget initialization failed:", err)
-      addNotification({
-        type: "error",
-        title: "初始化失败",
-        message: errorMessage
-      })
+      showError("初始化失败", errorMessage)
     }
   }
 
@@ -159,12 +117,8 @@ export const SprintPlanningWidget: React.FC<SprintPlanningWidgetProps> = ({
     if (onRefresh) {
       onRefresh()
     }
-    
-    addNotification({
-      type: "info",
-      title: "刷新中",
-      message: "重新加载 Sprint 数据..."
-    })
+
+    showInfo("刷新中", "重新加载 Sprint 数据...")
 
     sprintPlanning.reset()
     boardDetection.reset()

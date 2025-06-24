@@ -8,21 +8,16 @@ import { SparklesIcon } from "../../../lib/icons/heroicon"
 import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const GenerateDoDefinitionButton = () => {
-  const { addNotification } = useNotification()
+  const { showError, showWarning, showInfo } = useNotification()
   const { execute, loading, error } = useJiraDoDefinitionMessaging()
   const [streamingContent, setStreamingContent] = useState("")
 
   // Monitor error changes and display notifications
   useEffect(() => {
     if (error) {
-      console.error("Jira API Error:", error)
-      addNotification({
-        type: "error",
-        title: "Generation Failed",
-        message: error
-      })
+      showError("Generation Failed", error)
     }
-  }, [error, addNotification])
+  }, [error, showError])
 
   const handleClick = async () => {
     const $commentIframe = document.querySelector("#mce_0_ifr")
@@ -42,11 +37,7 @@ export const GenerateDoDefinitionButton = () => {
     const description = document.querySelector("#description-val")?.textContent
 
     if (!description?.trim()) {
-      addNotification({
-        type: "warning",
-        title: "Warning",
-        message: "Task description not found. Please ensure the page is fully loaded."
-      })
+      showWarning("Warning", "Task description not found. Please ensure the page is fully loaded.")
       return
     }
 
@@ -67,22 +58,14 @@ export const GenerateDoDefinitionButton = () => {
       console.log("🔍 Backend API health check:", healthCheck.status)
     } catch (error) {
       console.error("🔍 Backend API connection failed:", error)
-      addNotification({
-        type: "error",
-        title: "Connection Failed",
-        message: "Unable to connect to backend API server. Please ensure the server is running."
-      })
+      showError("Connection Failed", "Unable to connect to backend API server. Please ensure the server is running.")
       return
     }
 
     // Clear previous streaming content
     setStreamingContent("")
 
-    addNotification({
-      type: "info",
-      title: "Generating",
-      message: "Generating Definition of Done summary in real-time..."
-    })
+    showInfo("Generating", "Generating Definition of Done summary in real-time...")
 
     // Use API to call backend service with streaming response by default
     const result = await execute({
@@ -102,11 +85,7 @@ export const GenerateDoDefinitionButton = () => {
       const finalContent = result.generated_content || streamingContent
       // Ensure final content is properly set
       await setCommentArea(finalContent)
-      addNotification({
-        type: "info",
-        title: "Generation Successful",
-        message: "Definition of Done summary has been generated and filled into the form"
-      })
+      // Success notification is minimized by default - users can see the result directly
       setStreamingContent("")
     } else {
       console.error("❌ Generation failed, result is empty")

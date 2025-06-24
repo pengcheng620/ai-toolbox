@@ -1,4 +1,5 @@
 import { apiBaseUrl } from "../config/environment"
+import type { ParsedFile, ParsedCommit } from "../../src/services/github-pr-page-service"
 
 // API 配置文件
 export interface ApiConfig {
@@ -7,6 +8,8 @@ export interface ApiConfig {
   endpoints: {
     github: {
       pr: string
+      prFromJira: string
+      prData: string
       commit: string
       review: string
       releaseNotes: string
@@ -37,7 +40,9 @@ export const defaultApiConfig: ApiConfig = {
   endpoints: {
     github: {
       pr: "/ai/github/pr",
-      commit: "/ai/github/commit", 
+      prFromJira: "/ai/github/pr-from-jira",
+      prData: "/ai/github/pr-data",
+      commit: "/ai/github/commit",
       review: "/ai/github/review",
       releaseNotes: "/ai/github/release-notes"
     },
@@ -66,6 +71,44 @@ export interface GitHubPRResponse {
   suggested_title: string
   model: string
   tokens_used: number
+  error?: string
+}
+
+// Enhanced GitHub PR from Jira request interface
+export interface GitHubPRFromJiraRequest {
+  jira_ticket_id: string
+  pr_title: string
+  code_changes: string
+  branch_name?: string
+  commit_messages?: string[]
+  description_template?: string
+  stream?: boolean
+  files_changed?: ParsedFile[] | null
+  commits?: ParsedCommit[] | null
+}
+
+// GitHub PR data request interface
+export interface GitHubPRDataRequest {
+  pr_url: string
+  include_files?: boolean
+  include_commits?: boolean
+}
+
+// GitHub PR data response interface
+export interface GitHubPRDataResponse {
+  pr_info: {
+    title: string
+    description: string
+    branch_name: string
+    base_branch: string
+    author: string
+    created_at: string
+    updated_at: string
+  }
+  files_changed?: ParsedFile[]
+  commits?: ParsedCommit[]
+  formatted_commits?: string[]
+  success: boolean
   error?: string
 }
 
@@ -165,7 +208,7 @@ export class ApiClient {
     commit_messages?: string[]
   }): Promise<GitHubPRResponse> {
     console.log("🚀 发送GitHub PR请求:", data)
-    
+
     const response = await fetch(this.getFullUrl(this.config.endpoints.github.pr), {
       method: 'POST',
       headers: {
@@ -175,6 +218,40 @@ export class ApiClient {
     })
 
     return this.handleResponse<GitHubPRResponse>(response, data)
+  }
+
+  // Enhanced GitHub PR from Jira method
+  async generateGitHubPRFromJira(data: GitHubPRFromJiraRequest): Promise<GitHubPRResponse> {
+    console.log("🚀 发送增强的GitHub PR from Jira请求:", {
+      ...data,
+      files_changed: data.files_changed ? `${data.files_changed.length} files` : 'none',
+      commits: data.commits ? `${data.commits.length} commits` : 'none'
+    })
+
+    const response = await fetch(this.getFullUrl(this.config.endpoints.github.prFromJira), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+
+    return this.handleResponse<GitHubPRResponse>(response, data)
+  }
+
+  // GitHub PR data method
+  async getGitHubPRData(data: GitHubPRDataRequest): Promise<GitHubPRDataResponse> {
+    console.log("🚀 发送GitHub PR数据请求:", data)
+
+    const response = await fetch(this.getFullUrl(this.config.endpoints.github.prData), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+
+    return this.handleResponse<GitHubPRDataResponse>(response, data)
   }
 
   async generateCommitMessage(data: {

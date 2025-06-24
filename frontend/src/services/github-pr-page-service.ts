@@ -178,23 +178,73 @@ export const fetchPRFileChanges = async (): Promise<ParsedFile[]> => {
 };
 
 /**
- * Fetches and parses the 'Commits' tab of a GitHub PR to extract structured
- * information about each commit.
- * @returns A promise that resolves to an array of parsed commit objects.
+ * Detects which GitHub platform the current page is on.
+ * @returns The platform type: 'github.com', 'git.autodesk.com', or 'unknown'
  */
-export const fetchPRCommitMessages = async (): Promise<ParsedCommit[]> => {
-  const commitsUrl = constructCommitsTabUrl(window.location.href);
+const detectPlatform = (): 'github.com' | 'git.autodesk.com' | 'unknown' => {
+  const hostname = window.location.hostname.toLowerCase();
 
-  const response = await fetch(commitsUrl);
-  if (!response.ok) {
-    console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
-    throw new Error(`Failed to fetch commit messages. Status: ${response.status}`);
+  if (hostname.includes('github.com')) {
+    return 'github.com';
+  } else if (hostname.includes('git.autodesk.com')) {
+    return 'git.autodesk.com';
   }
-  const htmlText = await response.text();
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlText, "text/html");
+  return 'unknown';
+};
 
+/**
+ * Parses commits from github.com DOM structure.
+ * @param doc The parsed HTML document
+ * @returns Array of parsed commit objects
+ */
+const parseCommitsGitHubCom = (doc: Document): ParsedCommit[] => {
+  const parsedCommits: ParsedCommit[] = [];
+  const commitContainers = doc.querySelectorAll('[data-testid="commit-row-item"]');
+
+  commitContainers.forEach(container => {
+    // Extract commit message and URL
+    const messageLink = container.querySelector<HTMLAnchorElement>('h4 > a');
+    const message = messageLink?.textContent?.trim() ?? "";
+    const commitUrl = messageLink?.href;
+
+    // Extract commit SHA (short format from github.com)
+    const shaElement = container.querySelector<HTMLElement>('.Button-label.color-fg-muted');
+    const sha = shaElement?.textContent?.trim() ?? null;
+
+    // Extract author
+    const authorLink = container.querySelector<HTMLAnchorElement>('[data-testid="author-avatar"] a:last-child');
+    const author = authorLink?.textContent?.trim() ?? null;
+
+    // Extract date
+    const dateElement = container.querySelector<HTMLElement>('relative-time');
+    const date = dateElement?.getAttribute('datetime') ?? null;
+
+    // JIRA ticket extraction (less common on github.com, but try anyway)
+    const jiraMatch = message.match(/([A-Z]+-\d+)/);
+    const jiraTicket = jiraMatch ? jiraMatch[1] : null;
+
+    if (message) {
+      parsedCommits.push({
+        sha,
+        message,
+        author,
+        date,
+        jiraTicket,
+        commitUrl
+      });
+    }
+  });
+
+  return parsedCommits;
+};
+
+/**
+ * Parses commits from git.autodesk.com DOM structure.
+ * @param doc The parsed HTML document
+ * @returns Array of parsed commit objects
+ */
+const parseCommitsAutodesk = (doc: Document): ParsedCommit[] => {
   const parsedCommits: ParsedCommit[] = [];
   const commitContainers = doc.querySelectorAll(".js-commits-list-item");
 
@@ -204,7 +254,7 @@ export const fetchPRCommitMessages = async (): Promise<ParsedCommit[]> => {
       console.warn("Skipping commit container, no details found.", container);
       return;
     }
-    
+
     const messageLink = details.querySelector<HTMLAnchorElement>("a.Link--primary.text-bold.js-navigation-open");
     const message = messageLink?.textContent?.trim() ?? "";
     const commitUrl = messageLink?.href;
@@ -233,4 +283,40 @@ export const fetchPRCommitMessages = async (): Promise<ParsedCommit[]> => {
   });
 
   return parsedCommits;
-}; 
+};
+
+/**
+ * Fetches and parses the 'Commits' tab of a GitHub PR to extract structured
+ * information about each commit. Works with both github.com and git.autodesk.com.
+ * @returns A promise that resolves to an array of parsed commit objects.
+ */
+export const fetchPRCommitMessages = async (): Promise<ParsedCommit[]> => {
+  const commitsUrl = constructCommitsTabUrl(window.location.href);
+
+  const response = await fetch(commitsUrl);
+  if (!response.ok) {
+    console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch commit messages. Status: ${response.status}`);
+  }
+  const htmlText = await response.text();
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlText, "text/html");
+
+  // Detect platform and use appropriate parsing logic
+  const platform = detectPlatform();
+
+  switch (platform) {
+    case 'github.com':
+      console.log('Parsing commits for github.com');
+      return parseCommitsGitHubCom(doc);
+
+    case 'git.autodesk.com':
+      console.log('Parsing commits for git.autodesk.com');
+      return parseCommitsAutodesk(doc);
+
+    default:
+      console.warn(`Unknown platform: ${window.location.hostname}. Attempting git.autodesk.com parsing as fallback.`);
+      return parseCommitsAutodesk(doc);
+  }
+};

@@ -566,7 +566,7 @@ GET /api/jira/issue/UC-70875/basic
 
 #### POST /ai/github/pr-from-jira
 
-Generates a GitHub Pull Request description by combining details from a Jira ticket and the code changes in the PR.
+Generates a GitHub Pull Request description by combining details from a Jira ticket and the code changes in the PR. Enhanced with detailed file changes and commit information for more comprehensive PR descriptions.
 
 **请求体**:
 ```json
@@ -578,9 +578,61 @@ Generates a GitHub Pull Request description by combining details from a Jira tic
   "commit_messages": [
     "feat: add initial login structure",
     "fix: correct typo in login view"
+  ],
+  "description_template": "## Overview\n[Brief description]",
+  "stream": false,
+  "files_changed": [
+    {
+      "filePath": "src/auth/login.py",
+      "status": "modified",
+      "additions": 25,
+      "deletions": 5,
+      "fileUrl": "https://github.com/org/repo/blob/main/src/auth/login.py",
+      "lines": [
+        {
+          "type": "add",
+          "oldLineNumber": null,
+          "newLineNumber": 15,
+          "content": "def authenticate_user(username, password):"
+        },
+        {
+          "type": "delete",
+          "oldLineNumber": 20,
+          "newLineNumber": null,
+          "content": "# Old authentication method"
+        }
+      ]
+    }
+  ],
+  "commits": [
+    {
+      "sha": "abc123def456",
+      "message": "feat: add initial login structure",
+      "author": "Developer Name",
+      "date": "2024-01-15T10:30:00Z",
+      "jiraTicket": "PROJ-123",
+      "commitUrl": "https://github.com/org/repo/commit/abc123def456"
+    }
   ]
 }
 ```
+
+**字段说明**:
+- `jira_ticket_id`: Jira票据ID (必需)
+- `pr_title`: Pull Request标题 (必需)
+- `code_changes`: 代码变更摘要 (必需)
+- `branch_name`: 分支名称 (可选)
+- `commit_messages`: 提交消息列表 (可选)
+- `description_template`: 现有PR描述模板 (可选)
+- `stream`: 启用流式响应 (可选，默认false)
+- `files_changed`: 详细文件变更信息 (可选，增强功能)
+- `commits`: 详细提交信息 (可选，增强功能)
+
+**增强功能**:
+- **智能上下文管理**: 自动管理token长度，优先包含重要信息
+- **详细文件分析**: 包含文件路径、状态、行级差异
+- **丰富提交信息**: 包含SHA、作者、日期、关联Jira票据
+- **向后兼容**: 支持旧版本前端请求格式
 
 **响应体 (Success 200 OK)**:
 ```json

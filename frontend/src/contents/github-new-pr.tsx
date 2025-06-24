@@ -1,3 +1,5 @@
+import mantineCssText from "data-text:@mantine/core/styles.css"
+import cssText from "data-text:~style.css"
 import type {
   PlasmoCSConfig,
   PlasmoCSUIJSXContainer,
@@ -7,7 +9,10 @@ import React from "react"
 import { createRoot } from "react-dom/client"
 
 import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
-import {AddDescription} from "~components/github/add-description";
+import {AddDescription} from "~components/github/add-description"
+import { ThemeProvider } from "~theme"
+
+import "@mantine/core/styles.css"
 
 
 
@@ -17,6 +22,12 @@ export const config: PlasmoCSConfig = {
   matches: [
     "https://github.com/*/compare/feature/*?expand=1"
   ]
+}
+
+export const getStyle = () => {
+  const style = document.createElement("style")
+  style.textContent = mantineCssText + cssText
+  return style
 }
 
 export const getRootContainer = () =>
@@ -47,7 +58,11 @@ export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({
 }
 
 const PlasmoOverlay = () => {
-  return <AddDescription />
+  return (
+    <ThemeProvider>
+      <AddDescription />
+    </ThemeProvider>
+  )
 }
 
 export default PlasmoOverlay
