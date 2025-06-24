@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react"
 import { useNotification } from "~components/common/notification"
 import { useGitHubPRFromJiraMessaging } from "~hook/use-api-messaging"
 
+import {
+  fetchPRCommitMessages,
+  fetchPRFileChanges
+} from "../../services/github-pr-page-service"
 import { SparklesIcon } from "../../../lib/icons/heroicon"
 import { getGitHubPageStrategy } from "../../../lib/utils/github"
 import { useGitHubDOM } from "../../hooks/useGitHubDOM"
@@ -294,7 +298,53 @@ export const AddDescription = () => {
     }
   }
 
+  const handleTestFetchFiles = async () => {
+    console.log("🚀 Starting file fetching test...")
+    try {
+      const fileChanges = await fetchPRFileChanges()
 
+      if (fileChanges.length === 0) {
+        console.warn(
+          "⚠️ No file changes found. The page structure might have changed, or there are no file changes in this PR."
+        )
+        alert("Could not find any file changes. See console for details.")
+        return
+      }
+
+      console.log(`✅ Success! Found ${fileChanges.length} file(s):`)
+      console.table(fileChanges)
+      alert(
+        `Success! Found ${fileChanges.length} file(s). Check the console for the full list.`
+      )
+    } catch (error) {
+      console.error("❌ An error occurred during the file fetching test:", error)
+      alert("An unexpected error occurred. Check the console for details.")
+    }
+  }
+
+  const handleTestFetchCommits = async () => {
+    console.log("🚀 Starting commit fetching test...")
+    try {
+      const commits = await fetchPRCommitMessages()
+
+      if (commits.length === 0) {
+        console.warn(
+          "⚠️ No commits found. The page structure might have changed, or there are no commits in this PR."
+        )
+        alert("Could not find any commits. See console for details.")
+        return
+      }
+
+      console.log(`✅ Success! Found ${commits.length} commit(s):`)
+      console.table(commits)
+      alert(
+        `Success! Found ${commits.length} commit(s). Check the console for the full list.`
+      )
+    } catch (error) {
+      console.error("❌ An error occurred during the commit fetching test:", error)
+      alert("An unexpected error occurred. Check the console for details.")
+    }
+  }
 
   const LoadingSpinner = () => (
     <svg className={styles.spinner} viewBox="0 0 16 16" fill="currentColor">
@@ -306,25 +356,43 @@ export const AddDescription = () => {
   )
 
   return (
-    <div
-      className="dropdown-item"
-      onClick={handleClick}
-      style={{
-        cursor: loading ? "not-allowed" : "pointer",
-        opacity: loading ? 0.6 : 1
-      }}
-      title="Generate PR description from a Jira ticket and code changes">
-      {loading ? (
-        <>
-          <LoadingSpinner />
-          <span>Generating...</span>
-        </>
-      ) : (
-        <>
-          <SparklesIcon className={styles.icon} />
-          <span>Generate</span>
-        </>
-      )}
-    </div>
+    <>
+      <div
+        className="dropdown-item"
+        onClick={handleClick}
+        style={{
+          cursor: loading ? "not-allowed" : "pointer",
+          opacity: loading ? 0.6 : 1
+        }}
+        title="Generate PR description from a Jira ticket and code changes">
+        {loading ? (
+          <>
+            <LoadingSpinner />
+            <span>Generating...</span>
+          </>
+        ) : (
+          <>
+            <SparklesIcon className={styles.icon} />
+            <span>Generate</span>
+          </>
+        )}
+      </div>
+      <div
+        className="dropdown-item"
+        onClick={handleTestFetchFiles}
+        style={{ cursor: "pointer" }}
+        title="Test fetching the list of changed files from the 'Files changed' tab.">
+        <span style={{ width: "1.25rem", textAlign: "center" }}>🧪</span>
+        <span>Test Fetch Files</span>
+      </div>
+      <div
+        className="dropdown-item"
+        onClick={handleTestFetchCommits}
+        style={{ cursor: "pointer" }}
+        title="Test fetching the list of commits from the 'Commits' tab.">
+        <span style={{ width: "1.25rem", textAlign: "center" }}>📝</span>
+        <span>Test Fetch Commits</span>
+      </div>
+    </>
   )
 }

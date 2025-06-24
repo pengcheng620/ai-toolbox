@@ -1,0 +1,2676 @@
+<diff-layout sidebar-hidden="" data-catalyst="">
+  <button data-hotkey="t" data-action="click:diff-layout#handleOpenFilesListHotkeyEvent" hidden="hidden" type="button"
+    data-view-component="true" class="btn">
+  </button>
+  <div class="pr-toolbar js-sticky js-position-sticky d-flex" data-target="diff-layout.diffToolbar"
+    data-original-top="0px" style="top: 0px !important; position: sticky;">
+    <div class="diffbar details-collapse js-details-container Details flex-1 d-flex flex-items-center width-full">
+      <div class="show-if-stuck mr-2 hide-md hide-sm">
+        <div id="pull-state" class="js-socket-channel js-updatable-content"
+          data-channel="eyJjIjoiaXNzdWU6MzM3NjA2OTpzdGF0ZSIsInQiOjE3NTA2NjYwNzd9--225cd930ebaa8b970bd7c0becd2f8fc5e5bac2970c176420019856996248201a"
+          data-url="/vault/vault/pull/12700/partials/state" data-gid="MDExOlB1bGxSZXF1ZXN0MzMwMjA2OA==">
+          <span reviewable_state="ready" title="Status: Merged" data-view-component="true" class="State State--merged">
+            <svg height="16" class="octicon octicon-git-merge" viewBox="0 0 16 16" version="1.1" width="16"
+              aria-hidden="true">
+              <path
+                d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z">
+              </path>
+            </svg> Merged
+          </span>
+        </div>
+
+      </div>
+
+      <div class="flex-auto min-width-0">
+        <div class="show-if-stuck hide-md hide-sm">
+          <h1 class="d-flex text-bold f5">
+            <a class="js-issue-title css-truncate css-truncate-target Link--primary width-fit markdown-title js-smoothscroll-anchor"
+              href="#top">
+              PDM-46691: If the same item iteration is synced for the second, check…
+            </a>
+            <span class="gh-header-number color-fg-muted pl-1">#12700</span>
+          </h1>
+
+        </div>
+        <div class="d-flex flex-items-center flex-wrap" style="gap: 4px 16px;" data-pjax="#repo-content-pjax-container"
+          data-turbo-frame="repo-content-turbo-frame">
+          <instrument-files data-hydro-click-payload="" data-hydro-click-hmac="" data-catalyst=""></instrument-files>
+
+
+
+
+          <details class="details-reset details-overlay diffbar-item diffbar-range-menu select-menu   ml-0">
+            <summary data-hotkey="c" data-view-component="true" class="Link--muted select-menu-button btn-link"
+              aria-haspopup="menu" role="button"> Changes from <strong>all commits</strong>
+            </summary>
+            <details-menu class="select-menu-modal position-absolute" style="z-index: 99;" role="menu">
+              <div class="select-menu-header">
+                <span class="select-menu-title">Commits</span>
+              </div>
+              <div class="select-menu-list">
+                <a href="/vault/vault/pull/12700/files" class="select-menu-item" role="menuitem"
+                  data-turbo-frame="repo-content-turbo-frame">
+                  <div class="select-menu-item-text">
+                    <div class="text-emphasized css-truncate css-truncate-target">
+                      Show all changes
+                    </div>
+                    <span class="description">
+                      1 commit
+                    </span>
+                  </div>
+                </a>
+
+                <div class="select-menu-item disabled" style="pointer-events: none;">
+                  <div class="select-menu-item-text">
+                    <div class="text-bold">
+                      Show changes since your last review
+                    </div>
+                    <span class="description">
+                      You haven’t reviewed this pull request yet
+                    </span>
+                  </div>
+                </div>
+
+                <div class="select-menu-divider">
+                  Select commit
+                </div>
+
+                <div data-range-url="/vault/vault/pull/12700/files/$range">
+                  <a href="/vault/vault/pull/12700/commits/29f539c93c664393697f14b3a644beca01a380cd"
+                    class="select-menu-item " role="menuitem" data-commit="29f539c93c664393697f14b3a644beca01a380cd"
+                    data-turbo-frame="repo-content-turbo-frame">
+
+                    <div class="select-menu-item-text">
+                      <code class="float-right">29f539c</code>
+                      <div class="text-emphasized css-truncate css-truncate-target">
+                        PDM-46691: If the same item iteration is synced for the second, check…
+                      </div>
+                      <span class="description">
+                        jingd <relative-time datetime="2025-06-18T08:27:04Z" class="no-wrap"
+                          title="Jun 18, 2025, 4:27 PM GMT+8">Jun 18, 2025</relative-time>
+                      </span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </details-menu>
+          </details>
+
+
+          <file-filter data-target="diff-file-filter.fileFilter"
+            data-action="file-filter-change:diff-file-filter#applyFilter" data-catalyst="">
+            <details class="diffbar-item details-reset details-overlay">
+              <summary class="Link--muted select-menu-button" aria-haspopup="menu" data-target="file-filter.summary"
+                role="button">
+                <strong class="js-file-filter-text css-truncate css-truncate-target"
+                  data-target="file-filter.fileFilterActiveText">
+                  File filter
+                </strong>
+              </summary>
+              <details-menu class="SelectMenu js-file-filter" role="menu">
+                <div class="SelectMenu-modal">
+                  <header class="SelectMenu-header">
+                    <h3 class="SelectMenu-title">Filter by extension</h3>
+                  </header>
+                  <div class="SelectMenu-list SelectMenu-list--borderless">
+                    <!-- '"` --><!-- </textarea></xmp> -->
+                    <form class="js-file-filter-form" data-turbo="false" action="/" accept-charset="UTF-8"
+                      method="post"><input type="hidden" name="authenticity_token"
+                        value="GafKs_0OBDa1UlFFKy346ujGQdCkFO3ONPQlr6okuj9LlgZVvJFFCsRX3nJ9809M7fHHe-Tfs3974lBsYuGf-A"
+                        autocomplete="off">
+                      <fieldset>
+                        <legend class="sr-only">Filter by extension</legend>
+                        <label class="SelectMenu-item" role="menuitem">
+                          <input class="js-diff-file-type-option mr-2" type="checkbox" value=".cs" name="file-filters[]"
+                            checked="" data-hydro-click-payload="" data-hydro-click-hmac=""
+                            data-non-deleted-files-count="1" data-targets="file-filter.fileExtensions"
+                            data-action="change:file-filter#updateFileInputs">
+                          .cs&nbsp;
+                          <span class="text-normal js-file-type-count" data-non-deleted-file-count-markup="(1)"
+                            data-all-file-count-markup="(1)" data-targets="file-filter.fileTypeCount">(1)</span>
+                        </label>
+                        <label class="SelectMenu-item" role="menuitem">
+                          <input type="checkbox" class="sr-only hx_focus-input" data-target="file-filter.selectAllInput"
+                            data-action="change:file-filter#enableAllFileInputs">
+                          <span
+                            class="color-fg-muted no-underline text-normal js-file-filter-select-all-container hx_focus-target"
+                            data-select-all-markup="Select all 1 file type"
+                            data-all-selected-markup="All 1 file type selected"
+                            data-target="file-filter.selectAllContainer">All 1 file type selected</span>
+                        </label>
+                      </fieldset>
+                      <hr class="SelectMenu-divider">
+
+                      <label class="SelectMenu-item" role="menuitem">
+                        <input type="checkbox" class="js-viewed-files-toggle mr-2" name="show-viewed-files" value="true"
+                          checked="" data-hydro-click-payload="" data-hydro-click-hmac=""
+                          data-target="file-filter.viewedFilesInput" data-action="change:file-filter#updateFileInputs">
+                        Viewed files
+                      </label>
+                    </form>
+                  </div>
+                </div>
+              </details-menu>
+            </details>
+          </file-filter>
+
+          <div class="js-reset-filters diffbar-item hide-sm" data-target="diff-file-filter.resetFilters" hidden="">
+            <a class="text-bold color-fg-accent no-underline" href="/vault/vault/pull/12700/files"
+              data-action="click:diff-file-filter#clearFilters" data-hydro-click="" data-hydro-click-hmac=""
+              data-turbo-frame="repo-content-turbo-frame">
+              <svg style="height: 12px; width: 12px;" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1"
+                width="16" data-view-component="true" class="octicon octicon-x color-fg-muted">
+              </svg> <span>Clear filters</span>
+            </a>
+          </div>
+
+
+          <div class="position-relative diffbar-item ml-0">
+            <details class="details-reset details-overlay toc-select js-conversations-details select-menu ml-0">
+              <summary data-ga-click="Pull Requests, open view comments menu, type:semantic" data-view-component="true"
+                class="Link--muted select-menu-button btn-link" aria-haspopup="menu" role="button"> <strong
+                  class="js-conversation-menu-button">Conversations</strong>
+              </summary> <details-menu class="select-menu-modal position-absolute" style="z-index: 99;"
+                id="conversations-menu" src="/vault/vault/pull/12700/conversations_menu" preload="" role="menu">
+                <include-fragment>
+                  <div class="select-menu-blankslate select-menu-error">
+                    Failed to load comments. <button type="button" data-view-component="true"
+                      class="js-toc-retry btn-link"> Retry
+                    </button>
+                  </div>
+                  <div class="select-menu-loading-overlay d-flex flex-items-center">
+                    <svg style="box-sizing: content-box; color: var(--color-icon-primary);" width="32" height="32"
+                      viewBox="0 0 16 16" fill="none" data-view-component="true" class="flex-1 anim-rotate">
+                      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"
+                        vector-effect="non-scaling-stroke" fill="none"></circle>
+                      <path d="M15 8a7.002 7.002 0 00-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        vector-effect="non-scaling-stroke"></path>
+                    </svg>
+                  </div>
+                </include-fragment>
+              </details-menu>
+            </details>
+          </div>
+
+
+          <details class="details-reset details-overlay diffbar-item toc-select select-menu ml-0"
+            data-target="diff-layout.tocMenu">
+            <summary data-target="diff-layout.tocMenuButton"
+              data-ga-click="Pull Requests, open table of contents, type:semantic" data-view-component="true"
+              class="Link--muted select-menu-button btn-link" aria-haspopup="menu" role="button"> <strong>Jump
+                to</strong>
+            </summary> <details-menu class="select-menu-modal position-absolute" style="z-index: 99;"
+              src="/vault/vault/pull/12700/show_toc?base_sha=8c2152260eeccee3c55dc3b52d01d4da1a94cb6c&amp;sha1=8c2152260eeccee3c55dc3b52d01d4da1a94cb6c&amp;sha2=29f539c93c664393697f14b3a644beca01a380cd"
+              preload="" role="menu">
+              <div class="select-menu-header">
+                <span class="select-menu-title">
+                  Jump to file
+                </span>
+              </div>
+              <include-fragment>
+                <div class="select-menu-blankslate select-menu-error">
+                  Failed to load files. <button type="button" data-view-component="true" class="js-toc-retry btn-link">
+                    Retry
+                  </button>
+                </div>
+                <div class="select-menu-loading-overlay" aria-busy="true">
+                  <svg style="box-sizing: content-box; color: var(--color-icon-primary);" width="32" height="32"
+                    viewBox="0 0 16 16" fill="none" data-view-component="true" class="anim-rotate">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"
+                      vector-effect="non-scaling-stroke" fill="none"></circle>
+                    <path d="M15 8a7.002 7.002 0 00-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      vector-effect="non-scaling-stroke"></path>
+                  </svg>
+                </div>
+              </include-fragment>
+            </details-menu>
+          </details>
+
+          <div class="hide-sm hide-md">
+            <details data-view-component="true"
+              class="diffbar-item details-reset details-overlay position-relative text-center">
+              <summary role="button" data-view-component="true"> <svg aria-label="Diff settings" role="img" height="16"
+                  viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+                  class="octicon octicon-gear color-fg-muted">
+                  <path
+                    d="M8 0a8.2 8.2 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224.231.114.454.243.668.386.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63.27.385.506.792.704 1.218.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294.016.257.016.515 0 .772-.01.147.038.246.088.294l.814.806c.475.469.679 1.216.364 1.891a7.977 7.977 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a5.909 5.909 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8.006 8.006 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a5.738 5.738 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8.12 8.12 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.05-.048.098-.147.088-.294a6.214 6.214 0 0 1 0-.772c.01-.147-.038-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a7.92 7.92 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071.214-.143.437-.272.668-.386.133-.066.194-.158.211-.224l.29-1.106C6.009.645 6.556.095 7.299.03 7.53.01 7.764 0 8 0Zm-.571 1.525c-.036.003-.108.036-.137.146l-.289 1.105c-.147.561-.549.967-.998 1.189-.173.086-.34.183-.5.29-.417.278-.97.423-1.529.27l-1.103-.303c-.109-.03-.175.016-.195.045-.22.312-.412.644-.573.99-.014.031-.021.11.059.19l.815.806c.411.406.562.957.53 1.456a4.709 4.709 0 0 0 0 .582c.032.499-.119 1.05-.53 1.456l-.815.806c-.081.08-.073.159-.059.19.162.346.353.677.573.989.02.03.085.076.195.046l1.102-.303c.56-.153 1.113-.008 1.53.27.161.107.328.204.501.29.447.222.85.629.997 1.189l.289 1.105c.029.109.101.143.137.146a6.6 6.6 0 0 0 1.142 0c.036-.003.108-.036.137-.146l.289-1.105c.147-.561.549-.967.998-1.189.173-.086.34-.183.5-.29.417-.278.97-.423 1.529-.27l1.103.303c.109.029.175-.016.195-.045.22-.313.411-.644.573-.99.014-.031.021-.11-.059-.19l-.815-.806c-.411-.406-.562-.957-.53-1.456a4.709 4.709 0 0 0 0-.582c-.032-.499.119-1.05.53-1.456l.815-.806c.081-.08.073-.159.059-.19a6.464 6.464 0 0 0-.573-.989c-.02-.03-.085-.076-.195-.046l-1.102.303c-.56.153-1.113.008-1.53-.27a4.44 4.44 0 0 0-.501-.29c-.447-.222-.85-.629-.997-1.189l-.289-1.105c-.029-.11-.101-.143-.137-.146a6.6 6.6 0 0 0-1.142 0ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8Z">
+                  </path>
+                </svg>
+                <div class="dropdown-caret color-fg-muted"></div>
+              </summary>
+              <div data-view-component="true">
+                <div data-view-component="true" class="Popover position-absolute mt-2 pt-1 right-0 left-0">
+                  <div style="left: -107px; top: -7px" data-view-component="true"
+                    class="Popover-message Box position-relative mx-auto text-left color-shadow-large p-2 mt-2">
+                    <h5 data-view-component="true" class="mb-2"> Diff view
+                    </h5>
+                    <!-- '"` --><!-- </textarea></xmp> -->
+                    <form data-turbo="false" action="/vault/vault/pull/12700/diffview" accept-charset="UTF-8"
+                      method="post"><input type="hidden" name="authenticity_token"
+                        value="xBHWGqZTAz9T8yTLCy9ZTY2S7UG_FvfNSvb4etLLZjMj39BpiAmkMO75mTQ0FASoW1tKGk5eHqfCCTZOxEoAWw">
+                      <div class="d-flex flex-justify-center">
+                        <div class="js-unified-diff-view">
+                          <div data-view-component="true"
+                            class="js-unified-diff-view-box border rounded-1 pt-3 pb-1 color-border-accent-emphasis">
+                            <label>
+                              <div class="text-center px-4">
+                                <img src="https://assets.git.autodesk.com/assets/unified-6de447b07fd7.svg" height="50"
+                                  width="50" alt="Unified Diff View" data-view-component="true">
+                              </div>
+                              <div class="d-flex flex-items-center ml-2">
+                                <input type="radio" name="diff" id="diff_unified_lg" value="unified"
+                                  class="js-unified-diff-view-option mr-1" checked="checked">
+                                Unified
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="js-split-diff-view">
+                          <div data-view-component="true"
+                            class="js-split-diff-view-box border rounded-1 pt-3 pb-1 ml-2 color-border-default">
+                            <label>
+                              <div class="text-center px-4">
+                                <img src="https://assets.git.autodesk.com/assets/split-b930d4a1df45.svg" height="50"
+                                  width="50" alt="Split Diff View" data-view-component="true">
+                              </div>
+                              <div class="d-flex flex-items-center ml-2">
+                                <input type="radio" name="diff" id="diff_split_lg" value="split"
+                                  class="js-split-diff-view-option mr-1">
+                                Split
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mt-2 mb-2 ml-1 d-flex flex-items-center">
+                        <input type="hidden" name="w" id="show_whitespace_lg" value="0" autocomplete="off"
+                          class="form-control">
+                        <input type="checkbox" name="w" id="whitespace-cb-lg" value="1">
+                        <label for="whitespace-cb-lg" class="ml-1">Hide whitespace</label>
+                      </div>
+
+                      <div class="d-flex flex-column mt-2 px-1">
+                        <button type="submit" data-view-component="true" class="btn-sm btn"> Apply and reload
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+          <div class="ml-2 hide-sm hide-md">
+            <!-- '"` --><!-- </textarea></xmp> -->
+            <form data-turbo="false" action="/vault/vault/pull/12700/diffview" accept-charset="UTF-8" method="post">
+              <input type="hidden" name="authenticity_token"
+                value="sEGU0Hl6r4Cj5KE2ept0k18Toqy7Xe1LEm8WxfaBoBdXj5KjVyAIjx7uHMlFoCl2idoF90oVBCGakNjx4ADGfw">
+              <button name="w" value="0" hidden="hidden" type="submit" data-view-component="true"
+                class="btn-invisible btn-sm btn color-fg-accent py-0 px-1 rounded-1"> <svg aria-hidden="true"
+                  height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+                  class="octicon octicon-eye color-fg-accent mr-2">
+                  <path
+                    d="M8 2c1.981 0 3.671.992 4.933 2.078 1.27 1.091 2.187 2.345 2.637 3.023a1.62 1.62 0 0 1 0 1.798c-.45.678-1.367 1.932-2.637 3.023C11.67 13.008 9.981 14 8 14c-1.981 0-3.671-.992-4.933-2.078C1.797 10.83.88 9.576.43 8.898a1.62 1.62 0 0 1 0-1.798c.45-.677 1.367-1.931 2.637-3.022C4.33 2.992 6.019 2 8 2ZM1.679 7.932a.12.12 0 0 0 0 .136c.411.622 1.241 1.75 2.366 2.717C5.176 11.758 6.527 12.5 8 12.5c1.473 0 2.825-.742 3.955-1.715 1.124-.967 1.954-2.096 2.366-2.717a.12.12 0 0 0 0-.136c-.412-.621-1.242-1.75-2.366-2.717C10.824 4.242 9.473 3.5 8 3.5c-1.473 0-2.825.742-3.955 1.715-1.124.967-1.954 2.096-2.366 2.717ZM8 10a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 10Z">
+                  </path>
+                </svg>Show whitespace
+              </button>
+            </form>
+          </div>
+
+          <div class="hide-lg hide-xl">
+            <details data-view-component="true"
+              class="diffbar-item details-reset details-overlay position-relative text-center">
+              <summary role="button" data-view-component="true"> <svg aria-label="Diff settings" role="img" height="16"
+                  viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+                  class="octicon octicon-gear color-fg-muted">
+                  <path
+                    d="M8 0a8.2 8.2 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224.231.114.454.243.668.386.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63.27.385.506.792.704 1.218.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294.016.257.016.515 0 .772-.01.147.038.246.088.294l.814.806c.475.469.679 1.216.364 1.891a7.977 7.977 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a5.909 5.909 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8.006 8.006 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a5.738 5.738 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8.12 8.12 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.05-.048.098-.147.088-.294a6.214 6.214 0 0 1 0-.772c.01-.147-.038-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a7.92 7.92 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071.214-.143.437-.272.668-.386.133-.066.194-.158.211-.224l.29-1.106C6.009.645 6.556.095 7.299.03 7.53.01 7.764 0 8 0Zm-.571 1.525c-.036.003-.108.036-.137.146l-.289 1.105c-.147.561-.549.967-.998 1.189-.173.086-.34.183-.5.29-.417.278-.97.423-1.529.27l-1.103-.303c-.109-.03-.175.016-.195.045-.22.312-.412.644-.573.99-.014.031-.021.11.059.19l.815.806c.411.406.562.957.53 1.456a4.709 4.709 0 0 0 0 .582c.032.499-.119 1.05-.53 1.456l-.815.806c-.081.08-.073.159-.059.19.162.346.353.677.573.989.02.03.085.076.195.046l1.102-.303c.56-.153 1.113-.008 1.53.27.161.107.328.204.501.29.447.222.85.629.997 1.189l.289 1.105c.029.109.101.143.137.146a6.6 6.6 0 0 0 1.142 0c.036-.003.108-.036.137-.146l.289-1.105c.147-.561.549-.967.998-1.189.173-.086.34-.183.5-.29.417-.278.97-.423 1.529-.27l1.103.303c.109.029.175-.016.195-.045.22-.313.411-.644.573-.99.014-.031.021-.11-.059-.19l-.815-.806c-.411-.406-.562-.957-.53-1.456a4.709 4.709 0 0 0 0-.582c-.032-.499.119-1.05.53-1.456l.815-.806c.081-.08.073-.159.059-.19a6.464 6.464 0 0 0-.573-.989c-.02-.03-.085-.076-.195-.046l-1.102.303c-.56.153-1.113.008-1.53-.27a4.44 4.44 0 0 0-.501-.29c-.447-.222-.85-.629-.997-1.189l-.289-1.105c-.029-.11-.101-.143-.137-.146a6.6 6.6 0 0 0-1.142 0ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8Z">
+                  </path>
+                </svg>
+                <div class="dropdown-caret color-fg-muted"></div>
+              </summary>
+              <div data-view-component="true">
+                <div data-view-component="true" class="Popover position-fixed mt-2 pt-1 right-0 left-0">
+                  <div data-view-component="true"
+                    class="Popover-message Box position-relative mx-auto text-left color-shadow-large p-2 mt-2">
+                    <h5 data-view-component="true" class="mb-2"> Diff view
+                    </h5>
+                    <!-- '"` --><!-- </textarea></xmp> -->
+                    <form data-turbo="false" action="/vault/vault/pull/12700/diffview" accept-charset="UTF-8"
+                      method="post"><input type="hidden" name="authenticity_token"
+                        value="gClQJKWzPmjHf5HMLunlPGSQWWgu1ThQsUAKRrglUhJn51ZXi-mZZ3p1LDMR0rjZsln-M9-d0To5v8RyrqQ0eg">
+                      <div class="d-flex flex-items-center">
+                        <div class="js-unified-diff-view d-flex flex-1">
+                          <div data-view-component="true"
+                            class="js-unified-diff-view-box flex-1 border rounded-1 pt-3 px-2 pb-1 color-border-accent-emphasis">
+                            <label>
+                              <div class="text-center">
+                                <img src="https://assets.git.autodesk.com/assets/unified-6de447b07fd7.svg" height="50"
+                                  width="50" alt="Unified Diff View" data-view-component="true">
+                              </div>
+                              <div class="d-flex flex-items-center">
+                                <input type="radio" name="diff" id="diff_unified" value="unified"
+                                  class="js-unified-diff-view-option mr-1" checked="checked">
+                                Unified
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="js-split-diff-view d-flex flex-1">
+                          <div data-view-component="true"
+                            class="js-split-diff-view-box flex-1 border rounded-1 pt-3 px-2 pb-1 ml-2 color-border-default">
+                            <label>
+                              <div class="text-center">
+                                <img src="https://assets.git.autodesk.com/assets/split-b930d4a1df45.svg" height="50"
+                                  width="50" alt="Split Diff View" data-view-component="true">
+                              </div>
+                              <div class="d-flex flex-items-center">
+                                <input type="radio" name="diff" id="diff_split" value="split"
+                                  class="js-split-diff-view-option mr-1">
+                                Split
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mt-2 mb-2 d-flex flex-items-center">
+                        <input type="hidden" name="w" id="show_whitespace" value="0" autocomplete="off"
+                          class="form-control">
+                        <input type="checkbox" name="w" id="whitespace-cb" value="1">
+                        <label for="whitespace-cb" class="ml-1">Hide whitespace</label>
+                      </div>
+
+                      <div class="d-flex flex-column mt-2">
+                        <button type="submit" data-view-component="true" class="btn-sm btn"> Apply and reload
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+
+          <div class="js-socket-channel js-updatable-content js-pull-refresh-on-pjax"
+            data-channel="eyJjIjoicHVsbF9yZXF1ZXN0OjMzMDIwNjgiLCJ0IjoxNzUwNjY2MDc4fQ==--69faf2f7ad2bbcf63a5b665a8b5edccff840d5f133b3c98a8aabcb8741ff1f2c"
+            data-url="/vault/vault/pull/12700/show_partial_comparison?base_commit_oid=8c2152260eeccee3c55dc3b52d01d4da1a94cb6c&amp;end_commit_oid=29f539c93c664393697f14b3a644beca01a380cd&amp;partial=pull_requests%2Fstale_comparison&amp;start_commit_oid=8c2152260eeccee3c55dc3b52d01d4da1a94cb6c"
+            data-gid="MDExOlB1bGxSZXF1ZXN0MzMwMjA2OA=="></div>
+
+        </div>
+      </div>
+
+      <div class="flex-grow-0 flex-shrink-0 pr-review-tools">
+
+        <div class="diffbar-item dropdown js-batched-suggested-changes-container mr-3" hidden="">
+          <details class="details-reset details-overlay js-dropdown-details position-relative"
+            id="commit-suggestions-modal">
+            <summary data-view-component="true" class="js-batched-suggested-changes-toggle btn-sm btn"> Commit
+              suggestions
+              <span title="0" data-view-component="true"
+                class="Counter js-pending-batched-suggested-changes-count d-inline-block">0</span>
+              <span class="dropdown-caret"></span>
+            </summary>
+            <div class="SelectMenu right-0">
+              <div class="pull-request-suggested-changes-menu SelectMenu-modal top-0 p-0 mt-sm-2"
+                style="max-width: calc(100vw - 32px);" id="commit-suggestions">
+                <header class="SelectMenu-header p-2">
+                  <span class="SelectMenu-title">Commit suggestions</span>
+                  <button class="SelectMenu-closeButton" type="button" data-toggle-for="commit-suggestions-modal">
+                    <svg aria-label="Close commit suggestions dialog" role="img" height="16" viewBox="0 0 16 16"
+                      version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+                      <path
+                        d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z">
+                      </path>
+                    </svg>
+                  </button>
+                </header>
+
+                <!-- '"` --><!-- </textarea></xmp> -->
+                <form class="js-batched-suggested-changes-form p-2"
+                  data-warn-unsaved-changes="Your batched suggestions will be lost." data-turbo="false"
+                  action="/vault/vault/pull/12700/apply_suggestions" accept-charset="UTF-8" method="post"><input
+                    type="hidden" name="authenticity_token"
+                    value="5d2vOpzFhtVRIy1F2xcxf75brmPZcFhJ3ZX6BxIpAIaUvGePnRMTDqIHGi1d2LY9YJSE_n3fpOVjAET2Y9ipbQ">
+                  <input type="hidden" name="current_oid" value="29f539c93c664393697f14b3a644beca01a380cd">
+                  <input type="text" name="commit_title"
+                    class="form-control input-block input-contrast js-suggestion-commit-title text-emphasized mb-2"
+                    aria-label="Commit title" value="Apply suggestions from code review" placeholder="Commit title">
+                  <textarea rows="3" aria-label="Commit message" autocomplete="off"
+                    class="js-suggestion-commit-message js-quick-submit form-control input-block mb-2" type="text"
+                    name="commit_message" placeholder="Add an optional extended description…"
+                    style="resize: vertical"></textarea>
+
+
+
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-sm btn-primary float-left js-suggestion-batch-submit"
+                      data-ga-click="Markdown Toolbar, click, insert code suggestion" data-disable-invalid="true"
+                      data-disable-with="Applying commits...">
+                      Commit changes
+                    </button>
+                  </div>
+                  <div class="form-group warn m-0 mt-2 js-error-message-container" hidden="">
+                    <div class="position-relative warning m-0" style="max-width: inherit;">
+                      <span class="js-error-message"></span>
+                      Please <span class="text-bold btn-link js-refresh-after-suggestion">refresh</span> and try again.
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </details>
+        </div>
+
+
+
+        <span class="diffbar-item hide-md hide-sm mr-3" style="min-width: 110px">
+          <progress-bar ratio="0 / 1">
+            <div class="d-flex flex-justify-center flex-items-center width-full mb-1">
+              <div>
+                <span class="js-review-count">0 / 1</span> files viewed
+              </div>
+            </div>
+            <span class="Progress mt-n1">
+              <div class="color-bg-accent-emphasis js-review-progress"
+                style="transition: width 0.2s ease-out; width: 0%;"></div>
+            </span>
+          </progress-bar>
+        </span>
+
+
+        <div class="diffbar-item dropdown js-reviews-container">
+          <details class="details-reset details-overlay d-inline-block position-relative" id="review-changes-modal">
+            <summary class="btn btn-sm btn-primary js-reviews-toggle">
+              <span class="hide-sm">
+                <span class="js-review-changes" data-pending-message="Finish your review" data-message="Review changes">
+                  Review<span class="hide-md"> changes</span>
+                </span>
+                <span title="0" data-view-component="true" class="Counter js-pending-review-comment-count">0</span>
+                <span class="dropdown-caret"></span>
+              </span>
+              <span class="hide-xl hide-lg hide-md ">
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                  data-view-component="true" class="octicon octicon-code-review">
+                  <path
+                    d="M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-8.5C0 1.784.784 1 1.75 1ZM1.5 2.75v8.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm5.28 1.72a.75.75 0 0 1 0 1.06L5.31 7l1.47 1.47a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 0Zm2.44 0a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.69 7 9.22 5.53a.75.75 0 0 1 0-1.06Z">
+                  </path>
+                </svg>
+                <span class="dropdown-caret"></span>
+              </span>
+            </summary>
+            <div class="SelectMenu SelectMenu--hasFilter right-0">
+              <div class="SelectMenu-modal"
+                style="max-width: calc(100vw - 32px); width: 640px; height: auto; max-height: none;">
+                <header class="SelectMenu-header border-bottom-0 border-md-bottom">
+                  <span class="SelectMenu-title">Finish your review</span>
+                  <button class="SelectMenu-closeButton" type="button" data-toggle-for="review-changes-modal">
+                    <svg aria-label="Close review changes dialog" role="img" height="16" viewBox="0 0 16 16"
+                      version="1.1" width="16" data-view-component="true" class="octicon octicon-x">
+                      <path
+                        d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z">
+                      </path>
+                    </svg>
+                  </button>
+                </header>
+                <div class="SelectMenu-list hx_add-margin-to-comment-textfield">
+                  <!-- '"` --><!-- </textarea></xmp> -->
+                  <form id="pull_requests_submit_review" data-turbo="false" action="/vault/vault/pull/12700/reviews"
+                    accept-charset="UTF-8" method="post"><input type="hidden" name="_method" value="put"
+                      autocomplete="off"><input type="hidden" name="authenticity_token"
+                      value="RIz2xOuXvIUjGYkH-nKbAC7TViGl6RWGem499Fcqh9wrHkpFiS5Rge14xepZrjydKScEhv7Ddw1vByRuqXLLaw">
+                    <div data-view-component="true">
+                      <input type="hidden" name="head_sha" id="head_sha"
+                        value="29f539c93c664393697f14b3a644beca01a380cd" autocomplete="off" class="form-control">
+
+                      <tab-container class="js-previewable-comment-form write-selected previewable-comment-form"
+                        data-preview-url="/preview?markdown_unsupported=false&amp;repository=26369&amp;subject=12700&amp;subject_type=PullRequest">
+                        <input type="hidden"
+                          value="GtN1DP0jnWGiu643pemo6snwyWfkI6R3wb7fcy4btB-hF36bjgvIRsFeLOUVzKX0xV_CYCY1mfoaepcRrXDBrQ"
+                          data-csrf="true" class="js-data-preview-url-csrf">
+                        <div
+                          class="tabnav comment-form-head mb-2 d-flex flex-justify-between p-0 tabnav--responsive flex-column border-bottom-0 mb-0 mb-lg-2 flex-items-stretch border-lg-bottom color-border-default flex-lg-items-center flex-lg-row">
+                          <div class="tabnav-tabs mx-0 mx-md-2 mt-0 mt-md-2 no-wrap d-flex flex-auto d-md-block"
+                            role="tablist">
+                            <button type="button"
+                              class="btn-link tabnav-tab write-tab js-write-tab px-3 px-sm-6 px-md-3 flex-1 flex-md-auto"
+                              role="tab" aria-selected="true" tabindex="0">
+                              Write
+                            </button>
+                            <button type="button"
+                              class="btn-link tabnav-tab preview-tab js-preview-tab flex-1 flex-md-auto" role="tab"
+                              aria-selected="false" tabindex="-1">
+                              Preview
+                            </button>
+                          </div>
+                          <markdown-toolbar role="toolbar" aria-label="Composition" for="pull_request_review_body"
+                            data-view-component="true"
+                            class="js-details-container Details toolbar-commenting no-wrap d-flex px-2 pt-2 pt-lg-0 flex-items-start flex-wrap mt-lg-2 border-md-top border-lg-top-0"
+                            tabindex="0">
+                            <div class="d-block d-md-none flex-auto">
+                              <button data-md-button="" tabindex="-1" type="button" aria-label="Toggle text tools"
+                                aria-expanded="false"
+                                class="js-details-target btn-link toolbar-item btn-octicon no-underline py-2 mr-1">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-typography">
+                                </svg>
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-chevron-up Details-content--shown">
+                                </svg>
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true"
+                                  class="octicon octicon-chevron-down Details-content--hidden">
+                                </svg>
+                              </button>
+                            </div>
+
+
+                            <div class="flex-nowrap d-none d-md-inline-block mr-md-0 mr-3">
+                              <md-header aria-label="Heading" id="md-heading-pull_request_review_body-1" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon"
+                                data-ga-click="Markdown Toolbar, click, header"
+                                aria-describedby="tooltip-4f60e5d4-b36b-4bb1-b045-6f8aaeffc3d3">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-heading">
+                                </svg>
+                              </md-header>
+                              <tool-tip id="tooltip-4f60e5d4-b36b-4bb1-b045-6f8aaeffc3d3"
+                                for="md-heading-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add heading
+                                text</tool-tip>
+
+                              <md-bold aria-label="Bold" id="md-bold-pull_request_review_body-1" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+b"
+                                data-ga-click="Markdown Toolbar, click, bold"
+                                aria-describedby="tooltip-226a4d10-6a34-46f1-bf9c-d3b13bc8e0e8">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-bold">
+                                </svg>
+                              </md-bold>
+                              <tool-tip id="tooltip-226a4d10-6a34-46f1-bf9c-d3b13bc8e0e8"
+                                for="md-bold-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add bold text,
+                                &lt;Cmd+b&gt;</tool-tip>
+
+                              <md-italic aria-label="Italic" id="md-italic-pull_request_review_body-1" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+i"
+                                data-ga-click="Markdown Toolbar, click, italic"
+                                aria-describedby="tooltip-69987271-111e-4bb8-8acb-a276c312d31b">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-italic">
+                                </svg>
+                              </md-italic>
+                              <tool-tip id="tooltip-69987271-111e-4bb8-8acb-a276c312d31b"
+                                for="md-italic-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add italic text,
+                                &lt;Cmd+i&gt;</tool-tip>
+                            </div>
+
+                            <div class="d-flex d-md-inline-block mr-0">
+                              <md-quote aria-label="Quote" id="md-quote-pull_request_review_body-1" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon p-2 p-md-1"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+Shift+."
+                                data-ga-click="Markdown Toolbar, click, quote"
+                                aria-describedby="tooltip-1c5cdece-b3a8-44fe-97a0-51d584fbdb4d">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-quote">
+                                </svg>
+                              </md-quote>
+                              <tool-tip id="tooltip-1c5cdece-b3a8-44fe-97a0-51d584fbdb4d"
+                                for="md-quote-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a quote,
+                                &lt;Cmd+Shift+.&gt;</tool-tip>
+
+                              <md-code aria-label="Code" id="md-code-pull_request_review_body-1" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon p-2 p-md-1"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+e"
+                                data-ga-click="Markdown Toolbar, click, code"
+                                aria-describedby="tooltip-0da33072-b575-45aa-9bf6-43da56b849af">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-code">
+                                </svg>
+                              </md-code>
+                              <tool-tip id="tooltip-0da33072-b575-45aa-9bf6-43da56b849af"
+                                for="md-code-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add code,
+                                &lt;Cmd+e&gt;</tool-tip>
+
+                              <button type="button" data-md-button="" tabindex="-1"
+                                class="toolbar-item btn-octicon text-center p-2 d-md-none js-markdown-link-button"
+                                aria-label="Link" data-ga-click="Markdown Toolbar, click, saved reply">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-link">
+                                </svg>
+                              </button>
+
+                              <template class="js-markdown-link-dialog">
+                                <div class="Box-header">
+                                  <h1 class="Box-title" id="box-title">Insert Link</h1>
+                                </div>
+                                <div class="Box-body overflow-auto">
+                                  <div>
+                                    <label class="d-block mb-1" for="js-dialog-link-text">Link Text</label>
+                                    <input type="text" class="mb-3 form-control input-block" id="js-dialog-link-text"
+                                      autofocus="">
+                                  </div>
+                                  <div>
+                                    <label class="d-block mb-1" for="js-dialog-link-href">URL</label>
+                                    <input type="url" class="mb-3 form-control input-block" id="js-dialog-link-href">
+                                  </div>
+                                  <div class="pt-3 border-top">
+                                    <button data-close-dialog="" data-for-textarea="pull_request_review_body"
+                                      type="button" data-view-component="true"
+                                      class="js-markdown-link-insert btn-primary btn btn-block"> Add
+                                    </button>
+                                  </div>
+                                </div>
+                              </template>
+
+                              <md-link aria-label="Link" id="md-link-pull_request_review_body-2" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon p-2 p-md-1 d-none d-md-block"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+k"
+                                data-ga-click="Markdown Toolbar, click, link"
+                                aria-describedby="tooltip-24152004-3f09-48ef-942f-a7cb777468ab">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-link">
+                                </svg>
+                              </md-link>
+                              <tool-tip id="tooltip-24152004-3f09-48ef-942f-a7cb777468ab"
+                                for="md-link-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a link,
+                                &lt;Cmd+k&gt;</tool-tip>
+                            </div>
+
+                            <div class="d-none d-md-inline-block mr-md-0 mr-3">
+                              <md-unordered-list aria-label="Unordered list"
+                                id="md-unordered_list-pull_request_review_body-1" role="button" tabindex="-1"
+                                class="toolbar-item btn-octicon" data-hotkey-scope="pull_request_review_body"
+                                data-hotkey="Meta+Shift+8" data-ga-click="Markdown Toolbar, click, unordered list"
+                                aria-describedby="tooltip-a2b6dfa3-e497-4f02-9abd-96db22f88201">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-list-unordered">
+                                </svg>
+                              </md-unordered-list>
+                              <tool-tip id="tooltip-a2b6dfa3-e497-4f02-9abd-96db22f88201"
+                                for="md-unordered_list-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a bulleted
+                                list, &lt;Cmd+Shift+8&gt;</tool-tip>
+
+                              <md-ordered-list aria-label="Numbered list"
+                                id="md-ordered_list-pull_request_review_body-1" role="button" tabindex="-1"
+                                class="toolbar-item btn-octicon" data-hotkey-scope="pull_request_review_body"
+                                data-hotkey="Meta+Shift+7" data-ga-click="Markdown Toolbar, click, ordered list"
+                                aria-describedby="tooltip-248ef13b-57c9-4963-9612-a18b515930ee">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-list-ordered">
+                                </svg>
+                              </md-ordered-list>
+                              <tool-tip id="tooltip-248ef13b-57c9-4963-9612-a18b515930ee"
+                                for="md-ordered_list-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a numbered
+                                list, &lt;Cmd+Shift+7&gt;</tool-tip>
+
+                              <md-task-list aria-label="Task list" id="md-task_list-pull_request_review_body-1"
+                                role="button" tabindex="-1" class="toolbar-item btn-octicon"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+Shift+l"
+                                data-ga-click="Markdown Toolbar, click, task list"
+                                aria-describedby="tooltip-2f43311b-8716-4afe-82d3-5bc46779fcdd">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-tasklist">
+                                </svg>
+                              </md-task-list>
+                              <tool-tip id="tooltip-2f43311b-8716-4afe-82d3-5bc46779fcdd"
+                                for="md-task_list-pull_request_review_body-1" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a task list,
+                                &lt;Cmd+Shift+l&gt;</tool-tip>
+                            </div>
+
+                            <div class="d-flex d-xs-inline-block">
+
+                              <md-mention aria-label="Mention" role="button" id="md-mention-pull_request_review_body"
+                                tabindex="-1" class="flex-auto text-center toolbar-item btn-octicon p-2 p-md-1 mx-1"
+                                data-ga-click="Markdown Toolbar, click, mention"
+                                aria-describedby="tooltip-d9936c6f-76de-4f9d-8c66-b2897cdd6d1f">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-mention">
+                                </svg>
+                              </md-mention>
+                              <tool-tip id="tooltip-d9936c6f-76de-4f9d-8c66-b2897cdd6d1f"
+                                for="md-mention-pull_request_review_body" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true" class="sr-only position-absolute"
+                                role="tooltip">Directly mention a user or team</tool-tip>
+
+                              <label for="fc-pull_request_review_body" data-md-button="" tabindex="-1"
+                                class="d-block d-md-none btn-link flex-auto text-center toolbar-item btn-octicon tooltipped tooltipped-sw p-2 mx-1"
+                                aria-label="Attach an image or video">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-image">
+                                </svg>
+                              </label>
+
+                              <md-ref role="button" id="md-ref-pull_request_review_body"
+                                aria-label="Issue, pull request, or discussion reference" tabindex="-1"
+                                class="flex-auto text-center toolbar-item btn-octicon p-2 p-md-1 mx-1"
+                                data-ga-click="Markdown Toolbar, click, reference"
+                                aria-describedby="tooltip-2f89c7d5-ce9a-4fe3-b887-6928adf4dd53">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-cross-reference">
+                                </svg>
+                              </md-ref>
+                              <tool-tip id="tooltip-2f89c7d5-ce9a-4fe3-b887-6928adf4dd53"
+                                for="md-ref-pull_request_review_body" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true" class="sr-only position-absolute"
+                                role="tooltip">Reference an issue, pull request, or discussion</tool-tip>
+
+                              <details
+                                class="details-overlay details-reset js-saved-reply-container select-menu select-menu-modal-right flex-auto toolbar-item btn-octicon text-center p-2 p-md-1 mx-1"
+                                tabindex="-1">
+                                <summary id="saved-reply-pull_request_review_body" data-md-button="" tabindex="-1"
+                                  aria-label="Reply" aria-haspopup="menu" role="button"
+                                  aria-describedby="tooltip-1af02198-5e06-41d0-8a99-ba7adb6629a1">
+                                  <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                    data-view-component="true" class="octicon octicon-reply">
+                                  </svg>
+                                </summary>
+
+                                <details-menu style="z-index: 99;"
+                                  class="select-menu-modal position-absolute right-0 js-saved-reply-menu"
+                                  data-menu-input="pull_request_review_body_saved_reply_id"
+                                  src="/settings/replies?context=pull_request_comment" preload="" role="menu">
+                                  <div class="select-menu-header d-flex">
+                                    <span class="select-menu-title flex-auto">Select a reply</span>
+                                    <code><span class="border rounded p-1 mr-2">ctrl .</span></code>
+                                  </div>
+
+                                  <include-fragment role="menuitem" aria-label="Loading">
+                                    <svg style="box-sizing: content-box; color: var(--color-icon-primary);" width="32"
+                                      height="32" viewBox="0 0 16 16" fill="none" data-view-component="true"
+                                      class="my-6 mx-auto d-block anim-rotate">
+                                    </svg>
+                                  </include-fragment>
+
+                                </details-menu>
+                              </details>
+                              <tool-tip id="tooltip-1af02198-5e06-41d0-8a99-ba7adb6629a1"
+                                for="saved-reply-pull_request_review_body" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add saved
+                                reply</tool-tip>
+                            </div>
+
+                            <div class="Details-content--hidden d-block d-md-none width-full">
+                              <md-header aria-label="Heading" id="md-heading-pull_request_review_body-2" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon py-2 pr-2 pl-1 mr-1"
+                                data-ga-click="Markdown Toolbar, click, header"
+                                aria-describedby="tooltip-8acd6a91-a0d9-4fd7-952a-ce3e45960a3e">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-heading">
+                                </svg>
+                              </md-header>
+                              <tool-tip id="tooltip-8acd6a91-a0d9-4fd7-952a-ce3e45960a3e"
+                                for="md-heading-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add heading
+                                text</tool-tip>
+
+                              <md-bold aria-label="Bold" id="md-bold-pull_request_review_body-2" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon p-2"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+b"
+                                data-ga-click="Markdown Toolbar, click, bold"
+                                aria-describedby="tooltip-8cc0c9a4-58f7-4314-a203-bb8b0bc2d139">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-bold">
+                                </svg>
+                              </md-bold>
+                              <tool-tip id="tooltip-8cc0c9a4-58f7-4314-a203-bb8b0bc2d139"
+                                for="md-bold-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add bold text,
+                                &lt;Cmd+b&gt;</tool-tip>
+
+                              <md-italic aria-label="Italic" id="md-italic-pull_request_review_body-2" role="button"
+                                tabindex="-1" class="toolbar-item btn-octicon p-2"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+i"
+                                data-ga-click="Markdown Toolbar, click, italic"
+                                aria-describedby="tooltip-515a880a-5561-4841-99c3-46d4fb5f6379">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-italic">
+                                </svg>
+                              </md-italic>
+                              <tool-tip id="tooltip-515a880a-5561-4841-99c3-46d4fb5f6379"
+                                for="md-italic-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add italic text,
+                                &lt;Cmd+i&gt;</tool-tip>
+
+                              <md-unordered-list aria-label="Unordered list"
+                                id="md-unordered_list-pull_request_review_body-2" role="button" tabindex="-1"
+                                class="toolbar-item btn-octicon p-2" data-hotkey-scope="pull_request_review_body"
+                                data-hotkey="Meta+Shift+8" data-ga-click="Markdown Toolbar, click, unordered list"
+                                aria-describedby="tooltip-e2cc3f2b-0745-4265-97fa-ca30aaafece8">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-list-unordered">
+                                </svg>
+                              </md-unordered-list>
+                              <tool-tip id="tooltip-e2cc3f2b-0745-4265-97fa-ca30aaafece8"
+                                for="md-unordered_list-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a bulleted
+                                list, &lt;Cmd+Shift+8&gt;</tool-tip>
+
+                              <md-ordered-list aria-label="Numbered list"
+                                id="md-ordered_list-pull_request_review_body-2" role="button" tabindex="-1"
+                                class="toolbar-item btn-octicon p-2" data-hotkey-scope="pull_request_review_body"
+                                data-hotkey="Meta+Shift+7" data-ga-click="Markdown Toolbar, click, ordered list"
+                                aria-describedby="tooltip-dc958f1f-2774-4698-b9f3-b12c763011fb">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-list-ordered">
+                                </svg>
+                              </md-ordered-list>
+                              <tool-tip id="tooltip-dc958f1f-2774-4698-b9f3-b12c763011fb"
+                                for="md-ordered_list-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a numbered
+                                list, &lt;Cmd+Shift+7&gt;</tool-tip>
+
+                              <md-task-list aria-label="Task list" id="md-task_list-pull_request_review_body-2"
+                                role="button" tabindex="-1" class="toolbar-item btn-octicon p-2"
+                                data-hotkey-scope="pull_request_review_body" data-hotkey="Meta+Shift+l"
+                                data-ga-click="Markdown Toolbar, click, task list"
+                                aria-describedby="tooltip-ef855d72-a842-4971-ab43-1f6621238bda">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-tasklist">
+                                </svg>
+                              </md-task-list>
+                              <tool-tip id="tooltip-ef855d72-a842-4971-ab43-1f6621238bda"
+                                for="md-task_list-pull_request_review_body-2" popover="manual" data-direction="sw"
+                                data-type="description" data-view-component="true"
+                                class="js-modifier-label-key sr-only position-absolute" role="tooltip">Add a task list,
+                                &lt;Cmd+Shift+l&gt;</tool-tip>
+                            </div>
+                          </markdown-toolbar>
+
+                        </div>
+
+                        <div class="comment-form-error js-comment-form-error" role="alert" hidden="">
+                          There was an error creating your PullRequest.
+                        </div>
+
+                        <file-attachment class="js-upload-markdown-image is-default" input="fc-pull_request_review_body"
+                          role="tabpanel" data-tab-container-no-tabstop="true" data-upload-repository-id="26369"
+                          data-upload-policy-url="/upload/policies/assets"><input type="hidden"
+                            value="tF0XE4Ld5oqPc_CGu01u3bHlOTmasYzKOwaBrcEkWR4txoNHBIJ81CWz-C2Hl5vVE8WN8YZZwyqn6ZqNusTA0w"
+                            data-csrf="true" class="js-data-upload-policy-url-csrf">
+                          <div
+                            class="js-write-bucket write-content tooltipped tooltipped-ne tooltipped-no-delay tooltipped-align-left-1 hide-reaction-suggestion upload-enabled mx-0 mt-2 mb-2 mx-md-2 hx_sm-hide-drag-drop">
+                            <input type="hidden" name="saved_reply_id" id="pull_request_review_body_saved_reply_id"
+                              class="js-resettable-field" value="" data-reset-value="">
+
+                            <text-expander keys=": @ #"
+                              data-issue-url="/suggestions/pull_request/3302068?issue_suggester=1&amp;repository=vault&amp;user_id=vault"
+                              data-mention-url="/suggestions/pull_request/3302068?mention_suggester=1&amp;repository=vault&amp;user_id=vault"
+                              multiword="#" data-emoji-url="/autocomplete/emoji">
+
+                              <textarea name="pull_request_review[body]" id="pull_request_review_body"
+                                placeholder="Leave a comment" aria-label="Comment body"
+                                class="js-comment-field js-paste-markdown js-task-list-field js-quick-submit form-control input-contrast comment-form-textarea js-session-resumable js-saved-reply-shortcut-comment-field"
+                                dir="auto"></textarea>
+
+                            </text-expander>
+                            <label
+                              class="text-normal drag-and-drop hx_drag-and-drop position-relative d-flex flex-justify-between color-border-emphasis">
+                              <input
+                                accept=".gif,.jpeg,.jpg,.mov,.mp4,.png,.svg,.webm,.cpuprofile,.csv,.dmp,.docx,.fodg,.fodp,.fods,.fodt,.gz,.json,.jsonc,.log,.md,.odf,.odg,.odp,.ods,.odt,.patch,.pdf,.pptx,.tgz,.txt,.xls,.xlsx,.zip"
+                                type="file" multiple=""
+                                class="manual-file-chooser manual-file-chooser-transparent top-0 right-0 bottom-0 left-0 width-full ml-0 form-control rounded-top-0"
+                                id="fc-pull_request_review_body">
+                              <span
+                                class="color-bg-subtle position-absolute top-0 left-0 rounded-bottom-2 width-full height-full"
+                                style="pointer-events: none;"></span>
+                              <span class="position-relative pr-2" style="pointer-events: none;">
+                                <span class="default">
+                                  Attach files by dragging &amp; dropping, selecting or pasting them.
+                                </span>
+                                <span class="loading">
+                                  <svg style="box-sizing: content-box; color: var(--color-icon-primary);" width="16"
+                                    height="16" viewBox="0 0 16 16" fill="none" data-view-component="true"
+                                    class="v-align-text-bottom mr-1 anim-rotate">
+                                    <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-opacity="0.25"
+                                      stroke-width="2" vector-effect="non-scaling-stroke" fill="none"></circle>
+                                    <path d="M15 8a7.002 7.002 0 00-7-7" stroke="currentColor" stroke-width="2"
+                                      stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+                                  </svg>
+                                  <span class="js-file-upload-loading-text"
+                                    data-file-upload-message="Uploading your files…">
+                                    Uploading your files…
+                                  </span>
+                                </span>
+                                <span class="error bad-file">
+                                  We don’t support that file type.
+                                  <span class="drag-and-drop-error-info">
+                                    <span class="btn-link">Try again</span> with a
+                                    GIF, JPEG, JPG, MOV, MP4, PNG, SVG, WEBM, CPUPROFILE, CSV, DMP, DOCX, FODG, FODP,
+                                    FODS, FODT, GZ, JSON, JSONC, LOG, MD, ODF, ODG, ODP, ODS, ODT, PATCH, PDF, PPTX,
+                                    TGZ, TXT, XLS, XLSX or ZIP.
+                                  </span>
+                                </span>
+                                <span class="error bad-permissions">
+                                  Attaching documents requires write permission to this repository.
+                                  <span class="drag-and-drop-error-info">
+                                    <span class="btn-link">Try again</span> with a GIF, JPEG, JPG, MOV, MP4, PNG, SVG,
+                                    WEBM, CPUPROFILE, CSV, DMP, DOCX, FODG, FODP, FODS, FODT, GZ, JSON, JSONC, LOG, MD,
+                                    ODF, ODG, ODP, ODS, ODT, PATCH, PDF, PPTX, TGZ, TXT, XLS, XLSX or ZIP.
+                                  </span>
+                                </span>
+                                <span class="error repository-required">
+                                  We don’t support that file type.
+                                  <span class="drag-and-drop-error-info">
+                                    <span class="btn-link">Try again</span> with a GIF, JPEG, JPG, MOV, MP4, PNG, SVG,
+                                    WEBM, CPUPROFILE, CSV, DMP, DOCX, FODG, FODP, FODS, FODT, GZ, JSON, JSONC, LOG, MD,
+                                    ODF, ODG, ODP, ODS, ODT, PATCH, PDF, PPTX, TGZ, TXT, XLS, XLSX or ZIP.
+                                  </span>
+                                </span>
+                                <span class="error too-big js-upload-too-big">
+                                </span>
+                                <span class="error empty">
+                                  This file is empty.
+                                  <span class="drag-and-drop-error-info">
+                                    <span class="btn-link">Try again</span> with a file that’s not empty.
+                                  </span>
+                                </span>
+                                <span class="error hidden-file">
+                                  This file is hidden.
+                                  <span class="drag-and-drop-error-info">
+                                    <span class="btn-link">Try again</span> with another file.
+                                  </span>
+                                </span>
+                                <span class="error failed-request">
+                                  Something went really wrong, and we can’t process that file.
+                                  <span class="drag-and-drop-error-info">
+                                    <span class="btn-link">Try again.</span>
+                                  </span>
+                                </span>
+                              </span>
+                              <a class="Link--muted position-relative d-inline"
+                                href="https://docs.github.com/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+                                target="_blank" data-ga-click="Markdown Toolbar, click, help"
+                                id="dd_fc-pull_request_review_body_md_link"
+                                aria-labelledby="tooltip-e14e0513-d0c2-4da5-8dfb-9fdb0e3a4395">
+                                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                                  data-view-component="true" class="octicon octicon-markdown v-align-bottom">
+                                  <path
+                                    d="M14.85 3c.63 0 1.15.52 1.14 1.15v7.7c0 .63-.51 1.15-1.15 1.15H1.15C.52 13 0 12.48 0 11.84V4.15C0 3.52.52 3 1.15 3ZM9 11V5H7L5.5 7 4 5H2v6h2V8l1.5 1.92L7 8v3Zm2.99.5L14.5 8H13V5h-2v3H9.5Z">
+                                  </path>
+                                </svg>
+                              </a>
+                              <tool-tip id="tooltip-e14e0513-d0c2-4da5-8dfb-9fdb0e3a4395"
+                                for="dd_fc-pull_request_review_body_md_link" popover="manual" data-direction="nw"
+                                data-type="label" data-view-component="true" class="sr-only position-absolute"
+                                aria-hidden="true" role="tooltip">Styling with Markdown is supported</tool-tip>
+                            </label>
+
+                          </div>
+
+                        </file-attachment>
+                        <div role="tabpanel"
+                          class="js-preview-panel overflow-auto border-bottom mx-0 my-3 mx-md-2 mb-md-2" hidden="">
+                          <input type="hidden" name="path" value="" class="js-path">
+                          <input type="hidden" name="line" value="" class="js-line-number">
+                          <input type="hidden" name="start_line" value="" class="js-start-line-number">
+                          <input type="hidden" name="preview_side" value="" class="js-side">
+                          <input type="hidden" name="preview_start_side" value="" class="js-start-side">
+                          <input type="hidden" name="start_commit_oid" value="" class="js-start-commit-oid">
+                          <input type="hidden" name="end_commit_oid" value="" class="js-end-commit-oid">
+                          <input type="hidden" name="base_commit_oid" value="" class="js-base-commit-oid">
+                          <input type="hidden" name="comment_id" value="" class="js-comment-id">
+                          <div class="comment js-suggested-changes-container" data-thread-side="">
+                            <div class="comment-body markdown-body js-preview-body" data-skip-sizing=""
+                              style="max-height:50vh;">
+                              <p>Nothing to preview</p>
+                            </div>
+                          </div>
+
+                        </div>
+
+                        <div class="comment-form-error mb-2 js-comment-update-error" hidden=""></div>
+                      </tab-container>
+
+                      <input type="hidden" name="pull_request_review[event]" value="comment">
+                    </div>
+                    <div data-view-component="true" class="form-actions p-2 m-0 color-bg-subtle border-top">
+                      <button data-disable-with="" type="submit" data-view-component="true"
+                        class="Button--primary Button--small Button float-left mr-1"> <span class="Button-content">
+                          <span class="Button-label">Submit review</span>
+                        </span>
+                      </button>
+                      <span class="review-title-with-count color-fg-muted float-left mt-1 ml-1">
+                        <span class="js-pending-review-comment-count">0</span>
+                        pending
+                        <span class="js-pending-comment-count-type" data-singular-string="comment"
+                          data-plural-string="comments">
+                          comments
+                        </span>
+                      </span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="toolbar-shadow js-notification-shelf-offset-top" data-original-top="60px" style="top: 60px !important;">
+  </div>
+
+  <template id="js-inline-comments-single-container-template">
+    <tr class="inline-comments js-skip-tagsearch js-inline-comments-container">
+      <td class="line-comments js-line-comments js-quote-selection-container p-0 p-sm-2"
+        data-quote-markdown=".js-comment-body" colspan="3">
+        <div class="js-line-comments">
+          <div class="comment-holder js-comments-holder">
+          </div>
+
+          <div class="inline-comment-form-container js-inline-comment-form-container review-comment-form-container">
+            <div class="f6 pb-2 d-flex flex-justify-between js-multi-line-preview" hidden="">
+              <div class="f6 color-fg-muted">
+                Commenting on lines
+
+                <span class="js-multi-line-preview-start ">
+
+                </span> to <span class="js-multi-line-preview-end ">
+
+                </span>
+
+              </div>
+
+            </div>
+
+            <div class="inline-comment-form-box inline-comment-form border-md border-0 p-md-0 p-2">
+              <!-- '"` --><!-- </textarea></xmp> -->
+              <form class="js-inline-comment-form" data-turbo="false"
+                action="/vault/vault/pull/12700/review_comment/create" accept-charset="UTF-8" method="post"><input
+                  type="hidden" name="authenticity_token"
+                  value="ypNlvj0f-w354PkcRRuzjyOnmv_I3vLnTWy8nGrHibqtaJtQ2iOqlDMNyLt2CkF20NoLgAG4ttEFAGfdrGn90Q">
+
+                <input type="hidden" name="comment_context" value="diff">
+                <input type="hidden" name="position" value="">
+
+                <input type="hidden" name="commit_id" value="29f539c93c664393697f14b3a644beca01a380cd">
+                <input type="hidden" name="comparison_start_oid" value="8c2152260eeccee3c55dc3b52d01d4da1a94cb6c">
+                <input type="hidden" name="comparison_end_oid" value="29f539c93c664393697f14b3a644beca01a380cd">
+                <input type="hidden" name="comparison_base_oid" value="8c2152260eeccee3c55dc3b52d01d4da1a94cb6c">
+                <input type="hidden" name="side" value="">
+                <input type="hidden" name="start_side" value="">
+                <input type="hidden" name="subject_type" value="">
+                <input type="hidden" name="algorithm" value="vanilla">
+                <input type="hidden" name="expanded_diff" value="false" class="js-expanded-diff-placeholder-value">
+
+
+                <tab-container class="js-previewable-comment-form write-selected previewable-comment-form"
+                  data-preview-url="/preview?markdown_unsupported=false&amp;repository=26369&amp;subject=12700&amp;subject_type=PullRequest">
+                  <input type="hidden"
+                    value="oZfD4wkXsYCsKJ4nBnMJA9OOMIxY-2-BkxK2BDpHXUIaU8h0ej_kp8_NHPW2VgQd3yE7i5rtUgxI1v5muSwo8A"
+                    data-csrf="true" class="js-data-preview-url-csrf">
+                  <div
+                    class="tabnav comment-form-head mb-2 d-flex flex-justify-between p-0 tabnav--responsive flex-column border-bottom-0 mb-0 mb-lg-2 flex-items-stretch border-lg-bottom color-border-default flex-lg-items-center flex-lg-row">
+                    <div class="tabnav-tabs mx-0 mx-md-2 mt-0 mt-md-2 no-wrap d-flex flex-auto d-md-block"
+                      role="tablist">
+                      <button type="button"
+                        class="btn-link tabnav-tab write-tab js-write-tab px-3 px-sm-6 px-md-3 flex-1 flex-md-auto"
+                        role="tab" aria-selected="true">
+                        Write
+                      </button>
+                      <button type="button" class="btn-link tabnav-tab preview-tab js-preview-tab flex-1 flex-md-auto"
+                        role="tab">
+                        Preview
+                      </button>
+                    </div>
+                    <markdown-toolbar role="toolbar" aria-label="Composition"
+                      for="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}" data-view-component="true"
+                      class="js-details-container Details toolbar-commenting no-wrap d-flex px-2 pt-2 pt-lg-0 flex-items-start flex-wrap mt-lg-2 border-md-top border-lg-top-0">
+                      <div class="d-block d-md-none flex-auto">
+                        <button data-md-button="" tabindex="-1" type="button" aria-label="Toggle text tools"
+                          aria-expanded="false"
+                          class="js-details-target btn-link toolbar-item btn-octicon no-underline py-2 mr-1">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-typography">
+                            <path
+                              d="M6.71 10H2.332l-.874 2.498a.75.75 0 0 1-1.415-.496l3.39-9.688a1.217 1.217 0 0 1 2.302.018l3.227 9.681a.75.75 0 0 1-1.423.474Zm3.13-4.358C10.53 4.374 11.87 4 13 4c1.5 0 3 .939 3 2.601v5.649a.75.75 0 0 1-1.448.275C13.995 12.82 13.3 13 12.5 13c-.77 0-1.514-.231-2.078-.709-.577-.488-.922-1.199-.922-2.041 0-.694.265-1.411.887-1.944C11 7.78 11.88 7.5 13 7.5h1.5v-.899c0-.54-.5-1.101-1.5-1.101-.869 0-1.528.282-1.84.858a.75.75 0 1 1-1.32-.716ZM6.21 8.5 4.574 3.594 2.857 8.5Zm8.29.5H13c-.881 0-1.375.22-1.637.444-.253.217-.363.5-.363.806 0 .408.155.697.39.896.249.21.63.354 1.11.354.732 0 1.26-.209 1.588-.449.35-.257.412-.495.412-.551Z">
+                            </path>
+                          </svg>
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-chevron-up Details-content--shown">
+                            <path
+                              d="M3.22 10.53a.749.749 0 0 1 0-1.06l4.25-4.25a.749.749 0 0 1 1.06 0l4.25 4.25a.749.749 0 1 1-1.06 1.06L8 6.811 4.28 10.53a.749.749 0 0 1-1.06 0Z">
+                            </path>
+                          </svg>
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-chevron-down Details-content--hidden">
+                            <path
+                              d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z">
+                            </path>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div class="flex-nowrap d-none d-md-inline-block mr-md-0 mr-3">
+                        <md-header aria-label="Heading"
+                          id="md-heading-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon"
+                          data-ga-click="Markdown Toolbar, click, header">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-heading">
+                            <path
+                              d="M3.75 2a.75.75 0 0 1 .75.75V7h7V2.75a.75.75 0 0 1 1.5 0v10.5a.75.75 0 0 1-1.5 0V8.5h-7v4.75a.75.75 0 0 1-1.5 0V2.75A.75.75 0 0 1 3.75 2Z">
+                            </path>
+                          </svg>
+                        </md-header>
+                        <tool-tip id="tooltip-5e568a39-87dd-4a3e-93ba-7521d6c6fc4b"
+                          for="md-heading-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add heading text</tool-tip>
+
+                        <md-bold aria-label="Bold"
+                          id="md-bold-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+b" data-ga-click="Markdown Toolbar, click, bold">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-bold">
+                            <path
+                              d="M4 2h4.5a3.501 3.501 0 0 1 2.852 5.53A3.499 3.499 0 0 1 9.5 14H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm1 7v3h4.5a1.5 1.5 0 0 0 0-3Zm3.5-2a1.5 1.5 0 0 0 0-3H5v3Z">
+                            </path>
+                          </svg>
+                        </md-bold>
+                        <tool-tip id="tooltip-85610ab7-ed0a-4b4e-b7c2-eb79e4d98986"
+                          for="md-bold-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" popover="manual"
+                          data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add bold text,
+                          &lt;Ctrl+b&gt;</tool-tip>
+
+                        <md-italic aria-label="Italic"
+                          id="md-italic-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+i" data-ga-click="Markdown Toolbar, click, italic">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-italic">
+                            <path
+                              d="M6 2.75A.75.75 0 0 1 6.75 2h6.5a.75.75 0 0 1 0 1.5h-2.505l-3.858 9H9.25a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5h2.505l3.858-9H6.75A.75.75 0 0 1 6 2.75Z">
+                            </path>
+                          </svg>
+                        </md-italic>
+                        <tool-tip id="tooltip-7df3b735-d385-4151-8287-2f45da469ff9"
+                          for="md-italic-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add italic text,
+                          &lt;Ctrl+i&gt;</tool-tip>
+                      </div>
+
+                      <div class="d-flex d-md-inline-block mr-0">
+                        <md-quote aria-label="Quote"
+                          id="md-quote-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon p-2 p-md-1"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+." data-ga-click="Markdown Toolbar, click, quote">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-quote">
+                            <path
+                              d="M1.75 2.5h10.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Zm4 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5ZM2.5 7.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 1.5 0Z">
+                            </path>
+                          </svg>
+                        </md-quote>
+                        <tool-tip id="tooltip-96f4118f-50c7-4ad0-8e00-ab24d1a29e9f"
+                          for="md-quote-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a quote,
+                          &lt;Ctrl+Shift+.&gt;</tool-tip>
+
+                        <md-code aria-label="Code"
+                          id="md-code-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon p-2 p-md-1"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+e" data-ga-click="Markdown Toolbar, click, code">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-code">
+                            <path
+                              d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z">
+                            </path>
+                          </svg>
+                        </md-code>
+                        <tool-tip id="tooltip-717fa613-b5e6-4e99-a078-eee85ff81045"
+                          for="md-code-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1" popover="manual"
+                          data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add code, &lt;Ctrl+e&gt;</tool-tip>
+
+                        <button type="button" data-md-button="" tabindex="-1"
+                          class="toolbar-item btn-octicon text-center p-2 d-md-none js-markdown-link-button"
+                          aria-label="Link" data-ga-click="Markdown Toolbar, click, saved reply">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-link">
+                            <path
+                              d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z">
+                            </path>
+                          </svg>
+                        </button>
+
+                        <template class="js-markdown-link-dialog">
+                          <div class="Box-header">
+                            <h1 class="Box-title" id="box-title">Insert Link</h1>
+                          </div>
+                          <div class="Box-body overflow-auto">
+                            <div>
+                              <label class="d-block mb-1" for="js-dialog-link-text">Link Text</label>
+                              <input type="text" class="mb-3 form-control input-block" id="js-dialog-link-text"
+                                autofocus="">
+                            </div>
+                            <div>
+                              <label class="d-block mb-1" for="js-dialog-link-href">URL</label>
+                              <input type="url" class="mb-3 form-control input-block" id="js-dialog-link-href">
+                            </div>
+                            <div class="pt-3 border-top">
+                              <button data-close-dialog=""
+                                data-for-textarea="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                                type="button" data-view-component="true"
+                                class="js-markdown-link-insert btn-primary btn btn-block"> Add
+                              </button>
+                            </div>
+                          </div>
+                        </template>
+
+                        <md-link aria-label="Link"
+                          id="md-link-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon p-2 p-md-1 d-none d-md-block"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+k" data-ga-click="Markdown Toolbar, click, link">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-link">
+                          </svg>
+                        </md-link>
+                        <tool-tip id="tooltip-72f13c0a-017f-40ee-8c26-c1c2ed9abfb6"
+                          for="md-link-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2" popover="manual"
+                          data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a link, &lt;Ctrl+k&gt;</tool-tip>
+                      </div>
+
+                      <div class="d-none d-md-inline-block mr-md-0 mr-3">
+                        <md-unordered-list aria-label="Unordered list"
+                          id="md-unordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          role="button" tabindex="-1" class="toolbar-item btn-octicon"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+8" data-ga-click="Markdown Toolbar, click, unordered list">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-list-unordered">
+                            <path
+                              d="M5.75 2.5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5ZM2 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-6a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z">
+                            </path>
+                          </svg>
+                        </md-unordered-list>
+                        <tool-tip id="tooltip-4588fd0a-2f70-4bbf-b249-3858e46b538f"
+                          for="md-unordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a bulleted list,
+                          &lt;Ctrl+Shift+8&gt;</tool-tip>
+
+                        <md-ordered-list aria-label="Numbered list"
+                          id="md-ordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          role="button" tabindex="-1" class="toolbar-item btn-octicon"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+7" data-ga-click="Markdown Toolbar, click, ordered list">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-list-ordered">
+                            <path
+                              d="M5 3.25a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 3.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 8.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75ZM.924 10.32a.5.5 0 0 1-.851-.525l.001-.001.001-.002.002-.004.007-.011c.097-.144.215-.273.348-.384.228-.19.588-.392 1.068-.392.468 0 .858.181 1.126.484.259.294.377.673.377 1.038 0 .987-.686 1.495-1.156 1.845l-.047.035c-.303.225-.522.4-.654.597h1.357a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5c0-1.005.692-1.52 1.167-1.875l.035-.025c.531-.396.8-.625.8-1.078a.57.57 0 0 0-.128-.376C1.806 10.068 1.695 10 1.5 10a.658.658 0 0 0-.429.163.835.835 0 0 0-.144.153ZM2.003 2.5V6h.503a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1h.503V3.308l-.28.14a.5.5 0 0 1-.446-.895l1.003-.5a.5.5 0 0 1 .723.447Z">
+                            </path>
+                          </svg>
+                        </md-ordered-list>
+                        <tool-tip id="tooltip-17504761-2129-4028-b0c7-abe1bc3af7f5"
+                          for="md-ordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a numbered list,
+                          &lt;Ctrl+Shift+7&gt;</tool-tip>
+
+                        <md-task-list aria-label="Task list"
+                          id="md-task_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          role="button" tabindex="-1" class="toolbar-item btn-octicon"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+l" data-ga-click="Markdown Toolbar, click, task list">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-tasklist">
+                          </svg>
+                        </md-task-list>
+                        <tool-tip id="tooltip-f239a6b5-00d3-44ad-a05c-eb1d97ddc8e3"
+                          for="md-task_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-1"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a task list,
+                          &lt;Ctrl+Shift+l&gt;</tool-tip>
+                      </div>
+
+                      <div class="d-flex d-xs-inline-block">
+
+                        <md-mention aria-label="Mention" role="button"
+                          id="md-mention-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}" tabindex="-1"
+                          class="flex-auto text-center toolbar-item btn-octicon p-2 p-md-1 mx-1"
+                          data-ga-click="Markdown Toolbar, click, mention">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-mention">
+                            <path
+                              d="M4.75 2.37a6.501 6.501 0 0 0 6.5 11.26.75.75 0 0 1 .75 1.298A7.999 7.999 0 0 1 .989 4.148 8 8 0 0 1 16 7.75v1.5a2.75 2.75 0 0 1-5.072 1.475 3.999 3.999 0 0 1-6.65-4.19A4 4 0 0 1 12 8v1.25a1.25 1.25 0 0 0 2.5 0V7.867a6.5 6.5 0 0 0-9.75-5.496ZM10.5 8a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z">
+                            </path>
+                          </svg>
+                        </md-mention>
+                        <tool-tip id="tooltip-fcc87a78-2e93-47c1-88ac-3d3527ec316b"
+                          for="md-mention-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="sr-only position-absolute">Directly mention a user or team</tool-tip>
+
+                        <label for="fc-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}" data-md-button=""
+                          tabindex="-1"
+                          class="d-block d-md-none btn-link flex-auto text-center toolbar-item btn-octicon tooltipped tooltipped-sw p-2 mx-1"
+                          aria-label="Attach an image or video">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-image">
+                            <path
+                              d="M16 13.25A1.75 1.75 0 0 1 14.25 15H1.75A1.75 1.75 0 0 1 0 13.25V2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75ZM1.75 2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h.94l.03-.03 6.077-6.078a1.75 1.75 0 0 1 2.412-.06L14.5 10.31V2.75a.25.25 0 0 0-.25-.25Zm12.5 11a.25.25 0 0 0 .25-.25v-.917l-4.298-3.889a.25.25 0 0 0-.344.009L4.81 13.5ZM7 6a2 2 0 1 1-3.999.001A2 2 0 0 1 7 6ZM5.5 6a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0Z">
+                            </path>
+                          </svg>
+                        </label>
+
+                        <md-ref role="button" id="md-ref-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          aria-label="Issue, pull request, or discussion reference" tabindex="-1"
+                          class="flex-auto text-center toolbar-item btn-octicon p-2 p-md-1 mx-1"
+                          data-ga-click="Markdown Toolbar, click, reference">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-cross-reference">
+                            <path
+                              d="M2.75 3.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 13H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 14.543V13H2.75A1.75 1.75 0 0 1 1 11.25v-7.5C1 2.784 1.784 2 2.75 2h5.5a.75.75 0 0 1 0 1.5ZM16 1.25v4.146a.25.25 0 0 1-.427.177L14.03 4.03l-3.75 3.75a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l3.75-3.75-1.543-1.543A.25.25 0 0 1 11.604 1h4.146a.25.25 0 0 1 .25.25Z">
+                            </path>
+                          </svg>
+                        </md-ref>
+                        <tool-tip id="tooltip-eabe4ae2-c85d-43db-824a-b8457bdb37b0"
+                          for="md-ref-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}" popover="manual"
+                          data-direction="sw" data-type="description" data-view-component="true"
+                          class="sr-only position-absolute">Reference an issue, pull request, or discussion</tool-tip>
+
+                        <details
+                          class="details-overlay details-reset js-saved-reply-container select-menu select-menu-modal-right flex-auto toolbar-item btn-octicon text-center p-2 p-md-1 mx-1"
+                          tabindex="-1">
+                          <summary id="saved-reply-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                            data-md-button="" tabindex="-1" aria-label="Reply">
+                            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                              data-view-component="true" class="octicon octicon-reply">
+                              <path
+                                d="M6.78 1.97a.75.75 0 0 1 0 1.06L3.81 6h6.44A4.75 4.75 0 0 1 15 10.75v2.5a.75.75 0 0 1-1.5 0v-2.5a3.25 3.25 0 0 0-3.25-3.25H3.81l2.97 2.97a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L1.47 7.28a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z">
+                              </path>
+                            </svg>
+                          </summary>
+
+                          <details-menu style="z-index: 99;"
+                            class="select-menu-modal position-absolute right-0 js-saved-reply-menu"
+                            data-menu-input="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}_saved_reply_id"
+                            src="/settings/replies?context=pull_request_comment" preload="">
+                            <div class="select-menu-header d-flex">
+                              <span class="select-menu-title flex-auto">Select a reply</span>
+                              <code><span class="border rounded p-1 mr-2">ctrl .</span></code>
+                            </div>
+
+                            <include-fragment role="menuitem" aria-label="Loading">
+                              <svg style="box-sizing: content-box; color: var(--color-icon-primary);" width="32"
+                                height="32" viewBox="0 0 16 16" fill="none" data-view-component="true"
+                                class="my-6 mx-auto d-block anim-rotate">
+                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"
+                                  vector-effect="non-scaling-stroke" fill="none"></circle>
+                                <path d="M15 8a7.002 7.002 0 00-7-7" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+                              </svg>
+                            </include-fragment>
+
+                          </details-menu>
+                        </details>
+                        <tool-tip id="tooltip-afc0506b-0ae4-4d83-8817-1fa17a18c870"
+                          for="saved-reply-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add saved reply</tool-tip>
+
+
+
+
+                      </div>
+
+
+                      <div class="Details-content--hidden d-block d-md-none width-full">
+                        <md-header aria-label="Heading"
+                          id="md-heading-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon py-2 pr-2 pl-1 mr-1"
+                          data-ga-click="Markdown Toolbar, click, header">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-heading">
+                            <path
+                              d="M3.75 2a.75.75 0 0 1 .75.75V7h7V2.75a.75.75 0 0 1 1.5 0v10.5a.75.75 0 0 1-1.5 0V8.5h-7v4.75a.75.75 0 0 1-1.5 0V2.75A.75.75 0 0 1 3.75 2Z">
+                            </path>
+                          </svg>
+                        </md-header>
+                        <tool-tip id="tooltip-1e25ee3e-d782-446c-9714-f1886d67ada7"
+                          for="md-heading-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add heading text</tool-tip>
+
+                        <md-bold aria-label="Bold"
+                          id="md-bold-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon p-2"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+b" data-ga-click="Markdown Toolbar, click, bold">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-bold">
+                            <path
+                              d="M4 2h4.5a3.501 3.501 0 0 1 2.852 5.53A3.499 3.499 0 0 1 9.5 14H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm1 7v3h4.5a1.5 1.5 0 0 0 0-3Zm3.5-2a1.5 1.5 0 0 0 0-3H5v3Z">
+                            </path>
+                          </svg>
+                        </md-bold>
+                        <tool-tip id="tooltip-12526351-b29b-4b05-ad48-05a66b3cb922"
+                          for="md-bold-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2" popover="manual"
+                          data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add bold text,
+                          &lt;Ctrl+b&gt;</tool-tip>
+
+                        <md-italic aria-label="Italic"
+                          id="md-italic-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2" role="button"
+                          tabindex="-1" class="toolbar-item btn-octicon p-2"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+i" data-ga-click="Markdown Toolbar, click, italic">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-italic">
+                            <path
+                              d="M6 2.75A.75.75 0 0 1 6.75 2h6.5a.75.75 0 0 1 0 1.5h-2.505l-3.858 9H9.25a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5h2.505l3.858-9H6.75A.75.75 0 0 1 6 2.75Z">
+                            </path>
+                          </svg>
+                        </md-italic>
+                        <tool-tip id="tooltip-82d6abfd-0a21-4db3-9c4f-df16a5fde450"
+                          for="md-italic-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add italic text,
+                          &lt;Ctrl+i&gt;</tool-tip>
+
+                        <md-unordered-list aria-label="Unordered list"
+                          id="md-unordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          role="button" tabindex="-1" class="toolbar-item btn-octicon p-2"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+8" data-ga-click="Markdown Toolbar, click, unordered list">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-list-unordered">
+                          </svg>
+                        </md-unordered-list>
+                        <tool-tip id="tooltip-da817a5b-e3ab-4b32-8d6c-d4f214f94cfa"
+                          for="md-unordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a bulleted list,
+                          &lt;Ctrl+Shift+8&gt;</tool-tip>
+
+                        <md-ordered-list aria-label="Numbered list"
+                          id="md-ordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          role="button" tabindex="-1" class="toolbar-item btn-octicon p-2"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+7" data-ga-click="Markdown Toolbar, click, ordered list">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-list-ordered">
+                          </svg>
+                        </md-ordered-list>
+                        <tool-tip id="tooltip-ef56a628-214e-4fbc-8bab-b270cf286a52"
+                          for="md-ordered_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a numbered list,
+                          &lt;Ctrl+Shift+7&gt;</tool-tip>
+
+                        <md-task-list aria-label="Task list"
+                          id="md-task_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          role="button" tabindex="-1" class="toolbar-item btn-octicon p-2"
+                          data-hotkey-scope="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          data-hotkey="Meta+Shift+l" data-ga-click="Markdown Toolbar, click, task list">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-tasklist">
+                          </svg>
+                        </md-task-list>
+                        <tool-tip id="tooltip-d5e8fa80-7299-4541-b2c3-29422bd3c0e1"
+                          for="md-task_list-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}-2"
+                          popover="manual" data-direction="sw" data-type="description" data-view-component="true"
+                          class="js-modifier-label-key sr-only position-absolute">Add a task list,
+                          &lt;Ctrl+Shift+l&gt;</tool-tip>
+                      </div>
+                    </markdown-toolbar>
+
+                  </div>
+
+                  <div class="comment-form-error js-comment-form-error" role="alert" hidden="">
+                    There was an error creating your PullRequest.
+                  </div>
+
+                  <file-attachment class="js-upload-markdown-image is-default"
+                    input="fc-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}" role="tabpanel"
+                    data-tab-container-no-tabstop="true" data-upload-repository-id="26369"
+                    data-upload-policy-url="/upload/policies/assets"><input type="hidden"
+                      value="03AMVeoexYbV4_hbYNLItYRHzm4NHNuIA42K8DnCG4JK65gBbEFf2H8j8PBcCD29Jmd6phH0lGifYpHQQiKCTw"
+                      data-csrf="true" class="js-data-upload-policy-url-csrf">
+                    <div
+                      class="js-write-bucket write-content tooltipped tooltipped-ne tooltipped-no-delay tooltipped-align-left-1 hide-reaction-suggestion upload-enabled mx-0 mt-2 mb-2 mx-md-2 hx_sm-hide-drag-drop">
+                      <input type="hidden" name="saved_reply_id"
+                        id="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}_saved_reply_id"
+                        class="js-resettable-field" value="" data-reset-value="">
+
+                      <text-expander keys=": @ #"
+                        data-issue-url="/suggestions/pull_request/3302068?issue_suggester=1&amp;repository=vault&amp;user_id=vault"
+                        data-mention-url="/suggestions/pull_request/3302068?mention_suggester=1&amp;repository=vault&amp;user_id=vault"
+                        multiword="#" data-emoji-url="/autocomplete/emoji">
+
+                        <textarea name="comment[body]"
+                          id="r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}"
+                          placeholder="Leave a comment" aria-label="Comment body"
+                          data-required-trimmed="Text field is empty"
+                          class="js-comment-field js-paste-markdown js-task-list-field js-quick-submit form-control input-contrast comment-form-textarea js-session-resumable js-saved-reply-shortcut-comment-field"
+                          dir="auto" required=""></textarea>
+
+                      </text-expander>
+                      <label
+                        class="text-normal drag-and-drop hx_drag-and-drop position-relative d-flex flex-justify-between color-border-emphasis">
+                        <input
+                          accept=".gif,.jpeg,.jpg,.mov,.mp4,.png,.svg,.webm,.cpuprofile,.csv,.dmp,.docx,.fodg,.fodp,.fods,.fodt,.gz,.json,.jsonc,.log,.md,.odf,.odg,.odp,.ods,.odt,.patch,.pdf,.pptx,.tgz,.txt,.xls,.xlsx,.zip"
+                          type="file" multiple=""
+                          class="manual-file-chooser manual-file-chooser-transparent top-0 right-0 bottom-0 left-0 width-full ml-0 form-control rounded-top-0"
+                          id="fc-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}">
+                        <span
+                          class="color-bg-subtle position-absolute top-0 left-0 rounded-bottom-2 width-full height-full"
+                          style="pointer-events: none;"></span>
+                        <span class="position-relative pr-2" style="pointer-events: none;">
+                          <span class="default">
+                            Attach files by dragging &amp; dropping, selecting or pasting them.
+                          </span>
+                          <span class="loading">
+                            <svg style="box-sizing: content-box; color: var(--color-icon-primary);" width="16"
+                              height="16" viewBox="0 0 16 16" fill="none" data-view-component="true"
+                              class="v-align-text-bottom mr-1 anim-rotate">
+                              <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"
+                                vector-effect="non-scaling-stroke" fill="none"></circle>
+                              <path d="M15 8a7.002 7.002 0 00-7-7" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+                            </svg>
+                            <span class="js-file-upload-loading-text" data-file-upload-message="Uploading your files…">
+                              Uploading your files…
+                            </span>
+                          </span>
+                          <span class="error bad-file">
+                            We don’t support that file type.
+                            <span class="drag-and-drop-error-info">
+                              <span class="btn-link">Try again</span> with a
+                              GIF, JPEG, JPG, MOV, MP4, PNG, SVG, WEBM, CPUPROFILE, CSV, DMP, DOCX, FODG, FODP, FODS,
+                              FODT, GZ, JSON, JSONC, LOG, MD, ODF, ODG, ODP, ODS, ODT, PATCH, PDF, PPTX, TGZ, TXT, XLS,
+                              XLSX or ZIP.
+                            </span>
+                          </span>
+                          <span class="error bad-permissions">
+                            Attaching documents requires write permission to this repository.
+                            <span class="drag-and-drop-error-info">
+                              <span class="btn-link">Try again</span> with a GIF, JPEG, JPG, MOV, MP4, PNG, SVG, WEBM,
+                              CPUPROFILE, CSV, DMP, DOCX, FODG, FODP, FODS, FODT, GZ, JSON, JSONC, LOG, MD, ODF, ODG,
+                              ODP, ODS, ODT, PATCH, PDF, PPTX, TGZ, TXT, XLS, XLSX or ZIP.
+                            </span>
+                          </span>
+                          <span class="error repository-required">
+                            We don’t support that file type.
+                            <span class="drag-and-drop-error-info">
+                              <span class="btn-link">Try again</span> with a GIF, JPEG, JPG, MOV, MP4, PNG, SVG, WEBM,
+                              CPUPROFILE, CSV, DMP, DOCX, FODG, FODP, FODS, FODT, GZ, JSON, JSONC, LOG, MD, ODF, ODG,
+                              ODP, ODS, ODT, PATCH, PDF, PPTX, TGZ, TXT, XLS, XLSX or ZIP.
+                            </span>
+                          </span>
+                          <span class="error too-big js-upload-too-big">
+                          </span>
+                          <span class="error empty">
+                            This file is empty.
+                            <span class="drag-and-drop-error-info">
+                              <span class="btn-link">Try again</span> with a file that’s not empty.
+                            </span>
+                          </span>
+                          <span class="error hidden-file">
+                            This file is hidden.
+                            <span class="drag-and-drop-error-info">
+                              <span class="btn-link">Try again</span> with another file.
+                            </span>
+                          </span>
+                          <span class="error failed-request">
+                            Something went really wrong, and we can’t process that file.
+                            <span class="drag-and-drop-error-info">
+                              <span class="btn-link">Try again.</span>
+                            </span>
+                          </span>
+                        </span>
+                        <a class="Link--muted position-relative d-inline"
+                          href="https://docs.github.com/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+                          target="_blank" data-ga-click="Markdown Toolbar, click, help"
+                          id="dd_fc-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}_md_link">
+                          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true" class="octicon octicon-markdown v-align-bottom">
+                            <path
+                              d="M14.85 3c.63 0 1.15.52 1.14 1.15v7.7c0 .63-.51 1.15-1.15 1.15H1.15C.52 13 0 12.48 0 11.84V4.15C0 3.52.52 3 1.15 3ZM9 11V5H7L5.5 7 4 5H2v6h2V8l1.5 1.92L7 8v3Zm2.99.5L14.5 8H13V5h-2v3H9.5Z">
+                            </path>
+                          </svg>
+                        </a>
+                        <tool-tip id="tooltip-589e08fd-1cfc-422f-bbc6-97e267ac080d"
+                          for="dd_fc-r{{sequence}}_new_inline_comment_diff_{{anchor}}_{{position}}_md_link"
+                          popover="manual" data-direction="nw" data-type="label" data-view-component="true"
+                          class="sr-only position-absolute">Styling with Markdown is supported</tool-tip>
+                      </label>
+
+                    </div>
+
+                  </file-attachment>
+                  <div role="tabpanel" class="js-preview-panel overflow-auto border-bottom mx-0 my-3 mx-md-2 mb-md-2"
+                    hidden="">
+                    <input type="hidden" name="path" value="" class="js-path">
+                    <input type="hidden" name="line" value="" class="js-line-number">
+                    <input type="hidden" name="start_line" value="" class="js-start-line-number">
+                    <input type="hidden" name="preview_side" value="" class="js-side">
+                    <input type="hidden" name="preview_start_side" value="" class="js-start-side">
+                    <input type="hidden" name="start_commit_oid" value="8c2152260eeccee3c55dc3b52d01d4da1a94cb6c"
+                      class="js-start-commit-oid">
+                    <input type="hidden" name="end_commit_oid" value="29f539c93c664393697f14b3a644beca01a380cd"
+                      class="js-end-commit-oid">
+                    <input type="hidden" name="base_commit_oid" value="8c2152260eeccee3c55dc3b52d01d4da1a94cb6c"
+                      class="js-base-commit-oid">
+                    <input type="hidden" name="comment_id" value="" class="js-comment-id">
+                    <div class="comment js-suggested-changes-container" data-thread-side="">
+                      <div class="comment-body markdown-body js-preview-body" data-skip-sizing=""
+                        style="max-height:50vh;">
+                        <p>Nothing to preview</p>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="comment-form-error mb-2 js-comment-update-error" hidden=""></div>
+                </tab-container>
+
+
+                <div class="form-actions float-md-right float-none px-md-2 px-0">
+                  <div class="position-relative float-md-right float-none ml-md-1 ml-0">
+                    <button width="full  auto" data-disable-invalid="" data-disable-with="" type="submit"
+                      data-view-component="true"
+                      class="Button--primary Button--medium Button float-none float-md-right mb-2 mb-md-0"> <span
+                        class="Button-content">
+                        <span class="Button-label"><span class="add-comment-label">Add review comment</span>
+                          <span class="start-review-label">Start a review</span></span>
+                      </span>
+                    </button>
+
+                    <button name="single_comment" value="1" width="full  auto" data-disable-invalid=""
+                      data-disable-with="" type="submit" data-view-component="true"
+                      class="review-simple-reply-button js-quick-submit-alternative Button--secondary Button--medium Button float-none float-md-right mr-0 mr-md-1 mb-2 mb-md-0">
+                      <span class="Button-content">
+                        <span class="Button-label">Add single comment</span>
+                      </span>
+                    </button>
+
+                  </div>
+
+                  <button width="full  auto"
+                    data-confirm-cancel-text="Are you sure you want to discard your unsaved changes?" type="button"
+                    data-view-component="true"
+                    class="js-hide-inline-comment-form Button--secondary Button--medium Button float-none float-md-right">
+                    <span class="Button-content">
+                      <span class="Button-label">Cancel</span>
+                    </span>
+                  </button>
+
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </td>
+    </tr>
+  </template>
+
+
+
+  <template class="js-comment-button-template">
+    <button data-path="{{ path }}" data-anchor="{{ anchor }}" data-position="{{ position }}" data-side="{{ side }}"
+      data-line="{{ line }}" data-original-line="{{ originalLine }}" aria-label="Add line comment" type="button"
+      data-view-component="true" class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+        class="octicon octicon-plus">
+        <path
+          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+        </path>
+      </svg>
+    </button></template>
+
+  <div id="files" class="diff-view commentable js-diff-container js-code-nav-container" data-hpc="">
+
+
+    <div class="container-md js-file-filter-blankslate" data-target="diff-file-filter.blankslate" hidden="">
+
+      <div class="blankslate-container">
+        <div data-view-component="true" class="blankslate">
+          <svg aria-hidden="true" height="24" viewBox="0 0 24 24" version="1.1" width="24" data-view-component="true"
+            class="octicon octicon-filter blankslate-icon">
+            <path
+              d="M2.75 6a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5H2.75ZM6 11.75a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H6.75a.75.75 0 0 1-.75-.75Zm4 4.938a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z">
+            </path>
+          </svg>
+
+          <h2 data-view-component="true" class="blankslate-heading"> There are no files selected for viewing
+          </h2>
+
+
+        </div>
+      </div>
+    </div>
+    <div class="js-diff-progressive-container">
+      <div id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+        data-details-container-group="file" class="file js-file js-details-container js-targetable-element show-inline-notes Details
+              Details--on open
+             
+             
+             
+             
+             
+             js-tagsearch-file
+           " data-file-type=".cs" data-file-deleted="false"
+        data-tagsearch-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs" data-tagsearch-lang="C#"
+        data-targets="diff-file-filter.diffEntries">
+        <div
+          class="file-header d-flex flex-md-row flex-column flex-md-items-center file-header--expandable js-file-header js-skip-tagsearch  sticky-file-header js-position-sticky js-position-sticky-stacked"
+          data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs" data-short-path="2998212"
+          data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c" data-file-type=".cs"
+          data-file-deleted="false" data-original-top="60px" style="top: 60px !important;">
+          <div class="file-info flex-auto min-width-0 mb-md-0 mb-2">
+            <button type="button" class="btn-octicon js-details-target" aria-label="Toggle diff contents"
+              aria-expanded="true" style="width: 22px;">
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                data-view-component="true" class="octicon octicon-chevron-down Details-content--hidden">
+                <path
+                  d="M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z">
+                </path>
+              </svg>
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                data-view-component="true" class="octicon octicon-chevron-right Details-content--shown">
+                <path
+                  d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z">
+                </path>
+              </svg>
+            </button>
+
+
+            <div class="js-expand-full-wrapper d-inline-block">
+              <button type="button"
+                class="btn-link color-fg-muted no-underline js-expand-full directional-expander tooltipped tooltipped-se"
+                aria-label="Expand all"
+                data-url="/vault/vault/blob_expand/e94f6fd835c1df6cc25d642b38d0ef2c12a625e8?anchor=diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c&amp;context=pull_request&amp;diff=unified&amp;direction=full&amp;mode=100644&amp;path=Client%2FExplorer%2FItem%2FCommands%2FExtSyncCommand.cs&amp;pull_request_id=3302068">
+                <svg aria-label="Expand all" aria-hidden="false" role="img" height="16" viewBox="0 0 16 16"
+                  version="1.1" width="16" data-view-component="true" class="octicon octicon-unfold">
+                  <path
+                    d="m8.177.677 2.896 2.896a.25.25 0 0 1-.177.427H8.75v1.25a.75.75 0 0 1-1.5 0V4H5.104a.25.25 0 0 1-.177-.427L7.823.677a.25.25 0 0 1 .354 0ZM7.25 10.75a.75.75 0 0 1 1.5 0V12h2.146a.25.25 0 0 1 .177.427l-2.896 2.896a.25.25 0 0 1-.354 0l-2.896-2.896A.25.25 0 0 1 5.104 12H7.25v-1.25Zm-5-2a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM6 8a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5A.75.75 0 0 1 6 8Zm2.25.75a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM12 8a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5A.75.75 0 0 1 12 8Zm2.25.75a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5Z">
+                  </path>
+                </svg>
+              </button>
+              <button type="button"
+                class="btn-link color-fg-muted no-underline js-collapse-diff tooltipped tooltipped-se"
+                aria-label="Collapse expanded lines" hidden="">
+                <svg aria-label="Collapse added diff lines" aria-hidden="false" role="img" height="16"
+                  viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-fold">
+                  <path
+                    d="M10.896 2H8.75V.75a.75.75 0 0 0-1.5 0V2H5.104a.25.25 0 0 0-.177.427l2.896 2.896a.25.25 0 0 0 .354 0l2.896-2.896A.25.25 0 0 0 10.896 2ZM8.75 15.25a.75.75 0 0 1-1.5 0V14H5.104a.25.25 0 0 1-.177-.427l2.896-2.896a.25.25 0 0 1 .354 0l2.896 2.896a.25.25 0 0 1-.177.427H8.75v1.25Zm-6.5-6.5a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM6 8a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5A.75.75 0 0 1 6 8Zm2.25.75a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM12 8a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5A.75.75 0 0 1 12 8Zm2.25.75a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5Z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+
+
+
+            <a class="Link--secondary no-underline d-inline-block"
+              href="/vault/vault/blob/R2026.1/.github/CODEOWNERS#L2">
+              <span aria-label="Owned by @liz1, @zhuj, and @jingd (from CODEOWNERS line 2)" data-view-component="true"
+                class="tooltipped tooltipped-se">
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                  data-view-component="true" class="octicon octicon-shield-lock color-fg-muted">
+                </svg>
+              </span></a>
+
+            <span class="sr-only">
+              3 changes: 2 additions &amp; 1 deletion
+            </span>
+            <span class="diffstat" aria-hidden="true">3 <span class="diffstat-block-added"></span><span
+                class="diffstat-block-added"></span><span class="diffstat-block-deleted"></span><span
+                class="diffstat-block-neutral"></span><span class="diffstat-block-neutral"></span></span>
+
+
+            <span class="Truncate">
+              <a title="Client/Explorer/Item/Commands/ExtSyncCommand.cs" class="Link--primary Truncate-text"
+                href="#diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c">Client/Explorer/Item/Commands/ExtSyncCommand.cs</a>
+
+              <clipboard-copy data-copy-feedback="Copied!" aria-label="Copy"
+                value="Client/Explorer/Item/Commands/ExtSyncCommand.cs" data-view-component="true"
+                class="Link--onHover color-fg-muted ml-2 mr-2" tabindex="0" role="button">
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                  data-view-component="true" class="octicon octicon-copy">
+                  <path
+                    d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z">
+                  </path>
+                  <path
+                    d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z">
+                  </path>
+                </svg>
+                <svg style="display: none;" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                  data-view-component="true" class="octicon octicon-check color-fg-success">
+                  <path
+                    d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z">
+                  </path>
+                </svg>
+              </clipboard-copy>
+            </span>
+
+
+
+          </div>
+
+          <div class="file-actions pt-0 mb-md-0 mb-2 ml-md-2 flex-shrink-0 flex-md-justify-end">
+            <div class="d-flex flex-justify-end">
+
+
+
+
+
+
+
+
+
+
+              <div class="js-replace-file-header-review d-flex">
+                <!-- '"` --><!-- </textarea></xmp> -->
+                <form class="js-toggle-user-reviewed-file-form d-flex flex-items-stretch hide-sm" data-autosubmit="true"
+                  data-turbo="false" action="/vault/vault/pull/12700/file_review" accept-charset="UTF-8" method="post">
+                  <input type="hidden" name="authenticity_token"
+                    value="gmEHv4J2mhVLwp1VwSGqVWkMiLQdRaAG6nB7bb1o60Jv9mYn-yLLRnp6aCG7rKs3Zow8p_YNhnVViREPuiAfjQ">
+                  <input type="hidden" name="path" value="Client/Explorer/Item/Commands/ExtSyncCommand.cs">
+
+                  <label
+                    class="js-reviewed-toggle ml-2 mr-1 px-2 py-1 rounded-2 f6 text-normal d-flex flex-items-center border color-fg-muted color-border-muted"
+                    style="cursor:pointer;">
+                    <input id="Client/Explorer/Item/Commands/ExtSyncCommand.cs-viewed-file"
+                      class="mr-1 js-reviewed-checkbox" type="checkbox" name="viewed" value="viewed"
+                      aria-describedby="tooltip-8d4a6d1c-53b1-450f-a029-fc45cf6602d0">
+                    <tool-tip id="tooltip-8d4a6d1c-53b1-450f-a029-fc45cf6602d0"
+                      for="Client/Explorer/Item/Commands/ExtSyncCommand.cs-viewed-file" popover="manual"
+                      data-direction="w" data-type="description" data-view-component="true"
+                      class="sr-only position-absolute" role="tooltip">Marking files as viewed can help keep track of
+                      your progress, but will not affect your submitted review</tool-tip>
+                    Viewed
+                  </label>
+                </form>
+              </div>
+
+
+              <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                data-subject-type="file" data-side="right" id="icon-button-ee4ae2cc-e62a-4ad1-8b8c-1c43929c2d09"
+                aria-labelledby="tooltip-a3b5de28-3eb5-4945-93fe-56d22a6909fb" type="button" data-view-component="true"
+                class="Button Button--iconOnly Button--invisible Button--medium js-add-file-comment ml-0"> <svg
+                  aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true"
+                  class="octicon octicon-comment Button-visual">
+                  <path
+                    d="M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 13.25 12H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 13.543V12H2.75A1.75 1.75 0 0 1 1 10.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z">
+                  </path>
+                </svg>
+              </button><tool-tip id="tooltip-a3b5de28-3eb5-4945-93fe-56d22a6909fb"
+                for="icon-button-ee4ae2cc-e62a-4ad1-8b8c-1c43929c2d09" popover="manual" data-direction="s"
+                data-type="label" data-view-component="true" class="sr-only position-absolute" aria-hidden="true"
+                role="tooltip">Comment on this file</tool-tip>
+
+
+
+
+              <details class="js-file-header-dropdown dropdown details-overlay details-reset pr-2 pl-2">
+                <summary class="height-full" aria-haspopup="menu" role="button">
+                  <div class="height-full d-flex flex-items-center Link--secondary">
+                    <svg aria-label="Show options" role="img" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                      data-view-component="true" class="octicon octicon-kebab-horizontal">
+                    </svg>
+                  </div>
+                </summary>
+                <details-menu
+                  class="dropdown-menu dropdown-menu-sw show-more-popover color-fg-default position-absolute f5"
+                  style="width:185px; z-index:99; right: -4px;" role="menu">
+                  <label role="menuitemradio" class="dropdown-item btn-link text-normal d-block pl-5" tabindex="0"
+                    aria-checked="true">
+                    <span class="position-absolute ml-n4"><svg aria-hidden="true" height="16" viewBox="0 0 16 16"
+                        version="1.1" width="16" data-view-component="true" class="octicon octicon-check">
+                      </svg></span>
+                    <input type="checkbox" checked="" class="d-none js-toggle-file-notes">
+                    Show comments
+                  </label>
+
+                  <div role="none" class="dropdown-divider"></div>
+
+                  <a href="/vault/vault/blob/29f539c93c664393697f14b3a644beca01a380cd/Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                    class="pl-5 dropdown-item btn-link" rel="nofollow" role="menuitem"
+                    data-ga-click="View file, click, location:files_changed_dropdown">
+                    View file
+                  </a>
+
+
+                  <button type="button" disabled="" role="menuitem" class="pl-5 dropdown-item btn-link"
+                    aria-label="You must be signed in and have push access to make changes.">
+                    Edit file
+                  </button>
+
+
+                  <button type="button" disabled="" role="menuitem" class="pl-5 dropdown-item btn-link"
+                    aria-label="You must be signed in and have push access to delete this file.">
+                    Delete file
+                  </button>
+
+
+                  <div role="none" class="dropdown-divider"></div>
+
+
+                  <a class="pl-5 dropdown-item btn-link js-remove-unless-platform" data-platforms="windows,mac"
+                    role="menuitem" href="https://desktop.github.com" aria-label="Open this file in GitHub Desktop"
+                    data-analytics-event="{&quot;category&quot;:&quot;Repository&quot;,&quot;action&quot;:&quot;open with desktop&quot;,&quot;label&quot;:&quot;pull_request_id:3302068&quot;}">
+                    Open in desktop
+                  </a>
+
+
+
+                </details-menu>
+              </details>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="js-file-content Details-content--hidden position-relative">
+
+
+          <div class="data highlight js-blob-wrapper" style="overflow-x: auto; overflow-y: hidden;">
+            <template class="js-file-alert-template">
+              <div data-view-component="true" class="flash flash-warn flash-full d-flex flex-items-center">
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                  data-view-component="true" class="octicon octicon-alert">
+                  <path
+                    d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z">
+                  </path>
+                </svg>
+                <span>
+                  This file contains bidirectional Unicode text that may be interpreted or compiled differently than
+                  what appears below. To review, open the file in an editor that reveals hidden Unicode characters.
+                  <a class="Link--inTextBlock" href="https://github.co/hiddenchars" target="_blank">Learn more about
+                    bidirectional Unicode characters</a>
+                </span>
+
+
+                <div data-view-component="true" class="flash-action"> <a href="{{ revealButtonHref }}"
+                    data-view-component="true" class="btn-sm btn"> Show hidden characters
+                  </a>
+                </div>
+              </div>
+            </template>
+            <template class="js-line-alert-template">
+              <span aria-label="This line has hidden Unicode characters" data-view-component="true"
+                class="line-alert tooltipped tooltipped-e">
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                  data-view-component="true" class="octicon octicon-alert">
+                  <path
+                    d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z">
+                  </path>
+                </svg>
+              </span></template>
+
+
+
+
+            <table class=" diff-table js-diff-table tab-size  " data-tab-size="8"
+              data-diff-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+              data-paste-markdown-skip="">
+              <thead hidden="">
+                <tr>
+                  <th scope="col">Original file line number</th>
+                  <th scope="col">Diff line number</th>
+                  <th scope="col">Diff line change</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr class="js-expandable-line js-skip-tagsearch" data-position="0">
+                  <td class="blob-num blob-num-expandable" colspan="2">
+                    <a href="#diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      id="expand-up-link-0-diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      class="js-expand directional-expander single-expander" aria-label="Expand Up"
+                      data-url="/vault/vault/blob_excerpt/e94f6fd835c1df6cc25d642b38d0ef2c12a625e8?context=pull_request&amp;diff=unified&amp;direction=up&amp;in_wiki_context=&amp;last_left=&amp;last_right=&amp;left=26&amp;left_hunk_size=6&amp;mode=100644&amp;path=Client%2FExplorer%2FItem%2FCommands%2FExtSyncCommand.cs&amp;pull_request_id=3302068&amp;right=26&amp;right_hunk_size=7"
+                      data-left-range="1-25" data-right-range="1-25"
+                      aria-labelledby="tooltip-5829fbf2-fd5a-4ab6-91aa-6b78aafc8ee0">
+                      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-fold-up">
+                        <path
+                          d="M7.823 1.677 4.927 4.573A.25.25 0 0 0 5.104 5H7.25v3.236a.75.75 0 1 0 1.5 0V5h2.146a.25.25 0 0 0 .177-.427L8.177 1.677a.25.25 0 0 0-.354 0ZM13.75 11a.75.75 0 0 0 0 1.5h.5a.75.75 0 0 0 0-1.5h-.5Zm-3.75.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM7.75 11a.75.75 0 0 0 0 1.5h.5a.75.75 0 0 0 0-1.5h-.5ZM4 11.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM1.75 11a.75.75 0 0 0 0 1.5h.5a.75.75 0 0 0 0-1.5h-.5Z">
+                        </path>
+                      </svg>
+                    </a>
+                    <tool-tip id="tooltip-5829fbf2-fd5a-4ab6-91aa-6b78aafc8ee0"
+                      for="expand-up-link-0-diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      popover="manual" data-direction="ne" data-type="label" data-view-component="true"
+                      class="sr-only position-absolute" aria-hidden="true" role="tooltip">Expand Up</tool-tip>
+                  </td>
+                  <td class="blob-code blob-code-inner blob-code-hunk">@@ -26,6 +26,7 @@ public override void
+                    OnExecute(ExplorerCommandContext context)</td>
+                </tr>
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL26"
+                    data-line-number="26" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR26"
+                    data-line-number="26"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="1" data-side="right" data-line="26" data-original-line="         {"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker=" ">
+                      <span class="pl-kos">{</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL27"
+                    data-line-number="27" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR27"
+                    data-line-number="27"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="2" data-side="right" data-line="27" data-original-line="             try"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker=" ">
+                      <span class="pl-k">try</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL28"
+                    data-line-number="28" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR28"
+                    data-line-number="28"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="3" data-side="right" data-line="28" data-original-line="             {"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker=" ">
+                      <span class="pl-kos">{</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td class="blob-num blob-num-addition empty-cell"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR29"
+                    data-line-number="29"
+                    class="blob-num blob-num-addition js-linkable-line-number js-code-nav-line-number js-blob-rnum">
+                  </td>
+
+                  <td class="blob-code blob-code-addition js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="4" data-side="right" data-line="29"
+                      data-original-line="+                var commandStartTime = DateTime.UtcNow;"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker="+">
+                      <span class="pl-smi">var</span> <span class="pl-s1">commandStartTime</span> <span
+                        class="pl-c1">=</span> DateTime<span class="pl-kos">.</span>UtcNow<span
+                        class="pl-kos">;</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL29"
+                    data-line-number="29" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR30"
+                    data-line-number="30"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="5" data-side="right" data-line="30"
+                      data-original-line="                 ExplorerSelectionSet currSelSet = context.CurrentSelectionSet;"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker=" ">
+                      <span class="pl-smi">ExplorerSelectionSet</span> <span class="pl-s1">currSelSet</span> <span
+                        class="pl-c1">=</span> context<span class="pl-kos">.</span>CurrentSelectionSet<span
+                        class="pl-kos">;</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL30"
+                    data-line-number="30" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR31"
+                    data-line-number="31"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="6" data-side="right" data-line="31"
+                      data-original-line="                 if (currSelSet == null || currSelSet.Objects.Count &lt; 1)"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker=" ">
+                      <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">currSelSet</span>
+                      <span class="pl-c1">==</span> <span class="pl-c1">null</span> <span class="pl-c1">||</span>
+                      currSelSet<span class="pl-kos">.</span>Objects<span class="pl-kos">.</span>Count <span
+                        class="pl-c1">&lt;</span> <span class="pl-c1">1</span><span class="pl-kos">)</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="de0ea8438e836d74ef4e39f6525dc4caaa5615a511ecf88048b79a2ae32bdd50"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL31"
+                    data-line-number="31" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR32"
+                    data-line-number="32"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="7" data-side="right" data-line="32"
+                      data-original-line="                     return;" aria-label="Add line comment" type="button"
+                      data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass " data-code-marker=" ">
+                      <span class="pl-k">return</span><span class="pl-kos">;</span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr class="js-expandable-line js-skip-tagsearch" data-position="8">
+                  <td class="blob-num blob-num-expandable" colspan="2">
+                    <a href="#diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      id="expand-down-link-8-diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      class="js-expand directional-expander" aria-label="Expand Down"
+                      data-url="/vault/vault/blob_excerpt/e94f6fd835c1df6cc25d642b38d0ef2c12a625e8?context=pull_request&amp;diff=unified&amp;direction=down&amp;in_wiki_context=&amp;last_left=31&amp;last_right=32&amp;left=99&amp;left_hunk_size=7&amp;mode=100644&amp;path=Client%2FExplorer%2FItem%2FCommands%2FExtSyncCommand.cs&amp;pull_request_id=3302068&amp;right=100&amp;right_hunk_size=7"
+                      data-left-range="32-64" data-right-range="33-65"
+                      aria-labelledby="tooltip-0bf8963d-383c-448c-a9ec-810e0166d7ab">
+                      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-fold-down">
+                        <path
+                          d="m8.177 14.323 2.896-2.896a.25.25 0 0 0-.177-.427H8.75V7.764a.75.75 0 1 0-1.5 0V11H5.104a.25.25 0 0 0-.177.427l2.896 2.896a.25.25 0 0 0 .354 0ZM2.25 5a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM6 4.25a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75ZM8.25 5a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM12 4.25a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75Zm2.25.75a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5Z">
+                        </path>
+                      </svg>
+                    </a>
+                    <tool-tip id="tooltip-0bf8963d-383c-448c-a9ec-810e0166d7ab"
+                      for="expand-down-link-8-diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      popover="manual" data-direction="ne" data-type="label" data-view-component="true"
+                      class="sr-only position-absolute" aria-hidden="true" role="tooltip">Expand Down</tool-tip>
+                    <a href="#diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      id="expand-up-link-8-diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      class="js-expand directional-expander" aria-label="Expand Up"
+                      data-url="/vault/vault/blob_excerpt/e94f6fd835c1df6cc25d642b38d0ef2c12a625e8?context=pull_request&amp;diff=unified&amp;direction=up&amp;in_wiki_context=&amp;last_left=31&amp;last_right=32&amp;left=99&amp;left_hunk_size=7&amp;mode=100644&amp;path=Client%2FExplorer%2FItem%2FCommands%2FExtSyncCommand.cs&amp;pull_request_id=3302068&amp;right=100&amp;right_hunk_size=7"
+                      data-left-range="65-98" data-right-range="66-99"
+                      aria-labelledby="tooltip-b7dd167d-12f6-4b09-9aaf-6657f2474092">
+                      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-fold-up">
+                        <path
+                          d="M7.823 1.677 4.927 4.573A.25.25 0 0 0 5.104 5H7.25v3.236a.75.75 0 1 0 1.5 0V5h2.146a.25.25 0 0 0 .177-.427L8.177 1.677a.25.25 0 0 0-.354 0ZM13.75 11a.75.75 0 0 0 0 1.5h.5a.75.75 0 0 0 0-1.5h-.5Zm-3.75.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM7.75 11a.75.75 0 0 0 0 1.5h.5a.75.75 0 0 0 0-1.5h-.5ZM4 11.75a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM1.75 11a.75.75 0 0 0 0 1.5h.5a.75.75 0 0 0 0-1.5h-.5Z">
+                        </path>
+                      </svg>
+                    </a>
+                    <tool-tip id="tooltip-b7dd167d-12f6-4b09-9aaf-6657f2474092"
+                      for="expand-up-link-8-diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      popover="manual" data-direction="ne" data-type="label" data-view-component="true"
+                      class="sr-only position-absolute" aria-hidden="true" role="tooltip">Expand Up</tool-tip>
+                  </td>
+                  <td class="blob-code blob-code-inner blob-code-hunk">@@ -99,7 +100,7 @@ public override void
+                    OnExecute(ExplorerCommandContext context)</td>
+                </tr>
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL99"
+                    data-line-number="99" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR100"
+                    data-line-number="100"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="9" data-side="right" data-line="100"
+                      data-original-line="                             try" aria-label="Add line comment" type="button"
+                      data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker=" "><span class="pl-s1"> <span class="pl-k">try</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL100"
+                    data-line-number="100" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR101"
+                    data-line-number="101"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="10" data-side="right" data-line="101"
+                      data-original-line="                             {" aria-label="Add line comment" type="button"
+                      data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker=" "><span class="pl-s1"> <span class="pl-kos">{</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL101"
+                    data-line-number="101" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR102"
+                    data-line-number="102"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="11" data-side="right" data-line="102"
+                      data-original-line="                                 var syncDetails = ExternalSyncServiceMethods.GetExtSyncInfoByItemIterationId(ConnectionManager.Instance.Connection, itemIterationId, &quot;Adsk.FusionManage.Details&quot;);"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker=" "><span class="pl-s1"> <span class="pl-smi">var</span> <span
+                          class="pl-s1">syncDetails</span> <span class="pl-c1">=</span> ExternalSyncServiceMethods<span
+                          class="pl-kos">.</span><span class="pl-en">GetExtSyncInfoByItemIterationId</span><span
+                          class="pl-kos">(</span>ConnectionManager<span class="pl-kos">.</span>Instance<span
+                          class="pl-kos">.</span>Connection<span class="pl-kos">,</span> itemIterationId<span
+                          class="pl-kos">,</span> <span class="pl-s"><span
+                            class="pl-s">"</span>Adsk.FusionManage.Details<span class="pl-s">"</span></span><span
+                          class="pl-kos">)</span><span class="pl-kos">;</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL102"
+                    data-line-number="102" class="blob-num blob-num-deletion js-linkable-line-number"></td>
+
+                  <td class="blob-num blob-num-deletion empty-cell"></td>
+
+                  <td class="blob-code blob-code-deletion  js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="12" data-side="left" data-line="102"
+                      data-original-line="-                                if (syncDetails != null)"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass js-skip-tagsearch"
+                      data-code-marker="-"><span class="pl-s1"> <span class="pl-k">if</span> <span
+                          class="pl-kos">(</span><span class="pl-s1">syncDetails</span> <span class="pl-c1">!=</span>
+                        <span class="pl-c1">null</span><span class="pl-kos">)</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td class="blob-num blob-num-addition empty-cell"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR103"
+                    data-line-number="103"
+                    class="blob-num blob-num-addition js-linkable-line-number js-code-nav-line-number js-blob-rnum">
+                  </td>
+
+                  <td class="blob-code blob-code-addition js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="13" data-side="right" data-line="103"
+                      data-original-line="+                                if (syncDetails != null &amp;&amp; syncDetails.UpdateDateTime &gt; commandStartTime)"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker="+"><span class="pl-s1"> <span class="pl-k">if</span> <span
+                          class="pl-kos">(</span><span class="pl-s1">syncDetails</span> <span class="pl-c1">!=</span>
+                        <span class="pl-c1">null</span><span class="x x-first"> </span><span
+                          class="pl-c1 x">&amp;&amp;</span><span class="x"> syncDetails</span><span
+                          class="pl-kos x">.</span><span class="x">UpdateDateTime </span><span
+                          class="pl-c1 x">&gt;</span><span class="x"> </span><span
+                          class="pl-s1 x x-last">commandStartTime</span><span class="pl-kos">)</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL103"
+                    data-line-number="103" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR104"
+                    data-line-number="104"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context  js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="14" data-side="right" data-line="104"
+                      data-original-line="                                 {" aria-label="Add line comment"
+                      type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker=" "><span class="pl-s1"> <span class="pl-kos">{</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL104"
+                    data-line-number="104" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR105"
+                    data-line-number="105"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context  js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="15" data-side="right" data-line="105"
+                      data-original-line="                                     var syncDetailsObj = JsonSerializer.Deserialize&lt;ExtSyncDetails&gt;(syncDetails.Val);"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker=" "><span class="pl-s1"> <span class="pl-smi">var</span> <span
+                          class="pl-s1">syncDetailsObj</span> <span class="pl-c1">=</span> JsonSerializer<span
+                          class="pl-kos">.</span><span class="pl-smi">Deserialize</span><span
+                          class="pl-c1">&lt;</span><span class="pl-smi">ExtSyncDetails</span><span
+                          class="pl-c1">&gt;</span><span class="pl-kos">(</span>syncDetails<span
+                          class="pl-kos">.</span>Val<span class="pl-kos">)</span><span
+                          class="pl-kos">;</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr data-hunk="ae1dff7403272062dcd92ab1eaac5f739b57cd8f8c11e032150df3f7e5b2ebaa"
+                  class="show-top-border">
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cL105"
+                    data-line-number="105" class="blob-num blob-num-context js-linkable-line-number"></td>
+
+                  <td id="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8cR106"
+                    data-line-number="106"
+                    class="blob-num blob-num-context js-linkable-line-number js-code-nav-line-number js-blob-rnum"></td>
+
+                  <td class="blob-code blob-code-context  js-file-line">
+                    <button data-path="Client/Explorer/Item/Commands/ExtSyncCommand.cs"
+                      data-anchor="diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      data-position="16" data-side="right" data-line="106"
+                      data-original-line="                                     var itemRev = itemRevs.Single(x =&gt; x.Id == itemIterationId).ItemRevision;"
+                      aria-label="Add line comment" type="button" data-view-component="true"
+                      class="add-line-comment js-add-line-comment js-add-single-line-comment btn-link"> <svg
+                        aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-plus">
+                        <path
+                          d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z">
+                        </path>
+                      </svg>
+                    </button> <span class="blob-code-inner blob-code-marker js-code-nav-pass "
+                      data-code-marker=" "><span class="pl-s1"> <span class="pl-smi">var</span> <span
+                          class="pl-s1">itemRev</span> <span class="pl-c1">=</span> itemRevs<span
+                          class="pl-kos">.</span><span class="pl-en">Single</span><span class="pl-kos">(</span><span
+                          class="pl-s1">x <span class="pl-c1">=&gt;</span> x<span class="pl-kos">.</span>Id <span
+                            class="pl-c1">==</span> <span class="pl-s1">itemIterationId</span></span><span
+                          class="pl-kos">)</span><span class="pl-kos">.</span>ItemRevision<span
+                          class="pl-kos">;</span></span></span>
+                  </td>
+                </tr>
+
+
+
+
+                <tr class="js-expandable-line js-skip-tagsearch" data-position="">
+                  <td class="blob-num blob-num-expandable" colspan="2">
+                    <a href="#diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      id="expand-down-link--diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      class="js-expand directional-expander single-expander" aria-label="Expand Down"
+                      data-url="/vault/vault/blob_excerpt/e94f6fd835c1df6cc25d642b38d0ef2c12a625e8?context=pull_request&amp;diff=unified&amp;direction=down&amp;in_wiki_context=&amp;last_left=105&amp;last_right=106&amp;left=199&amp;left_hunk_size=&amp;mode=100644&amp;path=Client%2FExplorer%2FItem%2FCommands%2FExtSyncCommand.cs&amp;pull_request_id=3302068&amp;right=199&amp;right_hunk_size="
+                      data-left-range="106-198" data-right-range="107-198"
+                      aria-labelledby="tooltip-7d725b7c-0602-4791-85c7-076e0c631cd4">
+                      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                        data-view-component="true" class="octicon octicon-fold-down">
+                        <path
+                          d="m8.177 14.323 2.896-2.896a.25.25 0 0 0-.177-.427H8.75V7.764a.75.75 0 1 0-1.5 0V11H5.104a.25.25 0 0 0-.177.427l2.896 2.896a.25.25 0 0 0 .354 0ZM2.25 5a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM6 4.25a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75ZM8.25 5a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5ZM12 4.25a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5a.75.75 0 0 1 .75.75Zm2.25.75a.75.75 0 0 0 0-1.5h-.5a.75.75 0 0 0 0 1.5h.5Z">
+                        </path>
+                      </svg>
+                    </a>
+                    <tool-tip id="tooltip-7d725b7c-0602-4791-85c7-076e0c631cd4"
+                      for="expand-down-link--diff-29982121b85707e1fc089475aa804e0cf1a78e3a3a0f1752a76b74cdb082ef8c"
+                      popover="manual" data-direction="ne" data-type="label" data-view-component="true"
+                      class="sr-only position-absolute" aria-hidden="true" role="tooltip">Expand Down</tool-tip>
+                  </td>
+                  <td class="blob-code blob-code-inner blob-code-hunk"></td>
+                </tr>
+
+
+              </tbody>
+            </table>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <button type="button" class="js-toggle-all-file-notes" data-hotkey="i" style="display:none">Toggle all file
+    notes</button>
+
+  <button type="button" class="js-toggle-all-file-annotations" data-hotkey="a" style="display:none">Toggle all file
+    annotations</button>
+
+  <svg aria-hidden="true" width="100px" height="84px" viewBox="0 0 340 84" version="1.1"
+    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    class="diff-placeholder-svg position-absolute bottom-0">
+    <defs>
+      <clipPath id="diff-placeholder">
+        <rect x="0" y="0" width="67.0175439" height="11.9298746" rx="2"></rect>
+        <rect x="18.9473684" y="47.7194983" width="100.701754" height="11.9298746" rx="2"></rect>
+        <rect x="0" y="71.930126" width="37.8947368" height="11.9298746" rx="2"></rect>
+        <rect x="127.017544" y="48.0703769" width="53.3333333" height="11.9298746" rx="2"></rect>
+        <rect x="187.719298" y="48.0703769" width="72.9824561" height="11.9298746" rx="2"></rect>
+        <rect x="76.8421053" y="0" width="140.350877" height="11.9298746" rx="2"></rect>
+        <rect x="17.8947368" y="23.8597491" width="140.350877" height="11.9298746" rx="2"></rect>
+        <rect x="166.315789" y="23.8597491" width="173.684211" height="11.9298746" rx="2"></rect>
+      </clipPath>
+
+      <linearGradient id="animated-diff-gradient" x1="0" x2="0" y1="0" y2="1" spreadMethod="reflect">
+        <stop offset="0" stop-color="#eee"></stop>
+        <stop offset="0.2" stop-color="#eee"></stop>
+        <stop offset="0.5" stop-color="#ddd"></stop>
+        <stop offset="0.8" stop-color="#eee"></stop>
+        <stop offset="1" stop-color="#eee"></stop>
+        <animateTransform attributeName="y1" values="0%; 100%; 0" dur="1s" repeatCount="3"></animateTransform>
+        <animateTransform attributeName="y2" values="100%; 200%; 0" dur="1s" repeatCount="3"></animateTransform>
+      </linearGradient>
+    </defs>
+  </svg>
+
+
+
+
+</diff-layout>
