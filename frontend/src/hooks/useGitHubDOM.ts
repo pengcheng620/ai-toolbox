@@ -408,7 +408,7 @@ export function useGitHubDOM(): UseGitHubDOMReturn {
       revertButton.className = 'Button Button--secondary Button--medium mr-2'
       revertButton.innerHTML = `
         <span class="Button-content">
-          <span class="Button-label">↶ Revert to Original</span>
+          <span class="Button-label">Revert to Original</span>
         </span>
       `
       revertButton.title = 'Revert to original PR description content'

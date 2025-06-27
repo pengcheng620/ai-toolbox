@@ -13,6 +13,7 @@ import { getGitHubPageStrategy } from "../../../lib/utils/github"
 import { useGitHubDOM } from "../../hooks/useGitHubDOM"
 import styles from "./add-description.module.css"
 import { getApiConfigSync } from "../../../lib/config/api-config"
+import { JiraTicketInput } from "./jira-ticket-input"
 
 export const AddDescription = () => {
   const { showError, showWarning } = useNotification()
@@ -21,6 +22,8 @@ export const AddDescription = () => {
   const [originalContent, setOriginalContent] = useState<string>("")
   const [hasGeneratedContent, setHasGeneratedContent] = useState(false)
   const [streamingContent, setStreamingContent] = useState("")
+  const [showJiraInput, setShowJiraInput] = useState(false)
+  const [pendingGenerationData, setPendingGenerationData] = useState<any>(null)
 
   // Store original content before generation
   const storeOriginalContent = () => {
@@ -125,16 +128,21 @@ export const AddDescription = () => {
     await activateEditModeImmediately()
     // Edit mode failure is handled gracefully with fallback - no notification needed
 
-    // Get Jira ticket
+    // Get Jira ticket - now optional
     let jiraTicketId = strategy.extractJiraTicketId()
     if (!jiraTicketId) {
-      jiraTicketId = window.prompt(
-        "Could not automatically detect a Jira ticket ID. Please enter one (e.g., PROJ-123):"
-      )
-      if (!jiraTicketId) {
-        // User cancelled - no notification needed, this is intentional
-        return
+      // Store the generation data and show the Jira input modal
+      const generationData = {
+        prTitle,
+        codeChanges: await strategy.getCodeChanges(),
+        branchName: strategy.getBranchName(),
+        commitMessages: await strategy.getCommitMessages(),
+        descriptionTemplate: strategy.getDescriptionTemplate()
       }
+
+      setPendingGenerationData(generationData)
+      setShowJiraInput(true)
+      return
     }
 
     // Get code changes, branch name, and commit messages
@@ -179,13 +187,91 @@ export const AddDescription = () => {
       console.log(`✅ Enhanced analysis ready: ${enhancedFeatures.join(", ")}`)
     }
 
+    // Continue with generation using the detected Jira ticket
+    await continueWithGeneration(jiraTicketId, {
+      prTitle,
+      codeChanges,
+      branchName,
+      commitMessages,
+      descriptionTemplate,
+      filesChanged,
+      commits
+    })
+  }
+
+  // Handle Jira ticket input submission
+  const handleJiraTicketSubmit = async (jiraTicketId: string | null) => {
+    setShowJiraInput(false)
+
+    if (pendingGenerationData) {
+      await continueWithGeneration(jiraTicketId, pendingGenerationData)
+      setPendingGenerationData(null)
+    }
+  }
+
+  // Handle Jira ticket input cancellation
+  const handleJiraTicketCancel = () => {
+    setShowJiraInput(false)
+    setPendingGenerationData(null)
+  }
+
+  // Continue with generation after Jira ticket is resolved
+  const continueWithGeneration = async (jiraTicketId: string | null, data: {
+    prTitle: string
+    codeChanges: string
+    branchName: string
+    commitMessages: string[]
+    descriptionTemplate: string
+    filesChanged?: any
+    commits?: any
+  }) => {
+    // Fetch enhanced data if not already provided
+    let { filesChanged, commits } = data
+
+    if (!filesChanged || !commits) {
+      console.log("🔍 Fetching enhanced PR data...")
+
+      // Fetch file changes silently - no notifications for optional data
+      if (!filesChanged) {
+        try {
+          console.log("📁 Fetching detailed file changes...")
+          filesChanged = await fetchPRFileChanges()
+          console.log(`✅ Fetched ${filesChanged.length} file changes`)
+        } catch (error) {
+          console.warn("⚠️ Failed to fetch file changes:", error)
+          // Continue without file changes - this is optional data, no notification needed
+        }
+      }
+
+      // Fetch commit information silently - no notifications for optional data
+      if (!commits) {
+        try {
+          console.log("📝 Fetching detailed commit information...")
+          commits = await fetchPRCommitMessages()
+          console.log(`✅ Fetched ${commits.length} commits`)
+        } catch (error) {
+          console.warn("⚠️ Failed to fetch commits:", error)
+          // Continue without commits - this is optional data, no notification needed
+        }
+      }
+
+      // Log enhanced features to console only
+      const enhancedFeatures = []
+      if (filesChanged && filesChanged.length > 0) enhancedFeatures.push(`${filesChanged.length} files`)
+      if (commits && commits.length > 0) enhancedFeatures.push(`${commits.length} commits`)
+
+      if (enhancedFeatures.length > 0) {
+        console.log(`✅ Enhanced analysis ready: ${enhancedFeatures.join(", ")}`)
+      }
+    }
+
     await handleGenerate({
-      jira_ticket_id: jiraTicketId,
-      pr_title: prTitle,
-      code_changes: codeChanges,
-      branch_name: branchName,
-      commit_messages: commitMessages,
-      description_template: descriptionTemplate,
+      jira_ticket_id: jiraTicketId || "", // Use empty string if null (skip Jira integration)
+      pr_title: data.prTitle,
+      code_changes: data.codeChanges,
+      branch_name: data.branchName,
+      commit_messages: data.commitMessages,
+      description_template: data.descriptionTemplate,
       files_changed: filesChanged,
       commits: commits,
     })
@@ -297,26 +383,43 @@ export const AddDescription = () => {
 
   return (
     <>
-      <div
-        className="dropdown-item"
-        onClick={handleClick}
-        style={{
-          cursor: loading ? "not-allowed" : "pointer",
-          opacity: loading ? 0.6 : 1
-        }}
-        title="Generate PR description from a Jira ticket and code changes">
-        {loading ? (
-          <>
-            <LoadingSpinner />
-            <span>Generating...</span>
-          </>
-        ) : (
-          <>
-            <SparklesIcon className={styles.icon} />
-            <span>Generate</span>
-          </>
-        )}
-      </div>
+      {/* Jira Ticket Input Popover */}
+      <JiraTicketInput
+        isOpen={showJiraInput}
+        onSubmit={handleJiraTicketSubmit}
+        onCancel={handleJiraTicketCancel}
+      >
+        <div
+          onClick={handleClick}
+          style={{
+            cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.6 : 1,
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "4px 8px",
+            borderRadius: "6px",
+            backgroundColor: "#f6f8fa",
+            border: "1px solid #d0d7de",
+            fontSize: "12px",
+            fontWeight: "500",
+            color: "#24292f",
+            textDecoration: "none",
+            whiteSpace: "nowrap"
+          }}
+          title="Generate PR description from a Jira ticket and code changes">
+          {loading ? (
+            <>
+              <LoadingSpinner />
+              <span style={{ marginLeft: "4px" }}>Generating...</span>
+            </>
+          ) : (
+            <>
+              <SparklesIcon className={styles.icon} />
+              <span style={{ marginLeft: "4px" }}>Generate</span>
+            </>
+          )}
+        </div>
+      </JiraTicketInput>
     </>
   )
 }

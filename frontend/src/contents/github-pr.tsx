@@ -31,12 +31,18 @@ export const getRootContainer = () =>
   new Promise((resolve) => {
     console.log("getRootContainer")
     const checkInterval = setInterval(() => {
-      const rootContainerParent = document.querySelector(".timeline-comment-header > .timeline-comment-actions > details > details-menu")
-      if (rootContainerParent) {
+      // Look for the first timeline-comment-header and insert before timeline-comment-actions
+      const timelineCommentHeader = document.querySelector(".timeline-comment-header")
+      const timelineCommentActions = timelineCommentHeader?.querySelector(".timeline-comment-actions")
+
+      if (timelineCommentHeader && timelineCommentActions) {
         clearInterval(checkInterval)
         const rootContainer = document.createElement("div")
         rootContainer.className = "aui-buttons pluggable-ops"
-        rootContainerParent.append(rootContainer)
+        rootContainer.style.cssText = "display: inline-flex; align-items: center; margin-right: 8px;"
+
+        // Insert before timeline-comment-actions
+        timelineCommentHeader.insertBefore(rootContainer, timelineCommentActions)
         resolve(rootContainer)
       }
     }, 137)
