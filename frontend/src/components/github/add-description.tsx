@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { Modal, Button, Text } from "@mantine/core"
 import { useNotification } from "~components/common/notification"
 import { useGitHubPRFromJiraMessaging } from "~hook/use-api-messaging"
 
@@ -22,33 +21,6 @@ export const AddDescription = () => {
   const [originalContent, setOriginalContent] = useState<string>("")
   const [hasGeneratedContent, setHasGeneratedContent] = useState(false)
   const [streamingContent, setStreamingContent] = useState("")
-
-  // Modal state for replacing alert() calls
-  const [modalState, setModalState] = useState<{
-    opened: boolean
-    title: string
-    content: string
-    type: 'info' | 'success' | 'error'
-  }>({
-    opened: false,
-    title: '',
-    content: '',
-    type: 'info'
-  })
-
-  // Helper function to show modal instead of alert()
-  const showModal = (title: string, content: string, type: 'info' | 'success' | 'error' = 'info') => {
-    setModalState({
-      opened: true,
-      title,
-      content,
-      type
-    })
-  }
-
-  const closeModal = () => {
-    setModalState(prev => ({ ...prev, opened: false }))
-  }
 
   // Store original content before generation
   const storeOriginalContent = () => {
@@ -314,74 +286,6 @@ export const AddDescription = () => {
     }
   }
 
-  const handleTestFetchFiles = async () => {
-    console.log("🚀 Starting file fetching test...")
-    try {
-      const fileChanges = await fetchPRFileChanges()
-
-      if (fileChanges.length === 0) {
-        console.warn(
-          "⚠️ No file changes found. The page structure might have changed, or there are no file changes in this PR."
-        )
-        showModal(
-          "No File Changes Found",
-          "Could not find any file changes. The page structure might have changed, or there are no file changes in this PR. Check the console for more details.",
-          'info'
-        )
-        return
-      }
-
-      console.log(`✅ Success! Found ${fileChanges.length} file(s):`)
-      console.table(fileChanges)
-      showModal(
-        "File Fetching Test Successful",
-        `Success! Found ${fileChanges.length} file(s). Check the console for the full list of files and their details.`,
-        'success'
-      )
-    } catch (error) {
-      console.error("❌ An error occurred during the file fetching test:", error)
-      showModal(
-        "File Fetching Test Failed",
-        "An unexpected error occurred during the file fetching test. Check the console for detailed error information.",
-        'error'
-      )
-    }
-  }
-
-  const handleTestFetchCommits = async () => {
-    console.log("🚀 Starting commit fetching test...")
-    try {
-      const commits = await fetchPRCommitMessages()
-
-      if (commits.length === 0) {
-        console.warn(
-          "⚠️ No commits found. The page structure might have changed, or there are no commits in this PR."
-        )
-        showModal(
-          "No Commits Found",
-          "Could not find any commits. The page structure might have changed, or there are no commits in this PR. Check the console for more details.",
-          'info'
-        )
-        return
-      }
-
-      console.log(`✅ Success! Found ${commits.length} commit(s):`)
-      console.table(commits)
-      showModal(
-        "Commit Fetching Test Successful",
-        `Success! Found ${commits.length} commit(s). Check the console for the full list of commits and their details.`,
-        'success'
-      )
-    } catch (error) {
-      console.error("❌ An error occurred during the commit fetching test:", error)
-      showModal(
-        "Commit Fetching Test Failed",
-        "An unexpected error occurred during the commit fetching test. Check the console for detailed error information.",
-        'error'
-      )
-    }
-  }
-
   const LoadingSpinner = () => (
     <svg className={styles.spinner} viewBox="0 0 16 16" fill="currentColor">
       <path
@@ -413,42 +317,6 @@ export const AddDescription = () => {
           </>
         )}
       </div>
-      <div
-        className="dropdown-item"
-        onClick={handleTestFetchFiles}
-        style={{ cursor: "pointer" }}
-        title="Test fetching the list of changed files from the 'Files changed' tab.">
-        <span style={{ width: "1.25rem", textAlign: "center" }}>🧪</span>
-        <span>Test Fetch Files</span>
-      </div>
-      <div
-        className="dropdown-item"
-        onClick={handleTestFetchCommits}
-        style={{ cursor: "pointer" }}
-        title="Test fetching the list of commits from the 'Commits' tab.">
-        <span style={{ width: "1.25rem", textAlign: "center" }}>📝</span>
-        <span>Test Fetch Commits</span>
-      </div>
-
-      {/* Modal for replacing alert() calls */}
-      <Modal
-        opened={modalState.opened}
-        onClose={closeModal}
-        title={modalState.title}
-        centered
-        size="md"
-      >
-        <Text size="sm" style={{ marginBottom: '1rem' }}>
-          {modalState.content}
-        </Text>
-        <Button
-          onClick={closeModal}
-          color={modalState.type === 'error' ? 'red' : modalState.type === 'success' ? 'green' : 'blue'}
-          fullWidth
-        >
-          OK
-        </Button>
-      </Modal>
     </>
   )
 }
