@@ -430,8 +430,15 @@ class GitHubService(BaseAzureAIService):
             logger.info(f"Files changed count: {len(files_changed) if files_changed else 0}")
             logger.info(f"Commits count: {len(commits) if commits else 0}")
 
-            # Check if this is a test ticket
-            if jira_ticket_id.startswith("TEST-"):
+            # Check if jira_ticket_id is empty or a test ticket
+            if not jira_ticket_id or jira_ticket_id.strip() == "":
+                # Use default data when no Jira ticket is provided
+                jira_details = {
+                    "summary": "Pull Request",
+                    "description": "No Jira ticket provided. This PR contains code changes that improve the codebase."
+                }
+                logger.info(f"✅ No Jira ticket provided, using default data")
+            elif jira_ticket_id.startswith("TEST-"):
                 # Use mock data for testing
                 jira_details = {
                     "summary": "Test ticket for streaming functionality",
@@ -595,8 +602,15 @@ class GitHubService(BaseAzureAIService):
             logger.info(f"Files changed count: {len(files_changed) if files_changed else 0}")
             logger.info(f"Commits count: {len(commits) if commits else 0}")
 
-            # Check if this is a test ticket
-            if jira_ticket_id.startswith("TEST-"):
+            # Check if jira_ticket_id is empty or a test ticket
+            if not jira_ticket_id or jira_ticket_id.strip() == "":
+                # Use default data when no Jira ticket is provided
+                jira_details = {
+                    "summary": "Pull Request",
+                    "description": "No Jira ticket provided. This PR contains code changes that improve the codebase."
+                }
+                logger.info(f"✅ No Jira ticket provided, using default data")
+            elif jira_ticket_id.startswith("TEST-"):
                 # Use mock data for testing
                 jira_details = {
                     "summary": "Test ticket for streaming functionality",

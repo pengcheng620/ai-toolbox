@@ -4,6 +4,17 @@
   }
 }
 
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
 .icon {
   width: 16px;
   height: 16px;
@@ -11,7 +22,12 @@
   margin-right: 8px;
 }
 
+.iconLoading {
+  composes: icon;
+  animation: sparkle 0.6s ease-in-out infinite;
+}
+
 .spinner {
   composes: icon;
   animation: spin 1s linear infinite;
-} 
+}

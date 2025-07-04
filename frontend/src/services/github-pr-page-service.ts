@@ -56,19 +56,31 @@ const constructCommitsTabUrl = (prUrl: string): string => {
   return `${getBasePrUrl(prUrl)}/commits`;
 };
 
+import githubCacheService from './github-cache-service'
+
 /**
  * Fetches and parses the 'Files changed' tab of a GitHub PR to extract detailed,
  * structured information about file changes, including metadata and line-by-line diffs.
  * @returns A promise that resolves to an array of parsed file objects.
  */
 export const fetchPRFileChanges = async (): Promise<ParsedFile[]> => {
-  const filesUrl = constructFilesTabUrl(window.location.href);
+  const prUrl = window.location.href
 
-  const response = await fetch(filesUrl);
-  if (!response.ok) {
-    console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
-    throw new Error(`Failed to fetch file changes. Status: ${response.status}`);
+  // Check cache first
+  const cachedData = githubCacheService.get<ParsedFile[]>(prUrl, 'fileChanges')
+  if (cachedData) {
+    return cachedData
   }
+
+  console.log('🔍 Fetching PR file changes from server...')
+  const filesUrl = constructFilesTabUrl(prUrl);
+
+  try {
+    const response = await fetch(filesUrl);
+    if (!response.ok) {
+      console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch file changes. Status: ${response.status}`);
+    }
   const htmlText = await response.text();
 
   const parser = new DOMParser();
@@ -174,7 +186,15 @@ export const fetchPRFileChanges = async (): Promise<ParsedFile[]> => {
     }
   });
 
+  // Cache the results before returning
+  githubCacheService.set(prUrl, 'fileChanges', parsedFiles)
+  console.log(`✅ Cached ${parsedFiles.length} file changes for PR`)
+
   return parsedFiles;
+  } catch (error) {
+    console.error('❌ Failed to fetch PR file changes:', error)
+    throw error
+  }
 };
 
 /**
@@ -291,32 +311,57 @@ const parseCommitsAutodesk = (doc: Document): ParsedCommit[] => {
  * @returns A promise that resolves to an array of parsed commit objects.
  */
 export const fetchPRCommitMessages = async (): Promise<ParsedCommit[]> => {
-  const commitsUrl = constructCommitsTabUrl(window.location.href);
+  const prUrl = window.location.href
 
-  const response = await fetch(commitsUrl);
-  if (!response.ok) {
-    console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
-    throw new Error(`Failed to fetch commit messages. Status: ${response.status}`);
+  // Check cache first
+  const cachedData = githubCacheService.get<ParsedCommit[]>(prUrl, 'commits')
+  if (cachedData) {
+    return cachedData
   }
-  const htmlText = await response.text();
+
+  console.log('🔍 Fetching PR commit messages from server...')
+  const commitsUrl = constructCommitsTabUrl(prUrl);
+
+  try {
+    const response = await fetch(commitsUrl);
+    if (!response.ok) {
+      console.error(`Fetch failed with status: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch commit messages. Status: ${response.status}`);
+    }
+    const htmlText = await response.text();
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlText, "text/html");
 
-  // Detect platform and use appropriate parsing logic
-  const platform = detectPlatform();
+    // Detect platform and use appropriate parsing logic
+    const platform = detectPlatform();
 
-  switch (platform) {
-    case 'github.com':
-      console.log('Parsing commits for github.com');
-      return parseCommitsGitHubCom(doc);
+    let parsedCommits: ParsedCommit[]
 
-    case 'git.autodesk.com':
-      console.log('Parsing commits for git.autodesk.com');
-      return parseCommitsAutodesk(doc);
+    switch (platform) {
+      case 'github.com':
+        console.log('Parsing commits for github.com');
+        parsedCommits = parseCommitsGitHubCom(doc);
+        break;
 
-    default:
-      console.warn(`Unknown platform: ${window.location.hostname}. Attempting git.autodesk.com parsing as fallback.`);
-      return parseCommitsAutodesk(doc);
+      case 'git.autodesk.com':
+        console.log('Parsing commits for git.autodesk.com');
+        parsedCommits = parseCommitsAutodesk(doc);
+        break;
+
+      default:
+        console.warn(`Unknown platform: ${window.location.hostname}. Attempting git.autodesk.com parsing as fallback.`);
+        parsedCommits = parseCommitsAutodesk(doc);
+        break;
+    }
+
+    // Cache the results before returning
+    githubCacheService.set(prUrl, 'commits', parsedCommits)
+    console.log(`✅ Cached ${parsedCommits.length} commits for PR`)
+
+    return parsedCommits;
+  } catch (error) {
+    console.error('❌ Failed to fetch PR commit messages:', error)
+    throw error
   }
 };

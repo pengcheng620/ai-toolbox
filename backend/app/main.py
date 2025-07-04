@@ -2,8 +2,9 @@
 
 from contextlib import asynccontextmanager
 import os
+import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
@@ -64,6 +65,26 @@ app.add_middleware(
     ],
     expose_headers=["*"],
 )
+
+# Add request logging middleware for debugging
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log all incoming requests for debugging purposes"""
+    start_time = time.time()
+
+    # Log request details for debugging
+    logger.info(f"🔍 Incoming request: {request.method} {request.url}")
+    logger.info(f"🔍 Headers: {dict(request.headers)}")
+    logger.info(f"🔍 Client: {request.client}")
+
+    # Process request
+    response = await call_next(request)
+
+    # Log response details
+    process_time = time.time() - start_time
+    logger.info(f"🔍 Response: {response.status_code} (took {process_time:.3f}s)")
+
+    return response
 
 # Include routers with modular structure
 app.include_router(auth_router, prefix=f"{settings.api_v1_prefix}/auth", tags=["Auth"])

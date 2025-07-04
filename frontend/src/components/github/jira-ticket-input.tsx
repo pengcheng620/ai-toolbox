@@ -17,6 +17,7 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
 }) => {
   const [ticketId, setTicketId] = useState("")
   const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false) // Prevent duplicate submissions
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Reset state when modal opens
@@ -24,6 +25,7 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
     if (isOpen) {
       setTicketId("")
       setError("")
+      setIsSubmitting(false)
       // Focus the input after a short delay to ensure modal is rendered
       setTimeout(() => {
         inputRef.current?.focus()
@@ -50,18 +52,24 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
   }
 
   const handleSubmit = () => {
+    if (isSubmitting) return // Prevent duplicate submissions
+
     const trimmedValue = ticketId.trim()
-    
+
     if (trimmedValue && !validateTicketId(trimmedValue)) {
       setError("Please enter a valid Jira ticket ID (e.g., PROJ-123)")
       return
     }
 
+    setIsSubmitting(true)
     // Submit with the ticket ID or null if empty (skip Jira integration)
     onSubmit(trimmedValue || null)
   }
 
   const handleSkip = () => {
+    if (isSubmitting) return // Prevent duplicate submissions
+
+    setIsSubmitting(true)
     onSubmit(null)
   }
 
@@ -79,7 +87,7 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
     <Popover
       opened={isOpen}
       onChange={(opened) => {
-        if (!opened) {
+        if (!opened && !isSubmitting) {
           onCancel()
         }
       }}
@@ -88,8 +96,8 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
       trapFocus
       withArrow
       shadow="md"
-      closeOnClickOutside={true}
-      closeOnEscape={true}
+      closeOnClickOutside={!isSubmitting} // Prevent closing during submission
+      closeOnEscape={!isSubmitting} // Prevent closing during submission
     >
       <Popover.Target>
         {children}
@@ -104,7 +112,7 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
     return (
       <Stack gap="md">
         <Group gap="xs" align="center">
-          <TicketIcon className="w-4 h-4 text-blue-600" />
+          <TicketIcon style={{ width: 16, height: 16, color: "#2563eb" }} />
           <Text size="sm" fw={500}>
             Jira Ticket (Optional)
           </Text>
@@ -121,7 +129,7 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="e.g., PROJ-123, UC-74354"
           error={error}
-          size="sm"
+          size="xs"
           data-autofocus
           label="Jira Ticket ID"
         />
@@ -129,24 +137,28 @@ export const JiraTicketInput: React.FC<JiraTicketInputProps> = ({
         <Group gap="sm" justify="flex-end">
           <Button
             variant="subtle"
-            size="sm"
+            size="xs"
             onClick={handleSkip}
             color="gray"
+            disabled={isSubmitting}
           >
-            Skip Jira
+            {isSubmitting ? "Processing..." : "Skip Jira"}
           </Button>
           <Button
             variant="subtle"
-            size="sm"
+            size="xs"
             onClick={onCancel}
             color="gray"
+            disabled={isSubmitting}
           >
             Cancel
           </Button>
           <Button
-            size="sm"
+            size="xs"
             onClick={handleSubmit}
             color="blue"
+            disabled={isSubmitting}
+            loading={isSubmitting}
           >
             Continue
           </Button>

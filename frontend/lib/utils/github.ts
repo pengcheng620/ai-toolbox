@@ -1,5 +1,7 @@
 // Removed unused constant - JIRA_TICKET_REGEX is defined inline where needed
 
+import githubCacheService from '../../src/services/github-cache-service'
+
 /**
  * Defines the interface for a strategy that extracts information from a GitHub PR page.
  * This allows handling different page layouts (e.g., public GitHub vs. enterprise).
@@ -46,17 +48,33 @@ class PublicGitHubStrategy implements GitHubPageStrategy {
   }
 
   async getCodeChanges(): Promise<string> {
+    const prUrl = window.location.href
+
+    // Check cache first
+    const cachedData = githubCacheService.get<string>(prUrl, 'codeChanges')
+    if (cachedData) {
+      return cachedData
+    }
+
     console.log("🔍 Extracting code changes from GitHub page...")
+
+    let codeChanges: string
 
     // First, try to use GitHub API if available
     const apiChanges = await this.getCodeChangesFromAPI()
     if (apiChanges) {
       console.log("✅ Successfully extracted code changes from GitHub API")
-      return apiChanges
+      codeChanges = apiChanges
+    } else {
+      console.log("⚠️ GitHub API failed, falling back to DOM extraction")
+      codeChanges = await this.getCodeChangesFromDOM()
     }
 
-    console.log("⚠️ GitHub API failed, falling back to DOM extraction")
-    return this.getCodeChangesFromDOM()
+    // Cache the results before returning
+    githubCacheService.set(prUrl, 'codeChanges', codeChanges)
+    console.log(`✅ Cached code changes for PR (${codeChanges.length} characters)`)
+
+    return codeChanges
   }
 
   private async getCodeChangesFromAPI(): Promise<string | null> {
@@ -160,17 +178,33 @@ class PublicGitHubStrategy implements GitHubPageStrategy {
   }
 
   async getCommitMessages(): Promise<string[]> {
+    const prUrl = window.location.href
+
+    // Check cache first
+    const cachedData = githubCacheService.get<string[]>(prUrl, 'commitMessages')
+    if (cachedData) {
+      return cachedData
+    }
+
     console.log("🔍 Extracting commit messages from GitHub page...")
+
+    let commitMessages: string[]
 
     // First, try to use GitHub API if available
     const apiCommits = await this.getCommitMessagesFromAPI()
     if (apiCommits && apiCommits.length > 0) {
       console.log("✅ Successfully extracted commit messages from GitHub API")
-      return apiCommits
+      commitMessages = apiCommits
+    } else {
+      console.log("⚠️ GitHub API failed, falling back to DOM extraction")
+      commitMessages = await this.getCommitMessagesFromDOM()
     }
 
-    console.log("⚠️ GitHub API failed, falling back to DOM extraction")
-    return this.getCommitMessagesFromDOM()
+    // Cache the results before returning
+    githubCacheService.set(prUrl, 'commitMessages', commitMessages)
+    console.log(`✅ Cached ${commitMessages.length} commit messages for PR`)
+
+    return commitMessages
   }
 
   private async getCommitMessagesFromAPI(): Promise<string[] | null> {

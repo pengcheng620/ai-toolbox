@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback, useRef } from "react"
 import { useNotification } from "~components/common/notification"
 import { useGitHubPRFromJiraMessaging } from "~hook/use-api-messaging"
 
@@ -14,6 +14,33 @@ import { useGitHubDOM } from "../../hooks/useGitHubDOM"
 import styles from "./add-description.module.css"
 import { getApiConfigSync } from "../../../lib/config/api-config"
 import { JiraTicketInput } from "./jira-ticket-input"
+import GitHubCacheManager from "../../services/github-cache-manager"
+
+// Custom debounce hook
+const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const debouncedCallback = useCallback((...args: any[]) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      callback(...args)
+    }, delay)
+  }, [callback, delay])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  return debouncedCallback
+}
 
 export const AddDescription = () => {
   const { showError, showWarning } = useNotification()
@@ -24,6 +51,7 @@ export const AddDescription = () => {
   const [streamingContent, setStreamingContent] = useState("")
   const [showJiraInput, setShowJiraInput] = useState(false)
   const [pendingGenerationData, setPendingGenerationData] = useState<any>(null)
+  const [isProcessing, setIsProcessing] = useState(false) // Prevent duplicate processing
 
   // Store original content before generation
   const storeOriginalContent = () => {
@@ -55,6 +83,14 @@ export const AddDescription = () => {
       showError("Revert Failed", "Failed to revert content. Please manually restore if needed.")
     }
   }
+
+  // Initialize cache warm-up on component mount
+  useEffect(() => {
+    // Warm up cache in background for better performance
+    GitHubCacheManager.warmUpCurrentPR().catch(error => {
+      console.warn('Cache warm-up failed:', error)
+    })
+  }, [])
 
   // Monitor error changes and show notifications
   useEffect(() => {
@@ -102,108 +138,132 @@ export const AddDescription = () => {
     }
   }
 
-  const handleClick = async () => {
-    if (loading) return
+  const handleClickInternal = async () => {
+    if (loading || isProcessing || showJiraInput) return // Also prevent if popover is already open
 
-    // Check API connectivity first
-    const isAPIConnected = await checkAPIConnectivity()
-    if (!isAPIConnected) {
-      showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.")
-      return
-    }
+    // Prevent duplicate processing
+    setIsProcessing(true)
 
-    const strategy = getGitHubPageStrategy()
+    try {
+      const strategy = getGitHubPageStrategy()
 
-    // Store original content before generation
-    storeOriginalContent()
+      // Store original content before generation
+      storeOriginalContent()
 
-    // Get PR title
-    const prTitle = strategy.getPRTitle()
-    if (!prTitle) {
-      showWarning("Missing Title", "Could not detect a Pull Request title on the page.")
-      return
-    }
-
-    // Activate edit mode before API call
-    await activateEditModeImmediately()
-    // Edit mode failure is handled gracefully with fallback - no notification needed
-
-    // Get Jira ticket - now optional
-    let jiraTicketId = strategy.extractJiraTicketId()
-    if (!jiraTicketId) {
-      // Store the generation data and show the Jira input modal
-      const generationData = {
-        prTitle,
-        codeChanges: await strategy.getCodeChanges(),
-        branchName: strategy.getBranchName(),
-        commitMessages: await strategy.getCommitMessages(),
-        descriptionTemplate: strategy.getDescriptionTemplate()
+      // Get PR title
+      const prTitle = strategy.getPRTitle()
+      if (!prTitle) {
+        showWarning("Missing Title", "Could not detect a Pull Request title on the page.")
+        return
       }
 
-      setPendingGenerationData(generationData)
-      setShowJiraInput(true)
-      return
+      // Get Jira ticket - now optional
+      let jiraTicketId = strategy.extractJiraTicketId()
+      if (!jiraTicketId) {
+        // Store the generation data and show the Jira input modal
+        // API connectivity check will happen after popover opens
+        const generationData = {
+          prTitle,
+          codeChanges: await strategy.getCodeChanges(),
+          branchName: strategy.getBranchName(),
+          commitMessages: await strategy.getCommitMessages(),
+          descriptionTemplate: strategy.getDescriptionTemplate()
+        }
+
+        setPendingGenerationData(generationData)
+        setShowJiraInput(true)
+        return
+      }
+
+      // If we have Jira ticket, check API connectivity before proceeding
+      const isAPIConnected = await checkAPIConnectivity()
+      if (!isAPIConnected) {
+        showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.")
+        return
+      }
+
+      // Activate edit mode before API call
+      await activateEditModeImmediately()
+      // Edit mode failure is handled gracefully with fallback - no notification needed
+
+      // Get code changes, branch name, and commit messages
+      const codeChanges = await strategy.getCodeChanges()
+      const branchName = strategy.getBranchName()
+      const commitMessages = await strategy.getCommitMessages()
+      const descriptionTemplate = strategy.getDescriptionTemplate()
+
+      // Remove warning for no changes - this is optional data and generation can proceed
+
+      // Fetch enhanced data structures silently
+      console.log("🔍 Fetching enhanced PR data...")
+      let filesChanged = null
+      let commits = null
+
+      // Fetch file changes silently - no notifications for optional data
+      try {
+        console.log("📁 Fetching detailed file changes...")
+        filesChanged = await fetchPRFileChanges()
+        console.log(`✅ Fetched ${filesChanged.length} file changes`)
+      } catch (error) {
+        console.warn("⚠️ Failed to fetch file changes:", error)
+        // Continue without file changes - this is optional data, no notification needed
+      }
+
+      // Fetch commit information silently - no notifications for optional data
+      try {
+        console.log("📝 Fetching detailed commit information...")
+        commits = await fetchPRCommitMessages()
+        console.log(`✅ Fetched ${commits.length} commits`)
+      } catch (error) {
+        console.warn("⚠️ Failed to fetch commits:", error)
+        // Continue without commits - this is optional data, no notification needed
+      }
+
+      // Log enhanced features to console only
+      const enhancedFeatures = []
+      if (filesChanged && filesChanged.length > 0) enhancedFeatures.push(`${filesChanged.length} files`)
+      if (commits && commits.length > 0) enhancedFeatures.push(`${commits.length} commits`)
+
+      if (enhancedFeatures.length > 0) {
+        console.log(`✅ Enhanced analysis ready: ${enhancedFeatures.join(", ")}`)
+      }
+
+      // Continue with generation using the detected Jira ticket
+      await continueWithGeneration(jiraTicketId, {
+        prTitle,
+        codeChanges,
+        branchName,
+        commitMessages,
+        descriptionTemplate,
+        filesChanged,
+        commits
+      })
+    } finally {
+      // Always reset processing state
+      setIsProcessing(false)
     }
-
-    // Get code changes, branch name, and commit messages
-    const codeChanges = await strategy.getCodeChanges()
-    const branchName = strategy.getBranchName()
-    const commitMessages = await strategy.getCommitMessages()
-    const descriptionTemplate = strategy.getDescriptionTemplate()
-
-    // Remove warning for no changes - this is optional data and generation can proceed
-
-    // Fetch enhanced data structures silently
-    console.log("🔍 Fetching enhanced PR data...")
-    let filesChanged = null
-    let commits = null
-
-    // Fetch file changes silently - no notifications for optional data
-    try {
-      console.log("📁 Fetching detailed file changes...")
-      filesChanged = await fetchPRFileChanges()
-      console.log(`✅ Fetched ${filesChanged.length} file changes`)
-    } catch (error) {
-      console.warn("⚠️ Failed to fetch file changes:", error)
-      // Continue without file changes - this is optional data, no notification needed
-    }
-
-    // Fetch commit information silently - no notifications for optional data
-    try {
-      console.log("📝 Fetching detailed commit information...")
-      commits = await fetchPRCommitMessages()
-      console.log(`✅ Fetched ${commits.length} commits`)
-    } catch (error) {
-      console.warn("⚠️ Failed to fetch commits:", error)
-      // Continue without commits - this is optional data, no notification needed
-    }
-
-    // Log enhanced features to console only
-    const enhancedFeatures = []
-    if (filesChanged && filesChanged.length > 0) enhancedFeatures.push(`${filesChanged.length} files`)
-    if (commits && commits.length > 0) enhancedFeatures.push(`${commits.length} commits`)
-
-    if (enhancedFeatures.length > 0) {
-      console.log(`✅ Enhanced analysis ready: ${enhancedFeatures.join(", ")}`)
-    }
-
-    // Continue with generation using the detected Jira ticket
-    await continueWithGeneration(jiraTicketId, {
-      prTitle,
-      codeChanges,
-      branchName,
-      commitMessages,
-      descriptionTemplate,
-      filesChanged,
-      commits
-    })
   }
+
+  // Create debounced version of handleClick with 300ms delay
+  const handleClick = useDebounce(handleClickInternal, 300)
 
   // Handle Jira ticket input submission
   const handleJiraTicketSubmit = async (jiraTicketId: string | null) => {
     setShowJiraInput(false)
 
     if (pendingGenerationData) {
+      // Check API connectivity after popover closes
+      const isAPIConnected = await checkAPIConnectivity()
+      if (!isAPIConnected) {
+        showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.")
+        setPendingGenerationData(null)
+        return
+      }
+
+      // Activate edit mode before API call
+      await activateEditModeImmediately()
+      // Edit mode failure is handled gracefully with fallback - no notification needed
+
       await continueWithGeneration(jiraTicketId, pendingGenerationData)
       setPendingGenerationData(null)
     }
@@ -213,6 +273,7 @@ export const AddDescription = () => {
   const handleJiraTicketCancel = () => {
     setShowJiraInput(false)
     setPendingGenerationData(null)
+    setIsProcessing(false) // Reset processing state on cancel
   }
 
   // Continue with generation after Jira ticket is resolved
@@ -372,14 +433,7 @@ export const AddDescription = () => {
     }
   }
 
-  const LoadingSpinner = () => (
-    <svg className={styles.spinner} viewBox="0 0 16 16" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M8 2.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2.046 8A5.954 5.954 0 018 2.046v.033a.75.75 0 010 1.434V4.5a3.5 3.5 0 106.954 0V3.516a.75.75 0 110-1.434v-.033A5.954 5.954 0 0113.954 8h-.033a.75.75 0 01-1.434 0H12.5a3.5 3.5 0 100 6.954h.016a.75.75 0 111.434 0h.033A5.954 5.954 0 018 13.954v.033a.75.75 0 010-1.434V12.5a3.5 3.5 0 10-6.954 0v.016a.75.75 0 11-1.434 0v.033A5.954 5.954 0 012.046 8z"
-      />
-    </svg>
-  )
+
 
   return (
     <>
@@ -409,7 +463,7 @@ export const AddDescription = () => {
           title="Generate PR description from a Jira ticket and code changes">
           {loading ? (
             <>
-              <LoadingSpinner />
+              <SparklesIcon className={styles.iconLoading} />
               <span style={{ marginLeft: "4px" }}>Generating...</span>
             </>
           ) : (
