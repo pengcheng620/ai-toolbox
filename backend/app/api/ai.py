@@ -56,6 +56,12 @@ class JiraDoDefinitionRequest(StreamableRequest):
     task_description: str = Field(..., description="Jira task description")
 
 
+class JiraTicketSummaryRequest(StreamableRequest):
+    """Request model for Jira Ticket Summary generation."""
+
+    issue_key: str = Field(..., description="Jira issue key (e.g., UC-74354)")
+
+
 class GitHubPRRequest(StreamableRequest):
     """Request model for GitHub PR description generation."""
 
@@ -80,6 +86,17 @@ class GenerateTextResponse(BaseModel):
 
 class JiraDoDefinitionResponse(BaseModel):
     """Response model for Jira Definition of Done generation."""
+
+    generated_content: str
+    suggestions: List[str]
+    model: str
+    tokens_used: int
+    success: bool = True
+    error: str = ""
+
+
+class JiraTicketSummaryResponse(BaseModel):
+    """Response model for Jira Ticket Summary generation."""
 
     generated_content: str
     suggestions: List[str]
@@ -133,7 +150,6 @@ async def generate_text(request: GenerateTextRequest):
         logger.info(f"Generating text with prompt length: {len(request.prompt)}, stream: {request.stream}")
 
         if request.stream:
-            # Return streaming response
             generator = azure_ai_service.generate_text_stream(
                 prompt=request.prompt,
                 model=request.model if request.model else None,
@@ -143,7 +159,6 @@ async def generate_text(request: GenerateTextRequest):
             )
             return await create_streaming_response(generator, "Text generation")
         else:
-            # Return non-streaming response
             result = await azure_ai_service.generate_text(
                 prompt=request.prompt,
                 model=request.model if request.model else None,
@@ -164,13 +179,11 @@ async def chat_stream(request: ChatStreamRequest):
     try:
         logger.info(f"Starting chat with {len(request.messages)} messages, stream: {request.stream}")
 
-        # Convert Pydantic models to dicts
         messages = [
             {"role": msg.role, "content": msg.content} for msg in request.messages
         ]
 
         if request.stream:
-            # Return streaming response
             generator = azure_ai_service.generate_chat_stream(
                 messages=messages,
                 model=request.model if request.model else None,
@@ -179,7 +192,6 @@ async def chat_stream(request: ChatStreamRequest):
             )
             return await create_streaming_response(generator, "Chat generation")
         else:
-            # For non-streaming, use the last message as prompt
             if messages:
                 last_message = messages[-1]["content"]
                 result = await azure_ai_service.generate_text(
@@ -197,6 +209,31 @@ async def chat_stream(request: ChatStreamRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+async def _create_jira_streaming_generator(content: str):
+    """Create streaming generator for Jira content with proper paragraph separation."""
+    import asyncio
+    
+    paragraphs = content.split('\n\n')
+    
+    for paragraph_idx, paragraph in enumerate(paragraphs):
+        if paragraph.strip():
+            words = paragraph.split()
+            words_per_chunk = 4
+            
+            for i in range(0, len(words), words_per_chunk):
+                chunk_words = words[i:i + words_per_chunk]
+                chunk = ' '.join(chunk_words)
+                
+                if chunk.strip():
+                    yield chunk
+                    await asyncio.sleep(0.05)
+            
+            # Add paragraph separator after each paragraph (except the last)
+            if paragraph_idx < len(paragraphs) - 1:
+                yield '\\n\\n'
+                await asyncio.sleep(0.05)
+
+
 @router.post("/jira/generate", response_model=None)
 async def generate_jira_definition_of_done(request: JiraDoDefinitionRequest):
     """Generate Jira Definition of Done using specialized AI prompt. Supports both streaming and non-streaming."""
@@ -204,7 +241,6 @@ async def generate_jira_definition_of_done(request: JiraDoDefinitionRequest):
         logger.info(f"Generating Jira Definition of Done, stream: {request.stream}")
 
         if request.stream:
-            # For streaming, we need to create a custom generator
             async def generate_stream():
                 result = await jira_service.generate_dod_summary(
                     task_description=request.task_description
@@ -212,82 +248,17 @@ async def generate_jira_definition_of_done(request: JiraDoDefinitionRequest):
 
                 if result.get("success"):
                     content = result.get("generated_content", "")
-                    # Simulate streaming by sending chunks while preserving Markdown formatting
-                    import asyncio
-
-                    # Use word-based chunking with Markdown protection
-                    def markdown_aware_chunking(text, words_per_chunk=4):
-                        """Split content by words while preserving Markdown syntax"""
-                        chunks = []
-                        words = text.split()
-                        current_chunk = []
-
-                        i = 0
-                        while i < len(words):
-                            word = words[i]
-
-                            # Handle different Markdown patterns
-                            if '**' in word:
-                                if word.startswith('**') and word.endswith('**') and len(word) > 4:
-                                    # Complete bold word like **Summary**
-                                    current_chunk.append(word)
-                                elif word.startswith('**') and not word.endswith('**'):
-                                    # Start of bold phrase like **End-to-End
-                                    bold_phrase = [word]
-                                    i += 1
-
-                                    # Keep collecting until we find a word ending with **
-                                    while i < len(words):
-                                        next_word = words[i]
-                                        bold_phrase.append(next_word)
-                                        if next_word.endswith('**'):
-                                            break
-                                        i += 1
-
-                                    # Add the complete bold phrase as a single unit
-                                    current_chunk.extend(bold_phrase)
-                                elif word.endswith('**') and not word.startswith('**'):
-                                    # End of bold phrase like Workflows:**
-                                    current_chunk.append(word)
-                                else:
-                                    # Standalone ** or other cases
-                                    current_chunk.append(word)
-                            else:
-                                # Regular word
-                                current_chunk.append(word)
-
-                            # Check if we should emit a chunk
-                            if len(current_chunk) >= words_per_chunk:
-                                chunks.append(' '.join(current_chunk))
-                                current_chunk = []
-
-                            i += 1
-
-                        # Add remaining words
-                        if current_chunk:
-                            chunks.append(' '.join(current_chunk))
-
-                        return chunks
-
-                    # Generate chunks and stream them
-                    chunks = markdown_aware_chunking(content)
-
-                    for chunk in chunks:
-                        if chunk.strip():
-                            yield chunk + ' '
-                            # Add small delay to simulate real streaming
-                            await asyncio.sleep(0.1)
+                    async for chunk in _create_jira_streaming_generator(content):
+                        yield chunk
                 else:
                     yield f"Error: {result.get('error', 'Unknown error')}"
 
             return await create_streaming_response(generate_stream(), "Jira Definition of Done generation")
         else:
-            # Return non-streaming response
             result = await jira_service.generate_dod_summary(
                 task_description=request.task_description
             )
 
-            # Check if there was an error and handle it properly
             if result.get("error"):
                 raise HTTPException(status_code=500, detail=result["error"])
 
@@ -298,6 +269,41 @@ async def generate_jira_definition_of_done(request: JiraDoDefinitionRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/jira/summary", response_model=None)
+async def generate_jira_ticket_summary(request: JiraTicketSummaryRequest):
+    """Generate Jira Ticket Summary using specialized AI prompt. Supports both streaming and non-streaming."""
+    try:
+        logger.info(f"Generating Jira ticket summary for: {request.issue_key}, stream: {request.stream}")
+
+        if request.stream:
+            async def generate_stream():
+                result = await jira_service.generate_ticket_summary(
+                    issue_key=request.issue_key
+                )
+
+                if result.get("success"):
+                    content = result.get("generated_content", "")
+                    async for chunk in _create_jira_streaming_generator(content):
+                        yield chunk
+                else:
+                    yield f"Error: {result.get('error', 'Unknown error')}"
+
+            return await create_streaming_response(generate_stream(), "Jira ticket summary generation")
+        else:
+            result = await jira_service.generate_ticket_summary(
+                issue_key=request.issue_key
+            )
+
+            if result.get("error"):
+                raise HTTPException(status_code=500, detail=result["error"])
+
+            return JiraTicketSummaryResponse(**result)
+
+    except Exception as e:
+        logger.error(f"Jira ticket summary generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/github/pr", response_model=None)
 async def generate_github_pr_description(request: GitHubPRRequest):
     """Generate GitHub PR description using specialized AI prompt. Supports both streaming and non-streaming."""
@@ -305,7 +311,6 @@ async def generate_github_pr_description(request: GitHubPRRequest):
         logger.info(f"Generating GitHub PR description for: {request.pr_title}, stream: {request.stream}")
 
         if request.stream:
-            # Return streaming response
             generator = azure_ai_service.generate_github_pr_description_stream(
                 pr_title=request.pr_title,
                 code_changes=request.code_changes,
@@ -314,7 +319,6 @@ async def generate_github_pr_description(request: GitHubPRRequest):
             )
             return await create_streaming_response(generator, "GitHub PR description generation")
         else:
-            # Return non-streaming response
             result = await azure_ai_service.generate_github_pr_description(
                 pr_title=request.pr_title,
                 code_changes=request.code_changes,

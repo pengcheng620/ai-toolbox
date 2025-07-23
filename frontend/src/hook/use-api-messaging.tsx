@@ -55,44 +55,35 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
   let fullContent = ''
 
   if (!reader) {
-    throw new Error('无法获取响应流')
+    throw new Error('Cannot get response stream')
   }
-
-  console.log('📡 Starting streaming response processing...')
-  let chunkCount = 0
 
   while (true) {
     const { done, value } = await reader.read()
-    if (done) {
-      console.log(`✅ Streaming completed after ${chunkCount} chunks`)
-      break
-    }
+    if (done) break
 
-    chunkCount++
     const chunk = decoder.decode(value)
-    console.log(`📦 Chunk ${chunkCount}:`, chunk.slice(0, 100) + (chunk.length > 100 ? '...' : ''))
-
     const lines = chunk.split('\n')
 
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = line.slice(6)
         if (data === '[DONE]') {
-          console.log('🏁 Received [DONE] marker, finishing stream')
-          // 在返回前确保内容格式正确
-          const formattedContent = formatGeneratedContent(fullContent)
-          return formattedContent
+          return formatGeneratedContent(fullContent)
         }
 
         // 解码换行符并保持原始格式
-        const decodedData = data.replace(/\\n/g, '\n')
+        // Handle both encoded \\n and raw newlines
+        let decodedData = data
+        if (data.includes('\\n')) {
+          decodedData = data.replace(/\\n/g, '\n')
+        }
+        // Always append the data, even if it's empty (could be newlines)
         fullContent += decodedData
-        console.log(`📝 Current content length: ${fullContent.length}`)
 
         // 调用onChunk回调，传递格式化后的内容
         if (onChunk) {
           const formattedChunk = formatGeneratedContent(fullContent)
-          console.log(`🔄 Calling onChunk callback with ${formattedChunk.length} chars`)
           onChunk(decodedData, formattedChunk)
         }
       }
@@ -100,9 +91,7 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
   }
 
   // 确保最终内容格式正确
-  const formattedContent = formatGeneratedContent(fullContent)
-  console.log(`✅ Final formatted content: ${formattedContent.length} chars`)
-  return formattedContent
+  return formatGeneratedContent(fullContent)
 }
 
 // 格式化生成的内容，确保正确的换行和段落分隔
@@ -146,9 +135,6 @@ export function useMessagingApi<T = any>(
     setState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
-      console.log(`🚀 直接调用API: ${endpoint}`, body)
-      console.log(`🚀 API调用时间戳:`, new Date().toISOString())
-      
       const requestBody = { ...body, stream: true }
       
       const response = await fetch(getApiUrl(endpoint), {
@@ -159,25 +145,20 @@ export function useMessagingApi<T = any>(
         body: JSON.stringify(requestBody),
       })
 
-      console.log(`📡 API响应状态:`, response.status)
-
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`❌ API错误:`, errorText)
+        console.error("API Error:", errorText)
         throw new Error(`API调用失败: ${response.status} - ${errorText}`)
       }
 
-      // 处理流式响应
       const streamContent = await handleStreamingResponse(response, onChunk)
-      console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
-      
       const result = { generated_content: streamContent } as T
       
       setState({ data: result, loading: false, error: null })
       return result
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "API调用错误"
-      console.error(`❌ API调用失败:`, error)
+      console.error("API调用失败:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
@@ -215,10 +196,6 @@ export function useGitHubPRFromJiraMessaging() {
     setState(prev => ({ ...prev, loading: true, error: null }))
 
     try {
-      console.log(`🚀 GitHub PR from Jira API调用:`, body)
-      console.log(`🚀 API调用时间戳:`, new Date().toISOString())
-
-      // Force streaming if onChunk callback is provided
       const requestBody = onChunk ? { ...body, stream: true } : body
 
       const response = await fetch(getApiUrl("/ai/github/pr-from-jira"), {
@@ -229,14 +206,10 @@ export function useGitHubPRFromJiraMessaging() {
         body: JSON.stringify(requestBody),
       })
 
-      console.log(`📡 API响应状态:`, response.status)
-      console.log(`📡 API响应头:`, Object.fromEntries(response.headers.entries()))
-
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`❌ API错误:`, errorText)
+        console.error("API Error:", errorText)
 
-        // Provide more specific error messages based on status code
         let errorMessage = `API调用失败: ${response.status}`
         switch (response.status) {
           case 401:
@@ -262,41 +235,23 @@ export function useGitHubPRFromJiraMessaging() {
         throw new Error(errorMessage)
       }
 
-      // Check content type to determine how to parse response
       const contentType = response.headers.get('content-type')
-      console.log(`📡 Content-Type:`, contentType)
+      const isStreamingRequested = requestBody.stream === true
 
       let result
-      // Enhanced streaming detection - check if streaming was requested
-      const isStreamingRequested = requestBody.stream === true
-      console.log(`📡 Streaming requested: ${isStreamingRequested}, Content-Type: ${contentType}`)
-
       if (isStreamingRequested && onChunk) {
-        // Handle streaming response with callback - relaxed content-type check
-        console.log("📡 Processing streaming response with callback...")
         const streamContent = await handleStreamingResponse(response, onChunk)
-        console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
         result = { generated_content: streamContent }
       } else if (isStreamingRequested) {
-        // Handle streaming response without callback
-        console.log("📡 Processing streaming response without callback...")
         const streamContent = await handleStreamingResponse(response)
-        console.log(`✅ 流式响应完成:`, streamContent.slice(0, 100) + "...")
         result = { generated_content: streamContent }
       } else if (contentType?.includes('application/json')) {
-        // Handle JSON response
-        console.log("📡 Processing JSON response...")
         result = await response.json()
-        console.log(`✅ JSON响应:`, result)
       } else {
-        // Fallback: try JSON first, then text
-        console.log("📡 Processing fallback response...")
         try {
           result = await response.json()
-          console.log(`✅ Fallback JSON响应:`, result)
         } catch {
           const text = await response.text()
-          console.log(`✅ Fallback text响应:`, text.slice(0, 100) + "...")
           result = { generated_content: text }
         }
       }
@@ -305,7 +260,7 @@ export function useGitHubPRFromJiraMessaging() {
       return result
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "API调用错误"
-      console.error(`❌ API调用失败:`, error)
+      console.error("API调用失败:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
@@ -327,6 +282,11 @@ export function useJiraDoDefinitionMessaging() {
   return useMessagingApi("/ai/jira/generate")
 }
 
+// Jira Ticket Summary generation hook - direct API call
+export function useJiraTicketSummaryMessaging() {
+  return useMessagingApi("/ai/jira/summary")
+}
+
 // 健康检查 hook - 直接API调用
 export function useHealthCheckMessaging() {
   const [state, setState] = useState<UseMessagingApiState<any>>({
@@ -339,24 +299,18 @@ export function useHealthCheckMessaging() {
     setState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
-      console.log(`🚀 健康检查API调用`)
-      
       const response = await fetch(getApiUrl("/ai/health"))
-      
-      console.log(`📡 健康检查响应状态:`, response.status)
       
       if (!response.ok) {
         throw new Error(`健康检查失败: ${response.status}`)
       }
       
       const result = await response.json()
-      console.log(`✅ 健康检查成功:`, result)
-      
       setState({ data: result, loading: false, error: null })
       return result
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "健康检查错误"
-      console.error(`❌ 健康检查失败:`, error)
+      console.error("健康检查失败:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
@@ -389,8 +343,6 @@ export function useSprintPlanningMessaging() {
     setState(prev => ({ ...prev, loading: true, error: null }))
     
     try {
-      console.log(`🚀 Sprint Planning API调用:`, body)
-      
       const response = await fetch(getApiUrl("/sprint-planning/analyze"), {
         method: "POST",
         headers: {
@@ -399,23 +351,17 @@ export function useSprintPlanningMessaging() {
         body: JSON.stringify(body),
       })
 
-      console.log(`📡 Sprint Planning API响应状态:`, response.status)
-
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`❌ Sprint Planning API错误:`, errorText)
+        console.error("Sprint Planning API Error:", errorText)
         throw new Error(`API调用失败: ${response.status} - ${errorText}`)
       }
 
-      // Check if response is streaming or JSON
       const contentType = response.headers.get('content-type')
       
       if (body.stream && contentType?.includes('text/plain')) {
-        // Handle streaming response
         const streamContent = await handleStreamingResponse(response, onChunk)
-        console.log(`✅ Sprint Planning 流式响应完成`)
         
-        // Construct Sprint Planning response structure
         const result = {
           analysisResult: {
             boardId: body.boardId,
@@ -456,16 +402,13 @@ export function useSprintPlanningMessaging() {
         setState({ data: result, loading: false, error: null })
         return result
       } else {
-        // Handle regular JSON response
         const result = await response.json()
-        console.log(`✅ Sprint Planning JSON响应:`, result)
-        
         setState({ data: result, loading: false, error: null })
         return result
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Sprint Planning API调用错误"
-      console.error(`❌ Sprint Planning API调用失败:`, error)
+      console.error("Sprint Planning API调用失败:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
