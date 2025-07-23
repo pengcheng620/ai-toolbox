@@ -87,9 +87,9 @@ export const AddDescription = () => {
   // Initialize cache warm-up on component mount
   useEffect(() => {
     // Warm up cache in background for better performance
-    GitHubCacheManager.warmUpCurrentPR().catch(error => {
-      console.warn('Cache warm-up failed:', error)
-    })
+    // GitHubCacheManager.warmUpCurrentPR().catch(error => {
+    //   console.warn('Cache warm-up failed:', error)
+    // })
   }, [])
 
   // Monitor error changes and show notifications

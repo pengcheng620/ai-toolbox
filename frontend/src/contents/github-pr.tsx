@@ -17,7 +17,7 @@ import "@mantine/core/styles.css"
 export const config: PlasmoCSConfig = {
   matches: [
     "https://github.com/*/pull/*",
-    "https://git.autodesk.com/*/pull/\d+$"
+    "https://git.autodesk.com/*/pull/*"
   ]
 }
 
