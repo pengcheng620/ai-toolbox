@@ -78,6 +78,14 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
         if (data.includes('\\n')) {
           decodedData = data.replace(/\\n/g, '\n')
         }
+
+        // Smart spacing: add space between chunks if needed
+        if (decodedData && fullContent && 
+            !fullContent.endsWith(' ') && !fullContent.endsWith('\n') &&
+            !decodedData.startsWith(' ') && !decodedData.startsWith('\n')) {
+          fullContent += ' '
+        }
+
         // Always append the data, even if it's empty (could be newlines)
         fullContent += decodedData
 
@@ -285,6 +293,11 @@ export function useJiraDoDefinitionMessaging() {
 // Jira Ticket Summary generation hook - direct API call
 export function useJiraTicketSummaryMessaging() {
   return useMessagingApi("/ai/jira/summary")
+}
+
+// Message Optimize hook - direct API call
+export function messageOptimizeMessaging() {
+  return useMessagingApi("/ai/jira/optimize")
 }
 
 // 健康检查 hook - 直接API调用
