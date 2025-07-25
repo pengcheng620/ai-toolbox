@@ -12,11 +12,11 @@ export interface UseMessagingApiReturn<T> extends UseMessagingApiState<T> {
 }
 
 const apiConfig = getApiConfigSync()
-// API配置
+// API configuration
 const API_BASE_URL = apiConfig.baseUrl
 const API_VERSION = "/api/v1"
 
-// 构建完整API URL
+// Build the complete API URL
 function getApiUrl(endpoint: string): string {
   // Robustly join URL parts, avoiding double slashes.
   const joinedPath = [API_VERSION, endpoint]
@@ -48,7 +48,7 @@ function createAPIError(response: Response, errorText: string): Error {
   }
 }
 
-// 处理流式响应
+// Handle streaming response - general version (keep smart spacing logic, for other tools)
 async function handleStreamingResponse(response: Response, onChunk?: (chunk: string, fullText: string) => void): Promise<string> {
   const reader = response.body?.getReader()
   const decoder = new TextDecoder()
@@ -72,7 +72,7 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
           return formatGeneratedContent(fullContent)
         }
 
-        // 解码换行符并保持原始格式
+        // Decode the line feed and keep the original format
         // Handle both encoded \\n and raw newlines
         let decodedData = data
         if (data.includes('\\n')) {
@@ -89,7 +89,7 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
         // Always append the data, even if it's empty (could be newlines)
         fullContent += decodedData
 
-        // 调用onChunk回调，传递格式化后的内容
+        // Call the onChunk callback, passing the formatted content
         if (onChunk) {
           const formattedChunk = formatGeneratedContent(fullContent)
           onChunk(decodedData, formattedChunk)
@@ -98,34 +98,80 @@ async function handleStreamingResponse(response: Response, onChunk?: (chunk: str
     }
   }
 
-  // 确保最终内容格式正确
+  // Ensure the final content format is correct
   return formatGeneratedContent(fullContent)
 }
 
-// 格式化生成的内容，确保正确的换行和段落分隔
+// Specialized streaming response handling for GitHub PR (no smart spacing logic)
+async function handleGitHubPRStreamingResponse(response: Response, onChunk?: (chunk: string, fullText: string) => void): Promise<string> {
+  const reader = response.body?.getReader()
+  const decoder = new TextDecoder()
+  let fullContent = ''
+  if (!reader) {
+    throw new Error('Cannot get response stream')
+  }
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value)
+    const lines = chunk.split('\n')
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = line.slice(6)
+        if (data === '[DONE]') {
+          return formatGeneratedContent(fullContent)
+        }
+
+        // Decode the line feed and keep the original format
+        // Handle both encoded \\n and raw newlines
+        let decodedData = data
+        if (data.includes('\\n')) {
+          decodedData = data.replace(/\\n/g, '\n')
+        }
+
+        // Directly concatenate the chunk, without adding smart spacing, keeping the original format of AI generated content
+        fullContent += decodedData
+
+        // Call the onChunk callback, passing the formatted content
+        if (onChunk) {
+          const formattedChunk = formatGeneratedContent(fullContent)
+          onChunk(decodedData, formattedChunk)
+        }
+      }
+    }
+  }
+
+  // Ensure the final content format is correct
+  return formatGeneratedContent(fullContent)
+}
+
+// Format the generated content, ensuring correct line breaks and paragraph separation
 function formatGeneratedContent(content: string): string {
   if (!content) return content
 
-  // 移除多余的空白字符，但保留必要的换行
+  // Remove extra whitespace, but preserve necessary line breaks
   let formatted = content.trim()
 
-  // 确保段落标题（独立行的粗体文本）之间有适当的间距
-  // 只在粗体文本是独立行且后面跟着非空行时添加换行
+  // Ensure spacing between paragraph titles (bold text on separate lines)
+  // Only add line breaks when the bold text is on a separate line and followed by a non-empty line
   formatted = formatted.replace(/^(\*\*[^*]+\*\*)\s*$/gm, '$1\n')
 
-  // 确保列表项之间有适当的间距
+  // Ensure spacing between list items
   formatted = formatted.replace(/^(\s*-\s+\*\*[^*]+\*\*.*?)(\s*-\s+\*\*)/gm, '$1\n$2')
 
-  // 确保句子结束后的段落标题有适当的间距
+  // Ensure spacing after paragraph titles (bold text on separate lines)
   formatted = formatted.replace(/([.!?])\s*\n(\*\*[^*]+\*\*)/g, '$1\n\n$2')
 
-  // 清理多余的连续换行符（超过2个的）
+  // Clean up excessive consecutive line breaks (more than 2)
   formatted = formatted.replace(/\n{3,}/g, '\n\n')
 
   return formatted
 }
 
-// 通用API hook - 直接调用后端API
+// Generic API hook - directly call the backend API
 export function useMessagingApi<T = any>(
   endpoint: string
 ): UseMessagingApiReturn<T> {
@@ -156,7 +202,7 @@ export function useMessagingApi<T = any>(
       if (!response.ok) {
         const errorText = await response.text()
         console.error("API Error:", errorText)
-        throw new Error(`API调用失败: ${response.status} - ${errorText}`)
+        throw new Error(`API call failed: ${response.status} - ${errorText}`)
       }
 
       const streamContent = await handleStreamingResponse(response, onChunk)
@@ -165,8 +211,8 @@ export function useMessagingApi<T = any>(
       setState({ data: result, loading: false, error: null })
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "API调用错误"
-      console.error("API调用失败:", error)
+      const errorMessage = error instanceof Error ? error.message : "API call error"
+      console.error("API call failed:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
@@ -183,7 +229,7 @@ export function useMessagingApi<T = any>(
   }
 }
 
-// GitHub PR 生成 hook - 直接API调用
+// GitHub PR generation hook - direct API call
 export function useGitHubPRMessaging() {
   return useMessagingApi("/ai/github/pr")
 }
@@ -218,26 +264,26 @@ export function useGitHubPRFromJiraMessaging() {
         const errorText = await response.text()
         console.error("API Error:", errorText)
 
-        let errorMessage = `API调用失败: ${response.status}`
+        let errorMessage = `API call failed: ${response.status}`
         switch (response.status) {
           case 401:
-            errorMessage = "认证失败 - 请检查GitHub token或重新登录"
+            errorMessage = "Authentication failed - please check GitHub token or re-login"
             break
           case 403:
-            errorMessage = "访问被拒绝 - 权限不足或速率限制"
+            errorMessage = "Access denied - insufficient permissions or rate limit"
             break
           case 404:
-            errorMessage = "资源未找到 - 可能是私有仓库或PR不存在"
+            errorMessage = "Resource not found - may be a private repository or PR does not exist"
             break
           case 500:
-            errorMessage = "服务器错误 - 请稍后重试"
+            errorMessage = "Server error - please try again later"
             break
           case 0:
           case undefined:
-            errorMessage = "网络连接失败 - 请检查网络连接和后端服务状态"
+            errorMessage = "Network connection failed - please check network connection and backend service status"
             break
           default:
-            errorMessage = `API调用失败: ${response.status} - ${errorText}`
+            errorMessage = `API call failed: ${response.status} - ${errorText}`
         }
 
         throw new Error(errorMessage)
@@ -248,11 +294,11 @@ export function useGitHubPRFromJiraMessaging() {
 
       let result
       if (isStreamingRequested && onChunk) {
-        const streamContent = await handleStreamingResponse(response, onChunk)
+        const streamContent = await handleGitHubPRStreamingResponse(response, onChunk)
         result = { generated_content: streamContent }
-      } else if (isStreamingRequested) {
-        const streamContent = await handleStreamingResponse(response)
-        result = { generated_content: streamContent }
+              } else if (isStreamingRequested) {
+          const streamContent = await handleGitHubPRStreamingResponse(response)
+          result = { generated_content: streamContent }
       } else if (contentType?.includes('application/json')) {
         result = await response.json()
       } else {
@@ -267,8 +313,8 @@ export function useGitHubPRFromJiraMessaging() {
       setState({ data: result, loading: false, error: null })
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "API调用错误"
-      console.error("API调用失败:", error)
+      const errorMessage = error instanceof Error ? error.message : "API call error"
+      console.error("API call failed:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
@@ -300,7 +346,7 @@ export function messageOptimizeMessaging() {
   return useMessagingApi("/ai/jira/optimize")
 }
 
-// 健康检查 hook - 直接API调用
+// Health check hook - direct API call
 export function useHealthCheckMessaging() {
   const [state, setState] = useState<UseMessagingApiState<any>>({
     data: null,
@@ -315,15 +361,15 @@ export function useHealthCheckMessaging() {
       const response = await fetch(getApiUrl("/ai/health"))
       
       if (!response.ok) {
-        throw new Error(`健康检查失败: ${response.status}`)
+        throw new Error(`Health check failed: ${response.status}`)
       }
       
       const result = await response.json()
       setState({ data: result, loading: false, error: null })
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "健康检查错误"
-      console.error("健康检查失败:", error)
+      const errorMessage = error instanceof Error ? error.message : "Health check error"
+      console.error("Health check failed:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
@@ -367,7 +413,7 @@ export function useSprintPlanningMessaging() {
       if (!response.ok) {
         const errorText = await response.text()
         console.error("Sprint Planning API Error:", errorText)
-        throw new Error(`API调用失败: ${response.status} - ${errorText}`)
+        throw new Error(`API call failed: ${response.status} - ${errorText}`)
       }
 
       const contentType = response.headers.get('content-type')
@@ -420,8 +466,8 @@ export function useSprintPlanningMessaging() {
         return result
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Sprint Planning API调用错误"
-      console.error("Sprint Planning API调用失败:", error)
+      const errorMessage = error instanceof Error ? error.message : "Sprint Planning API call error"
+      console.error("Sprint Planning API call failed:", error)
       setState({ data: null, loading: false, error: errorMessage })
       return null
     }
