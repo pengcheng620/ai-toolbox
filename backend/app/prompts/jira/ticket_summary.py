@@ -1,21 +1,18 @@
 """Jira Ticket Summary prompt templates."""
 
-TICKET_SUMMARY_SYSTEM_MESSAGE = """You are an experienced project manager and technical analyst. Your main task is to analyze Jira tickets and their associated comments to generate comprehensive, actionable summaries that help team members quickly understand the current state and next steps.
+TICKET_SUMMARY_SYSTEM_MESSAGE = """You are an experienced project manager specializing in extracting actionable insights from Jira tickets.
 
-Your analysis should cover:
-- Core problem identification and context
-- Key decisions made during discussions
-- Current status and progress updates
-- Action items and next steps
-- Risk factors and blockers
-- Important technical details and dependencies
-- Stakeholder concerns and requirements
+Your primary goal is to analyze both ticket descriptions and discussion history to provide a concise, value-driven summary that helps team members quickly understand:
+- Current situation and project requirements
+- Key decisions made or technical approach defined
+- Immediate next actions needed
+- Critical blockers or dependencies
 
-Focus on extracting the most valuable information that enables quick decision-making and effective collaboration. Prioritize clarity, actionability, and completeness in your summaries."""
+Analyze all available information sources - both detailed descriptions and discussion comments. For tickets with rich descriptions but limited discussion, focus on extracting insights from the description content. For tickets with extensive discussion, analyze the conversation evolution. Always provide actionable insights regardless of the information source."""
 
 
 def generate_ticket_summary_prompt(ticket_data: dict) -> str:
-    """Generate a comprehensive ticket summary prompt based on ticket data and comments."""
+    """Generate a focused ticket summary prompt based on ticket data and comments analysis."""
     
     # Extract basic ticket information
     title = ticket_data.get('title', 'N/A')
@@ -26,105 +23,85 @@ def generate_ticket_summary_prompt(ticket_data: dict) -> str:
     created = ticket_data.get('created', 'N/A')
     updated = ticket_data.get('updated', 'N/A')
     
-    # Extract comments
+    # Extract and format comments
     comments = ticket_data.get('comments', [])
-    comments_text = ""
     if comments:
         comments_text = "\n".join([
-            f"**{comment.get('author', 'Unknown')}** ({comment.get('created', 'N/A')}):\n{comment.get('content', '')}\n"
+            f"[{comment.get('created', 'Unknown date')}] {comment.get('author', 'Unknown')}: {comment.get('content', '')}"
             for comment in comments
         ])
     else:
         comments_text = "No comments available."
     
     return f"""
-### PERSONA
-You are an expert project manager and technical analyst.
-
 ### CONTEXT
-You are analyzing a Jira ticket and its discussion history to create a comprehensive summary that helps team members quickly understand the current situation and determine next steps.
+Analyze this Jira ticket and its discussion history to extract the most valuable insights for team collaboration and decision-making.
 
-### TICKET INFORMATION
+### TICKET OVERVIEW
 **Title:** {title}
-**Status:** {status}
-**Priority:** {priority}
-**Assignee:** {assignee}
-**Created:** {created}
-**Last Updated:** {updated}
+**Status:** {status} | **Priority:** {priority} | **Assignee:** {assignee}
+**Created:** {created} | **Updated:** {updated}
 
-**Description:**
+**Original Description:**
 {description}
 
-### COMMENTS AND DISCUSSION HISTORY
+### DISCUSSION HISTORY
 {comments_text}
 
-### YOUR TASK
-Based on the ticket information and comments, generate a comprehensive summary. Adhere strictly to the Markdown format specified below. Do not add any introductory or concluding sentences outside of this format.
+### ANALYSIS INSTRUCTIONS
+1. **Analyze All Available Information**: Examine both ticket description and discussion history to extract valuable insights.
 
-### CRITICAL FORMATTING REQUIREMENTS
-- Use EXACTLY two newline characters (\\n\\n) between each section
-- Use EXACTLY one newline character (\\n) between list items
-- Ensure proper spacing for readability
-- Do NOT merge sections together
+2. **For Tickets with Rich Descriptions** (when comments are limited):
+   - Extract key requirements and technical specifications from description
+   - Identify implementation approach and technical details
+   - Determine scope and complexity based on described work
+   - Extract specific deliverables and acceptance criteria
+
+3. **For Tickets with Rich Discussion** (when comments are extensive):
+   - Focus on latest status updates and progress changes
+   - Important decisions made during discussions ("decided to", "agreed that", "will change to")  
+   - Blocking issues ("blocked by", "waiting for", "depends on")
+   - Solutions discovered ("solution is", "approach is", "resolved by")
+   - New requirements or scope changes that emerged from discussions
+
+4. **Extract Actionable Insights**: Always provide meaningful next steps regardless of information source.
 
 ### OUTPUT FORMAT
+Provide a concise summary using exactly this three-section structure:
 
-**Executive Summary**
+**Current Situation**
+[2-3 sentences describing the current state based on latest updates from comments. What is happening now? What has changed recently?]
 
-[A 2-3 sentence overview of the ticket's core purpose, current status, and immediate next steps.]
+**Key Insights**
+[Bullet points covering the most important findings from the discussion:
+- Critical decisions made
+- Important blockers or dependencies discovered
+- Solutions or approaches identified
+- Scope changes or new requirements
+Only include insights that are genuinely valuable - if no significant insights exist, state "No major new developments in discussions."]
 
+**Next Actions**
+[Clear, actionable next steps based on the discussion. Who needs to do what? If no clear actions are identified, state "Next actions need to be clarified."]
 
-**Key Problem & Context**
+### QUALITY GUIDELINES
+- Keep total length under 400 words for comprehensive analysis
+- Use direct, actionable language
+- Extract meaningful insights from available information sources (description and/or comments)
+- Focus on actionable next steps and clear requirements
+- If limited information is available, be honest about constraints while providing maximum value from what exists
+- Highlight technical approach, implementation details, and specific deliverables when available
 
-[Describe the main problem or requirement this ticket addresses, including relevant background context.]
-
-
-**Current Status & Progress**
-
-[Summarize the current state of work, what has been completed, and what remains to be done.]
-
-
-**Important Decisions Made**
-
-- [Decision 1: Brief description of key decision and rationale]
-- [Decision 2: Another important decision from the discussion]
-- [Decision 3: Additional decisions if applicable, or remove if not needed]
-
-
-**Action Items & Next Steps**
-
-- [Action 1: Specific next step with owner if mentioned]
-- [Action 2: Another required action]
-- [Action 3: Additional actions if applicable, or remove if not needed]
-
-
-**Risks & Blockers**
-
-- [Risk/Blocker 1: Description and potential impact]
-- [Risk/Blocker 2: Another concern if applicable, or state "No significant risks identified"]
-
-
-**Technical Notes & Dependencies**
-
-[Any important technical details, dependencies, or constraints that team members should be aware of.]
-
-
-**Stakeholder Impact**
-
-[Brief note on how this affects users, other teams, or business objectives. State "Minimal impact" if not significant.]
-
-### FINAL CHECK
-Before providing the output, review it to ensure:
-1. Each section is separated by exactly two newlines (\\n\\n)
-2. List items are separated by exactly one newline (\\n)
-3. The formatting exactly matches the template above
-4. No sections are merged together
-5. All information is accurate and actionable
+### FINAL REMINDER
+Your value comes from extracting actionable insights from ALL available information sources. For tickets with detailed descriptions, analyze the requirements and technical approach. For tickets with rich discussions, focus on conversation evolution. Always provide practical guidance for moving forward.
 """
 
 
 TICKET_SUMMARY_PROMPT = {
     "system_message": TICKET_SUMMARY_SYSTEM_MESSAGE,
     "generate_prompt": generate_ticket_summary_prompt,
-    "suggestions": ["Review all comments thoroughly", "Identify key decisions and blockers", "Focus on actionable next steps"]
+    "suggestions": [
+        "Analyze discussion chronology for key decisions",
+        "Identify recent status changes and blockers",
+        "Focus on actionable next steps from comments"
+    ]
 }

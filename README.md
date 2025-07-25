@@ -1,185 +1,186 @@
 # AI Toolbox
 
-一个全面的AI驱动开发工具包，提供实时流式响应、安全认证以及专门的Jira和GitHub工作流工具。
+A comprehensive AI-powered development toolkit offering real-time streaming responses, secure authentication, and dedicated Jira and GitHub workflow tools.
 
-## 🚀 核心功能
+## 🚀 Core Features
 
-- **实时流式响应**: 打字机效果的AI响应，提升用户体验
-- **安全认证**: Microsoft OAuth 2.0自动令牌刷新
-- **Jira集成**: AI驱动的任务评论生成，支持流式输出
-- **GitHub集成**: 智能PR描述生成
-- **浏览器扩展**: Chrome扩展，无缝集成工作流
-- **模块化架构**: 前后端清晰分离
+- **Real-time Streaming Response**: Typing effect AI responses for enhanced user experience
+- **Secure Authentication**: Microsoft OAuth 2.0 automatic token refresh
+- **Jira Integration**: AI-driven task comment generation with streaming output
+- **GitHub Integration**: Intelligent PR description generation
+- **Browser Extension**: Chrome extension for seamless workflow integration
+- **Modular Architecture**: Clear separation of frontend and backend
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 ai-toolbox/
-├── backend/                 # FastAPI后端服务
-│   ├── app/                # 应用代码
-│   │   ├── api/           # API路由处理器
-│   │   ├── services/      # 业务逻辑服务
-│   │   └── utils/         # 工具函数
-│   ├── tests/             # 后端测试
-│   ├── pyproject.toml     # Python依赖管理
-│   └── README.md         # 后端文档
-├── frontend/              # Plasmo浏览器扩展
-│   ├── src/              # 源代码
-│   ├── background/       # 后台脚本
-│   ├── package.json      # 前端依赖（pnpm）
-│   └── README.md         # 前端文档
-└── README.md             # 本文件
+├── backend/                 # FastAPI backend service
+│   ├── app/                # Application code
+│   │   ├── api/           # API route handlers
+│   │   ├── services/      # Business logic services
+│   │   └── utils/         # Utility functions
+│   ├── tests/             # Backend tests
+│   ├── pyproject.toml     # Python dependency management
+│   └── README.md         # Backend documentation
+├── frontend/              # Plasmo browser extension
+│   ├── src/              # Source code
+│   ├── background/       # Background scripts
+│   ├── package.json      # Frontend dependencies (pnpm)
+│   └── README.md         # Frontend documentation
+└── README.md             # This file
 ```
 
-## 🛠 技术栈
+## 🛠 Tech Stack
 
-### 后端
-- **框架**: FastAPI + Uvicorn
-- **AI服务**: Azure OpenAI + OAuth 2.0
-- **认证**: Microsoft OAuth客户端凭据流
-- **数据验证**: Pydantic v2
-- **语言**: Python 3.11+
-- **包管理**: uv
+### Backend
+- **Framework**: FastAPI + Uvicorn
+- **AI Service**: Azure OpenAI + OAuth 2.0
+- **Authentication**: Microsoft OAuth client credentials flow
+- **Data Validation**: Pydantic v2
+- **Language**: Python 3.11+
+- **Package Management**: uv
 
-### 前端（浏览器扩展）
-- **框架**: Plasmo + React + TypeScript
-- **构建工具**: Plasmo Framework
-- **样式**: Tailwind CSS + Mantine UI
-- **包管理**: pnpm
-- **扩展类型**: Manifest V3
+### Frontend (Browser Extension)
+- **Framework**: Plasmo + React + TypeScript
+- **Build Tool**: Plasmo Framework
+- **Styling**: Tailwind CSS + Mantine UI
+- **Package Management**: pnpm
+- **Extension Type**: Manifest V3
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 环境要求
+### Requirements
 
 - Python 3.11+
-- Node.js 18+ 和 pnpm
-- Azure OpenAI访问权限和OAuth设置
+- Node.js 18+ and pnpm
+- Azure OpenAI access and OAuth setup
 
-### 后端设置
+### Backend Setup
 
-1. **进入后端目录**:
+1. **Enter backend directory**:
    ```bash
    cd backend
    ```
 
-2. **安装依赖**:
+2. **Install dependencies**:
    ```bash
-   # 使用uv（推荐）
+   # Using uv (recommended)
    uv sync
 
-   # 或使用pip
+   # Or using pip
    pip install -e .
    ```
 
-3. **配置环境**:
+3. **Configure environment**:
    ```bash
    cp env.example .env
-   # 编辑.env文件，配置Azure和OAuth信息
+   # Edit .env file to configure Azure and OAuth info
    ```
 
-4. **运行后端**:
+4. **Run backend**:
    ```bash
    uv run run_dev.py
    ```
 
-### 浏览器扩展设置
+### Browser Extension Setup
 
-1. **进入前端目录**:
+1. **Enter frontend directory**:
    ```bash
    cd frontend
    ```
 
-2. **安装依赖**:
+2. **Install dependencies**:
    ```bash
    pnpm install
    ```
 
-3. **开发模式**:
+3. **Development mode**:
    ```bash
    pnpm dev
    ```
 
-4. **构建扩展**:
+4. **Build extension**:
    ```bash
    pnpm build
-   # 在Chrome开发者模式下加载build文件夹
+   # Load the build folder in Chrome developer mode
    ```
 
-## 🔧 配置
+## 🔧 Configuration
 
-### Azure OpenAI设置
+### Azure OpenAI Setup
 
-1. **创建Azure OpenAI资源**
-2. **注册Azure AD应用程序**
-3. **配置环境变量**
+1. **Create Azure OpenAI resource**
+2. **Register Azure AD application**
+3. **Configure environment variables**
 
-详细配置步骤请参考 [backend/README.md](./backend/README.md)
+For detailed configuration steps, see [backend/README.md](./backend/README.md)
 
-## 🌟 主要功能
+## 🌟 Main Features
 
-### 1. Jira任务评论生成
-- 智能生成任务评论
-- 支持实时流式输出
-- 打字机效果提升用户体验
+### 1. Jira Task Comment Generation
+- Intelligent task comment generation
+- Supports real-time streaming output
+- Typing effect for enhanced user experience
 
-### 2. GitHub PR描述生成
-- 自动生成PR描述
-- 基于代码变更智能分析
-- 支持流式响应
+### 2. GitHub PR Description Generation
+- Automatic PR description generation
+- Intelligent analysis based on code changes
+- Supports streaming response
 
-### 3. 通用文本生成
-- 灵活的AI文本生成
-- 可配置参数（温度、最大令牌数等）
-- 适用于各种使用场景
+### 3. General Text Generation
+- Flexible AI text generation
+- Configurable parameters (temperature, max tokens, etc.)
+- Suitable for various use cases
 
-## 🔄 开发工作流
+## 🔄 Development Workflow
 
-### 后端开发
+### Backend Development
 ```bash
 cd backend
-uv sync                    # 安装依赖
-uv run run_dev.py    # 启动开发服务器
+uv sync                    # Install dependencies
+uv run run_dev.py          # Start development server
 ```
 
-### 扩展开发
+### Extension Development
 ```bash
 cd frontend
-pnpm install              # 安装依赖
-pnpm dev                  # 开发模式
-pnpm build                # 构建扩展
+pnpm install              # Install dependencies
+pnpm dev                  # Development mode
+pnpm build                # Build extension
 ```
 
-## 📊 API文档
+## 📊 API Documentation
 
-后端运行后，访问API文档：
+After backend is running, access API docs:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
-- **健康检查**: http://localhost:8000/api/v1/ai/health
+- **Health Check**: http://localhost:8000/api/v1/ai/health
 
-### 主要端点
-- `POST /api/v1/ai/jira/generate` - Jira评论生成（支持流式）
-- `POST /api/v1/ai/github/pr-description` - GitHub PR描述
-- `POST /api/v1/ai/generate` - 通用文本生成
-- `GET /api/v1/ai/health` - 服务健康状态
+### Main Endpoints
+- `POST /api/v1/ai/jira/generate` - Jira comment generation (streaming supported)
+- `POST /api/v1/ai/github/pr-description` - GitHub PR description
+- `POST /api/v1/ai/generate` - General text generation
+- `GET /api/v1/ai/health` - Service health status
 
-## � 相关文档
+## 📚 Related Documentation
 
-- [后端文档](./backend/README.md) - 详细的后端API和配置说明
-- [前端文档](./frontend/README.md) - 浏览器扩展开发指南
+- [Backend Documentation](./backend/README.md) - Detailed backend API and configuration
+- [Frontend Documentation](./frontend/README.md) - Browser extension development guide
 
-## 🤝 贡献
+## 🤝 Contribution
 
-1. Fork本仓库
-2. 创建功能分支: `git checkout -b feature/your-feature`
-3. 提交更改并编写测试
-4. 确保所有测试通过
-5. 提交Pull Request
+1. Fork this repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit changes and write tests
+4. Ensure all tests pass
+5. Submit a Pull Request
 
-## 📝 许可证
+## 📝 License
 
 [Your License Here]
 
 ---
 
-**注意**: 本项目专注于AI驱动的开发工具和实时用户体验，正在积极开发中。
+**Note**: This project focuses on AI-powered development tools and real-time user experience, and is under active development.
+

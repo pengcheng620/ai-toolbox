@@ -1,7 +1,7 @@
 """Jira API endpoints."""
 
 from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from pydantic import BaseModel, Field
 
 from app.services.jira.jira_service import jira_service
@@ -201,3 +201,5 @@ async def generate_jira_legacy(request: JiraDoDefinitionRequest):
         except Exception as e:
             logger.error(f"Jira Definition of Done generation failed: {str(e)}")
             raise HTTPException(status_code=500, detail=str(e))
+
+

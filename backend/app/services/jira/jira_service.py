@@ -191,18 +191,39 @@ class JiraService(BaseAzureAIService):
                         "error": f"Failed to fetch ticket data: {error_msg}",
                     }
 
-            # Extract and format ticket information
-            issue_data = ticket_data.get("issue", {})
+            # Extract and format ticket information (data is at root level)
+            issue_data = ticket_data
+            
+            # Helper function to safely extract readable text from objects
+            def extract_readable_value(field_data, field_name="name", fallback="N/A"):
+                if isinstance(field_data, dict):
+                    return field_data.get(field_name, fallback)
+                elif isinstance(field_data, str):
+                    return field_data
+                else:
+                    return fallback
+            
+            # Format assignee information
+            assignee_data = issue_data.get("assignee")
+            if isinstance(assignee_data, dict):
+                display_name = assignee_data.get("display_name", assignee_data.get("name", "Unknown"))
+                email = assignee_data.get("email_address", "")
+                assignee_formatted = f"{display_name}" + (f" ({email})" if email else "")
+            else:
+                assignee_formatted = "Unassigned"
+            
             formatted_ticket_data = {
                 "title": issue_data.get("summary", "N/A"),
                 "description": issue_data.get("description", "N/A"),
-                "status": issue_data.get("status", "N/A"),
-                "priority": issue_data.get("priority", "N/A"),
-                "assignee": issue_data.get("assignee", "Unassigned"),
+                "status": extract_readable_value(issue_data.get("status"), "name", "Unknown Status"),
+                "priority": extract_readable_value(issue_data.get("priority"), "name", "Unknown Priority"),
+                "assignee": assignee_formatted,
                 "created": issue_data.get("created", "N/A"),
                 "updated": issue_data.get("updated", "N/A"),
                 "comments": issue_data.get("comments", [])
             }
+
+
 
             # Generate summary using AI
             prompt_config = jira_prompts.TICKET_SUMMARY
@@ -212,7 +233,7 @@ class JiraService(BaseAzureAIService):
             result = await self.generate_text(
                 prompt=prompt,
                 system_message=str(prompt_config["system_message"]),
-                max_tokens=1500,
+                max_tokens=2000,  # Increased to accommodate more detailed analysis
                 temperature=0.3,
             )
 
