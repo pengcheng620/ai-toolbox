@@ -120,6 +120,48 @@ class JiraService(BaseAzureAIService):
             formatted = re.sub(pattern, r'\1\n\n\2', formatted)
 
         return formatted
+    
+    async def optimize_message(
+        self,
+        issue_key: str,
+        message_to_optimize: str,
+    ) -> Dict[str, Any]:
+        """Optimize the message for the ticket."""
+        try:
+            logger.info(f"Optimizing message for issue: {issue_key}")
+
+            # Generate optimized message using AI
+            prompt_config = jira_prompts.MESSAGE_OPTIMIZE
+            prompt_func: Callable = prompt_config["generate_prompt"]  # type: ignore
+            prompt = prompt_func(issue_key, message_to_optimize)
+
+            result = await self.generate_text(
+                prompt=prompt,
+                system_message=str(prompt_config["system_message"]),
+                max_tokens=1500,
+                temperature=0.3,
+            )
+
+            if result.get("success"):
+                # Use the generated text as optimized content
+                generated_text = result["text"]
+                result["generated_content"] = generated_text
+                result["suggestions"] = prompt_config["suggestions"]
+                del result["text"]  # Remove original key to match expected format
+
+            logger.info(f"Message optimization completed successfully for {issue_key}")
+            return result
+
+        except Exception as e:
+            logger.error(f"Message optimization failed for {issue_key}: {str(e)}")
+            return {
+                "generated_content": "",
+                "suggestions": [],
+                "model": settings.azure_openai_deployment_name,
+                "tokens_used": 0,
+                "success": False,
+                "error": str(e),
+            }
 
     async def generate_ticket_summary(
         self,
