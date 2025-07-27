@@ -67,6 +67,10 @@ class MessageOptimizeRequest(StreamableRequest):
     issue_key: str = Field(..., description="Jira issue key (e.g., UC-74354)")
     message_to_optimize: str = Field(..., description="Message to optimize")
 
+class JiraTicketStatusCheckRequest(StreamableRequest):
+    """Request model for Jira Ticket Summary generation."""
+
+    issue_key: str = Field(..., description="Jira issue key (e.g., UC-74354)")
 
 class GitHubPRRequest(StreamableRequest):
     """Request model for GitHub PR description generation."""
@@ -112,6 +116,18 @@ class JiraTicketSummaryResponse(BaseModel):
     error: str = ""
 
 class MessageOptimizeResponse(BaseModel):
+    """Response model for Message Optimize generation.
+    This response is used to return the optimized message to the frontend.
+    """
+
+    generated_content: str
+    suggestions: List[str]
+    model: str
+    tokens_used: int
+    success: bool = True
+    error: str = "" 
+
+class JiraTicketStatusCheckResponse(BaseModel):
     """Response model for Message Optimize generation.
     This response is used to return the optimized message to the frontend.
     """
@@ -353,6 +369,42 @@ async def optimize_message(request: MessageOptimizeRequest):
                 raise HTTPException(status_code=500, detail=result["error"])
 
             return MessageOptimizeResponse(**result)
+
+    except Exception as e:
+        logger.error(f"Jira ticket summary generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/jira/statuscheck", response_model=None)
+async def statuscheck(request: JiraTicketStatusCheckRequest):
+    """Check jira ticket status."""
+    try:
+        logger.info(f"Check jira ticket {request.issue_key}, stream: {request.stream}")
+
+        if request.stream:
+            async def generate_stream():
+                result = await jira_service.generate_ticket_status_check(
+                    issue_key=request.issue_key
+                )
+
+                if result.get("success"):
+                    content = result.get("generated_content", "")
+                    async for chunk in _create_jira_streaming_generator(content):
+                        yield chunk
+                else:
+                    yield f"Error: {result.get('error', 'Unknown error')}"
+
+            return await create_streaming_response(generate_stream(), "Message optimization")
+        else:
+            result = await jira_service.generate_ticket_status_check(
+                issue_key=request.issue_key
+            )
+
+            if result.get("error"):
+                raise HTTPException(status_code=500, detail=result["error"])
+
+            return JiraTicketStatusCheckResponse(**result)
 
     except Exception as e:
         logger.error(f"Jira ticket summary generation failed: {str(e)}")
