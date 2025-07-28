@@ -522,6 +522,8 @@ class JiraAPIClient:
                         "url": f"{self.base_url}/browse/{issue_key}",
                         "success": True
                     }
+
+                    #logger.error("detailed_info: " + str(detailed_info))
                     
                     return detailed_info
                     
@@ -544,6 +546,49 @@ class JiraAPIClient:
                 "error": str(e)
             }
 
+
+
+    async def get_issue_fields(self, issue_key: str) -> Dict[str, Any]:
+        """Get detailed information for a specific issue including comments, links, and attachments."""
+        if not settings.jira_api_enabled:
+            raise ValueError("Jira API is not enabled or properly configured")
+        
+        if not self.session:
+            raise ValueError("Session not initialized. Use 'async with' context manager.")
+
+        try:       
+            url = f"{self.base_url}/rest/api/2/issue/{issue_key}"
+            async with self.session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+
+                    # Parse basic issue information
+                    basic_info = self._parse_issue_data(data)
+
+                    logger.error("basic_info: " + str(basic_info))
+
+                    detailed_info = {
+                        "success": True,
+                        **basic_info
+                    }
+                    return detailed_info;
+                elif response.status == 404:
+                    return {
+                        "success": False,
+                        "error": f"Issue {issue_key} not found"
+                    }
+                else:
+                    error_text = await response.text()
+                    return {
+                        "success": False,
+                        "error": f"API error {response.status}: {error_text}"
+                    }
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
 
 # Global Jira API client instance
 jira_api_client = JiraAPIClient() 
