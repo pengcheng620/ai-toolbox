@@ -3,7 +3,7 @@
 from typing import Dict, Any, Callable
 
 from app.services.base_ai import BaseAzureAIService
-from app.services.jira.jira_api_client import jira_api_client
+from app.services.jira.jira_api_client import JiraAPIClient
 from app.config import settings
 from app.utils.logger import get_logger
 from app.prompts.jira import jira_prompts
@@ -172,7 +172,8 @@ class JiraService(BaseAzureAIService):
             logger.info(f"Generating ticket summary for issue: {issue_key}")
 
             # Get ticket data from Jira API
-            async with jira_api_client as client:
+            # Create a new client instance for each request to avoid concurrency issues
+            async with JiraAPIClient() as client:
                 ticket_data = await client.get_issue_details(
                     issue_key=issue_key,
                     include_comments=True,
@@ -259,6 +260,72 @@ class JiraService(BaseAzureAIService):
                 "error": str(e),
             }
 
+
+
+    async def generate_ticket_status_check(
+        self,
+        issue_key: str,
+    ) -> Dict[str, Any]: 
+        """Generate comprehensive ticket status check based on issue key."""
+        try:
+            logger.info(f"Generating ticket status check for issue: {issue_key}")
+
+            # Get ticket data from Jira API
+            async with JiraAPIClient() as client:
+                ticket_data = await client.get_issue_details(
+                    issue_key=issue_key,
+                    include_comments=False,
+                    include_attachments=False
+                )
+
+                if not ticket_data.get("success"):
+                    error_msg = ticket_data.get("error", "Failed to fetch ticket data")
+                    logger.error(f"Failed to fetch ticket data for {issue_key}: {error_msg}")
+                    return {
+                        "generated_content": "",  # Use consistent field name
+                        "suggestions": [],
+                        "model": settings.azure_openai_deployment_name,
+                        "tokens_used": 0,
+                        "success": False,
+                        "error": f"Failed to fetch ticket data: {error_msg}",
+                    }
+
+            # Generate summary using AI
+            prompt_config = jira_prompts.TICKET_STATUS_CHECK
+            prompt_func: Callable = prompt_config["generate_prompt"]  # type: ignore
+            prompt = prompt_func(issue_key, ticket_data)
+
+            #Logger.error("prompt: " + str(prompt))
+            ##logger.error("ticket_data: " + str(ticket_data))
+
+            result = await self.generate_text(
+                prompt=prompt,
+                system_message=str(prompt_config["system_message"]),
+                max_tokens=2000,  # Increased to accommodate more detailed analysis
+                temperature=0.3,
+            )
+
+            if result.get("success"):
+                # Ensure proper formatting of the generated content
+                generated_text = result["text"]
+                formatted_content = self._format_summary_content(generated_text)
+                result["generated_content"] = formatted_content  # Use consistent field name
+                result["suggestions"] = prompt_config["suggestions"]
+                del result["text"]  # Remove original key to match expected format
+
+            logger.info(f"Jira ticket summary generated successfully for {issue_key}")
+            return result
+
+        except Exception as e:
+            logger.error(f"Jira ticket summary generation failed for {issue_key}: {str(e)}")
+            return {
+                "generated_content": "",  # Use consistent field name
+                "suggestions": [],
+                "model": settings.azure_openai_deployment_name,
+                "tokens_used": 0,
+                "success": False,
+                "error": str(e),
+            }
 
 # Global Jira service instance
 jira_service = JiraService()

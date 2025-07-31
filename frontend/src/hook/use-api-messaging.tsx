@@ -346,7 +346,12 @@ export function messageOptimizeMessaging() {
   return useMessagingApi("/ai/jira/optimize")
 }
 
-// Health check hook - direct API call
+// Jira Ticket Status Check hook - direct API call
+export function useJiraTicketStatusCheckMessaging() {
+  return useMessagingApi("/ai/jira/statuscheck")
+}
+
+// 健康检查 hook - 直接API调用
 export function useHealthCheckMessaging() {
   const [state, setState] = useState<UseMessagingApiState<any>>({
     data: null,
