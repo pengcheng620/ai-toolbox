@@ -27,12 +27,12 @@ export async function getApiBaseUrl(): Promise<string> {
   try {
     return await StorageHelper.getApiBaseUrl()
   } catch {
-    return getEnvVar("NEXT_PUBLIC_API_BASE_URL", "http://localhost:8000")
+    return getEnvVar("NEXT_PUBLIC_API_BASE_URL", "http://localhost:8077")
   }
 }
 
 // 同步获取API Base URL（用于初始化）
-export const apiBaseUrl = getEnvVar("NEXT_PUBLIC_API_BASE_URL", "http://localhost:8000")
+export const apiBaseUrl = getEnvVar("NEXT_PUBLIC_API_BASE_URL", "http://localhost:8077")
 
 // 获取完整环境配置
 export async function getEnvironmentConfig(): Promise<EnvironmentConfig> {

@@ -12,7 +12,6 @@ import { GenerateTicketSummaryButton } from "~components/jira/ticket-summary-but
 export const config: PlasmoCSConfig = {
   matches: [
     "https://jira.autodesk.com/browse/*"
-    // "http://localhost:8887/*"
   ]
 }
 

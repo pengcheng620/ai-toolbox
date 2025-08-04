@@ -88,3 +88,6 @@ Thumbs.db
 # Logs
 logs
 *.log
+
+# Sensitive configuration files
+config/deployment.yml

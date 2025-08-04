@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: sprint-planning-api
     ports:
-      - "8000:8000"
+      - "8077:8077"
     environment:
       - ENVIRONMENT=production
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
@@ -22,7 +22,7 @@ services:
       - ../backend/logs:/app/logs
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8077/api/v1/ai/health"]
       interval: 30s
       timeout: 10s
       retries: 3

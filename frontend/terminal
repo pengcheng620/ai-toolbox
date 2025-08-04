@@ -1,1 +1,0 @@
-pnpm install --platform=darwin --arch=arm64 sharp

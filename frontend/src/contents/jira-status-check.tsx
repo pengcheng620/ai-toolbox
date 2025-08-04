@@ -11,7 +11,6 @@ import { JiraTicketStatusCheckPanel } from "~components/jira/jira-ticket-status-
 export const config: PlasmoCSConfig = {
   matches: [
     "https://jira.autodesk.com/browse/*"
-    // "http://localhost:8887/*"
   ]
 }
 

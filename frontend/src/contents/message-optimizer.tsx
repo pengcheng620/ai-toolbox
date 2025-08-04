@@ -12,7 +12,6 @@ import { MessageOptimizerButton } from "~components/jira/message-optimizer-butto
 export const config: PlasmoCSConfig = {
   matches: [
     "https://jira.autodesk.com/browse/*"
-    // "http://localhost:8887/*"
   ]
 }
 

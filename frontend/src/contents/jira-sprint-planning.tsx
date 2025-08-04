@@ -12,7 +12,6 @@ import { createSprintPlanningContainer } from "~services/jira-container-manager"
 export const config: PlasmoCSConfig = {
   matches: [
     "https://jira.autodesk.com/secure/RapidBoard.jspa?*view=planning.nodetail*"
-    // "http://localhost:8887/*" // For testing
   ]
 }
 

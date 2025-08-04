@@ -1,7 +1,7 @@
 import {createTheme, MantineProvider} from "@mantine/core"
 import {getPlasmoShadowContainer} from "../lib/utils";
 
-const theme = createTheme({})
+export const theme = createTheme({})
 export const ThemeProvider = ({children}) => {
     return (
         <MantineProvider

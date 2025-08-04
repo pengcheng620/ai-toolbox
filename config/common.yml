@@ -1,0 +1,98 @@
+# AI Toolbox - Unified configuration file
+# This is the main configuration file shared by all services, modifying this file will affect the entire system
+
+# ============================================================================
+# Network configuration - Unified port management
+# ============================================================================
+network:
+  # Backend API service port (avoid Windows reserved ports)
+  api_port: 8077
+  
+  # Frontend development service port
+  frontend_dev_port: 3000
+  
+  # Health check and internal communication
+  health_check_endpoint: "/api/v1/ai/health"
+  api_prefix: "/api/v1"
+
+# ============================================================================
+# Deployment configuration
+# ============================================================================
+deployment:
+  # Target deployment server
+  target_ip: "10.49.82.213"
+  target_user: "administrator"
+  
+  # Container configuration
+  container_name: "ai-toolbox-backend"
+  image_name: "ai-toolbox-backend"
+  restart_policy: "unless-stopped"
+  
+  # Production environment settings
+  production:
+    workers: 4
+    environment: "production"
+    debug: false
+    log_level: "info"
+
+# ============================================================================
+# Service configuration
+# ============================================================================
+services:
+  backend:
+    host: "0.0.0.0"
+    # Reference the port in the network configuration
+    port: "${network.api_port}"
+    
+  frontend:
+    # API base URL template
+    api_base_url_template: "http://{host}:{port}"
+
+# ============================================================================
+# Security configuration
+# ============================================================================
+security:
+  # CORS configuration
+  cors_origins:
+    - "chrome-extension://*"
+    - "https://jira.autodesk.com"
+    - "http://localhost:3000"
+  
+  # Allowed hosts
+  allowed_hosts:
+    - "localhost"
+    - "127.0.0.1"
+    - "${deployment.target_ip}"
+
+# ============================================================================
+# Monitoring configuration
+# ============================================================================
+monitoring:
+  # Health check configuration
+  healthcheck:
+    interval: "30s"
+    timeout: "10s"
+    retries: 3
+    start_period: "10s"
+  
+  # Required open firewall ports
+  required_ports:
+    - "${network.api_port}"  # Backend API
+    - 22                     # SSH (for management)
+
+# ============================================================================
+# Configuration version and metadata
+# ============================================================================
+meta:
+  config_version: "1.0.0"
+  last_updated: "2024-01-20"
+  description: "AI Toolbox unified configuration"
+  
+# ============================================================================
+# Usage instructions
+# ============================================================================
+# 1. Modify port: change the value of network.api_port
+# 2. Modify deployment IP: change the value of deployment.target_ip  
+# 3. Run update script: ./scripts/update-config.sh
+# 4. Rebuild and deploy: ./scripts/deploy.sh
+# ============================================================================

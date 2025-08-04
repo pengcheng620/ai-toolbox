@@ -4,183 +4,170 @@ A comprehensive AI-powered development toolkit offering real-time streaming resp
 
 ## 🚀 Core Features
 
-- **Real-time Streaming Response**: Typing effect AI responses for enhanced user experience
-- **Secure Authentication**: Microsoft OAuth 2.0 automatic token refresh
-- **Jira Integration**: AI-driven task comment generation with streaming output
-- **GitHub Integration**: Intelligent PR description generation
-- **Browser Extension**: Chrome extension for seamless workflow integration
-- **Modular Architecture**: Clear separation of frontend and backend
+-   **Real-time Streaming Response**: Typing effect AI responses for enhanced user experience.
+-   **Secure Authentication**: Microsoft OAuth 2.0 automatic token refresh.
+-   **Jira Integration**: AI-driven task comment generation with streaming output.
+-   **GitHub Integration**: Intelligent PR description generation.
+-   **Browser Extension**: Chrome and Firefox extension for seamless workflow integration.
+-   **Modular Architecture**: Clear separation of frontend and backend with a robust, centralized configuration.
 
 ## 📁 Project Structure
 
 ```
 ai-toolbox/
 ├── backend/                 # FastAPI backend service
-│   ├── app/                # Application code
-│   │   ├── api/           # API route handlers
-│   │   ├── services/      # Business logic services
-│   │   └── utils/         # Utility functions
-│   ├── tests/             # Backend tests
-│   ├── pyproject.toml     # Python dependency management
-│   └── README.md         # Backend documentation
 ├── frontend/              # Plasmo browser extension
-│   ├── src/              # Source code
-│   ├── background/       # Background scripts
-│   ├── package.json      # Frontend dependencies (pnpm)
-│   └── README.md         # Frontend documentation
-└── README.md             # This file
+├── config/                  # Non-sensitive configuration files
+│   ├── common.yml
+│   └── deployment.yml.template
+├── scripts/                 # Helper scripts
+└── CONFIGURATION.md         # Detailed configuration guide
 ```
 
 ## 🛠 Tech Stack
 
 ### Backend
-- **Framework**: FastAPI + Uvicorn
-- **AI Service**: Azure OpenAI + OAuth 2.0
-- **Authentication**: Microsoft OAuth client credentials flow
-- **Data Validation**: Pydantic v2
-- **Language**: Python 3.11+
-- **Package Management**: uv
+-   **Framework**: FastAPI + Uvicorn
+-   **Language**: Python 3.11+
+-   **Package Management**: uv
+-   **Authentication**: Microsoft OAuth 2.0
 
 ### Frontend (Browser Extension)
-- **Framework**: Plasmo + React + TypeScript
-- **Build Tool**: Plasmo Framework
-- **Styling**: Tailwind CSS + Mantine UI
-- **Package Management**: pnpm
-- **Extension Type**: Manifest V3
-
-## 🚀 Quick Start
-
-### Requirements
-
-- Python 3.11+
-- Node.js 18+ and pnpm
-- Azure OpenAI access and OAuth setup
-
-### Backend Setup
-
-1. **Enter backend directory**:
-   ```bash
-   cd backend
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   # Using uv (recommended)
-   uv sync
-
-   # Or using pip
-   pip install -e .
-   ```
-
-3. **Configure environment**:
-   ```bash
-   cp env.example .env
-   # Edit .env file to configure Azure and OAuth info
-   ```
-
-4. **Run backend**:
-   ```bash
-   uv run run_dev.py
-   ```
-
-### Browser Extension Setup
-
-1. **Enter frontend directory**:
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pnpm install
-   ```
-
-3. **Development mode**:
-   ```bash
-   pnpm dev
-   ```
-
-4. **Build extension**:
-   ```bash
-   pnpm build
-   # Load the build folder in Chrome developer mode
-   ```
-
-## 🔧 Configuration
-
-### Azure OpenAI Setup
-
-1. **Create Azure OpenAI resource**
-2. **Register Azure AD application**
-3. **Configure environment variables**
-
-For detailed configuration steps, see [backend/README.md](./backend/README.md)
-
-## 🌟 Main Features
-
-### 1. Jira Task Comment Generation
-- Intelligent task comment generation
-- Supports real-time streaming output
-- Typing effect for enhanced user experience
-
-### 2. GitHub PR Description Generation
-- Automatic PR description generation
-- Intelligent analysis based on code changes
-- Supports streaming response
-
-### 3. General Text Generation
-- Flexible AI text generation
-- Configurable parameters (temperature, max tokens, etc.)
-- Suitable for various use cases
-
-## 🔄 Development Workflow
-
-### Backend Development
-```bash
-cd backend
-uv sync                    # Install dependencies
-uv run run_dev.py          # Start development server
-```
-
-### Extension Development
-```bash
-cd frontend
-pnpm install              # Install dependencies
-pnpm dev                  # Development mode
-pnpm build                # Build extension
-```
-
-## 📊 API Documentation
-
-After backend is running, access API docs:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **Health Check**: http://localhost:8000/api/v1/ai/health
-
-### Main Endpoints
-- `POST /api/v1/ai/jira/generate` - Jira comment generation (streaming supported)
-- `POST /api/v1/ai/github/pr-description` - GitHub PR description
-- `POST /api/v1/ai/generate` - General text generation
-- `GET /api/v1/ai/health` - Service health status
-
-## 📚 Related Documentation
-
-- [Backend Documentation](./backend/README.md) - Detailed backend API and configuration
-- [Frontend Documentation](./frontend/README.md) - Browser extension development guide
-
-## 🤝 Contribution
-
-1. Fork this repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit changes and write tests
-4. Ensure all tests pass
-5. Submit a Pull Request
-
-## 📝 License
-
-[Your License Here]
+-   **Framework**: Plasmo + React + TypeScript
+-   **Styling**: Tailwind CSS + Mantine UI
+-   **Package Management**: pnpm
+-   **Browser Support**: Chrome, Firefox, Edge, and other Chromium-based browsers
+-   **Manifest**: V3 (Chrome/Edge), V2 (Firefox)
 
 ---
 
-**Note**: This project focuses on AI-powered development tools and real-time user experience, and is under active development.
+## 🚀 Quick Start
 
+### Prerequisites
+
+-   Python 3.11+ & `uv`
+-   Node.js 18+ & `pnpm`
+-   Docker and Docker Compose
+-   Access to required services (Azure, Jira, etc.)
+
+### 1. Configure the Application
+
+Before running the services, you need to set up your configuration. All sensitive information is managed through `.env` files.
+
+**For a complete guide, please read [CONFIGURATION.md](./CONFIGURATION.md) first.**
+
+1.  **Backend Secrets**: Copy `backend/env.production.template` to `backend/.env` and fill in your secrets.
+    ```bash
+    cp backend/env.production.template backend/.env
+    # Now edit backend/.env
+    ```
+2.  **Frontend Dev Environment**: Copy `frontend/env.production.template` to `frontend/.env`. The default value pointing to `http://localhost:8077` is usually sufficient for local development.
+    ```bash
+    cp frontend/env.production.template frontend/.env
+    ```
+
+### 2. Run in Development Mode
+
+Run the backend and frontend services in separate terminals.
+
+**Terminal 1: Start Backend**
+```bash
+cd backend
+uv sync
+uv run run_dev.py
+```
+
+**Terminal 2: Start Frontend**
+```bash
+cd frontend
+pnpm install
+
+# For Chrome development (default)
+pnpm dev
+
+# For Firefox development
+pnpm dev:firefox
+```
+
+**Loading the Extension:**
+
+*For Chrome:*
+1. Navigate to `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked" and select `build/chrome-mv3-dev` directory
+
+*For Firefox:*
+1. Navigate to `about:debugging`
+2. Click "This Firefox"
+3. Click "Load Temporary Add-on..."
+4. Navigate to `build/firefox-mv2-dev` directory and select `manifest.json`
+
+---
+
+## 🔧 Configuration
+
+All configuration is managed centrally by the backend. For a detailed explanation of the configuration hierarchy, environment variables, and how to manage settings, **please refer to [CONFIGURATION.md](./CONFIGURATION.md)**.
+
+---
+
+## 🚀 Production Deployment
+
+This project is set up for Docker-based deployments.
+
+### Running Locally in Production Mode
+
+You can simulate the production environment on your local machine using our simplified helper scripts. This is useful for final testing before a real deployment.
+
+1.  **Ensure `backend/.env` is configured** with your production-like values.
+2.  **Run the script for your OS**:
+
+    **For Linux/macOS/WSL:**
+    ```bash
+    ./scripts/deploy.sh
+    ```
+    **For Windows PowerShell:**
+    ```powershell
+    ./scripts/deploy.ps1
+    ```
+These scripts will build the Docker images and start all services using `docker-compose.prod.yml`.
+
+### Browser Extension Builds
+
+For production deployment of the browser extension, you can build for specific browsers:
+
+```bash
+cd frontend
+
+# Build for Chrome (Manifest V3)
+pnpm build
+
+# Build for Firefox (Manifest V2)
+pnpm build:firefox
+
+# Package for distribution
+pnpm package          # Chrome package
+pnpm package:firefox  # Firefox package
+```
+
+The packaged extensions will be available in the `build/` directory and can be submitted to the respective browser stores.
+
+### True Production Deployment (CI/CD)
+
+A true production deployment should be handled by a CI/CD pipeline (e.g., GitHub Actions). The pipeline would be responsible for:
+1.  Securely providing the production `backend/.env` secrets.
+2.  Setting the `PLASMO_PUBLIC_API_BASE_URL` environment variable to the public backend URL.
+3.  Building the frontend and backend Docker images.
+4.  Pushing the images to a registry and deploying them to your server.
+
+---
+
+## 📊 API Documentation
+
+After the backend is running, access the API docs at `http://localhost:8077/docs` (the port may vary based on your configuration).
+
+## 🤝 Contribution
+
+1.  Fork this repository.
+2.  Create a feature branch: `git checkout -b feature/your-feature`.
+3.  Commit changes and write tests.
+4.  Submit a Pull Request.

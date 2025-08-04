@@ -1,102 +1,116 @@
 # AI Toolbox Browser Extension
 
-基于Plasmo框架的浏览器扩展，为AI工具箱提供无缝的浏览器集成体验，支持实时流式响应和现代UI组件。
+A Plasmo-based browser extension that provides seamless browser integration for the AI Toolbox, featuring real-time streaming responses and modern UI components.
 
-## 🚀 功能特性
+## 🚀 Features
 
-- **实时流式UI**: 处理服务器发送事件的打字机效果组件
-- **Jira集成界面**: 浏览器内Jira评论生成界面
-- **GitHub集成界面**: PR描述生成界面
-- **通用AI聊天**: 通用AI聊天界面
-- **无缝集成**: 直接在目标网站上注入UI组件
-- **响应式设计**: 适配各种屏幕尺寸的界面
+- **Real-time Streaming UI**: Typewriter effect components for handling server-sent events
+- **Jira Integration Interface**: In-browser Jira comment generation interface
+- **GitHub Integration Interface**: PR description generation interface
+- **Universal AI Chat**: General-purpose AI chat interface
+- **Seamless Integration**: Direct UI component injection into target websites
+- **Responsive Design**: Interface that adapts to various screen sizes
 
-## 🛠 技术栈
+## 🛠 Tech Stack
 
-- **框架**: Plasmo + React 18 + TypeScript
-- **构建工具**: Plasmo Framework
-- **样式**: Tailwind CSS + Mantine UI组件库
-- **状态管理**: Plasmo Storage API
-- **HTTP客户端**: Fetch API，支持流式响应
-- **图标**: Heroicons
-- **包管理**: pnpm
-- **扩展类型**: Manifest V3
+- **Framework**: Plasmo + React 18 + TypeScript
+- **Build Tool**: Plasmo Framework
+- **Styling**: Tailwind CSS + Mantine UI Component Library
+- **State Management**: Plasmo Storage API
+- **HTTP Client**: Fetch API with streaming response support
+- **Icons**: Heroicons
+- **Package Manager**: pnpm
+- **Extension Type**: Manifest V3 (Chrome/Edge), Manifest V2 (Firefox)
+- **Browser Support**: Chrome, Firefox, Edge, and other Chromium-based browsers
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 frontend/
-├── src/                    # 源代码目录
-│   ├── components/         # 可复用UI组件
-│   ├── hooks/             # 自定义React hooks
-│   ├── services/          # API和外部服务
-│   ├── types/             # TypeScript类型定义
-│   └── utils/             # 工具函数
-├── background/            # 后台脚本
-├── assets/               # 静态资源
-├── lib/                  # 库文件
-├── terminal/             # 终端相关组件
-├── package.json          # 依赖和脚本（pnpm）
-├── plasmo.config.js      # Plasmo配置
-├── tailwind.config.js    # Tailwind CSS配置
-├── tsconfig.json         # TypeScript配置
-└── README.md             # 本文件
+├── src/                    # Source code directory
+│   ├── components/         # Reusable UI components
+│   ├── hooks/             # Custom React hooks
+│   ├── services/          # API and external services
+│   ├── types/             # TypeScript type definitions
+│   └── utils/             # Utility functions
+├── background/            # Background scripts
+│   └── messages/          # Message handlers
+├── assets/               # Static assets
+├── lib/                  # Library files
+├── scripts/              # Build and utility scripts
+├── package.json          # Dependencies and scripts (pnpm)
+├── tailwind.config.js    # Tailwind CSS configuration
+├── postcss.config.js     # PostCSS configuration
+├── tsconfig.json         # TypeScript configuration
+└── README.md             # This file
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 环境要求
+### Prerequisites
 
 - Node.js 18+
 - pnpm
-- Chrome浏览器（用于开发和测试）
+- Chrome or Firefox browser (for development and testing)
 
-### 安装和开发
+### Installation and Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 启动开发模式（监听文件变化）
-pnpm dev
+# Start development mode (with file watching)
+pnpm dev                    # Chrome development mode (default)
+pnpm dev:firefox           # Firefox development mode
 
-# 构建生产版本
-pnpm build
+# Build production version
+pnpm build                 # Chrome build (default)
+pnpm build:firefox         # Firefox build
 
-# 打包扩展
-pnpm package
+# Package extension
+pnpm package               # Chrome package (default)
+pnpm package:firefox       # Firefox package
 ```
 
-### 加载扩展到Chrome
+### Loading Extension in Chrome
 
-1. 打开Chrome浏览器
-2. 访问 `chrome://extensions/`
-3. 开启"开发者模式"
-4. 点击"加载已解压的扩展程序"
-5. 选择 `build/chrome-mv3-dev` 文件夹（开发模式）或 `build/chrome-mv3-prod` 文件夹（生产模式）
+1. Open Chrome browser
+2. Navigate to `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked"
+5. Select `build/chrome-mv3-dev` folder (development mode) or `build/chrome-mv3-prod` folder (production mode)
 
-## 🔗 后端集成
+### Loading Extension in Firefox
 
-扩展通过 `http://localhost:8000` 与后端API集成：
+1. Open Firefox browser
+2. Navigate to `about:debugging`
+3. Click "This Firefox"
+4. Click "Load Temporary Add-on..."
+5. Navigate to `build/firefox-mv2-dev` folder (development mode) or `build/firefox-mv2-prod` folder (production mode)
+6. Select the `manifest.json` file
 
-### Plasmo消息传递
+## 🔗 Backend Integration
+
+The extension integrates with the backend API through `http://localhost:8077`:
+
+### Plasmo Messaging
 
 ```typescript
-// 使用Plasmo的消息传递API与后台脚本通信
+// Use Plasmo's messaging API to communicate with background scripts
 import { sendToBackground } from "@plasmohq/messaging"
 
-// 发送消息到后台脚本
+// Send message to background script
 const response = await sendToBackground({
   name: "generateJiraComment",
   body: {
-    task_description: "实现用户认证",
+    task_description: "Implement user authentication",
     task_type: "feature",
     stream: true
   }
 })
 ```
 
-### 流式响应处理
+### Streaming Response Handling
 
 ```typescript
 // hooks/useStreaming.ts
@@ -111,7 +125,7 @@ export const useStreaming = () => {
     setContent('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/ai/jira/generate', {
+      const response = await fetch('http://localhost:8077/api/v1/ai/jira/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, stream: true })
@@ -138,7 +152,7 @@ export const useStreaming = () => {
 };
 ```
 
-### Content Script示例
+### Content Script Example
 
 ```typescript
 // contents/jira-integration.tsx
@@ -163,11 +177,11 @@ const JiraCommentGenerator = () => {
 
   return (
     <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg z-50">
-      <h3 className="text-lg font-semibold mb-2">AI评论生成器</h3>
+      <h3 className="text-lg font-semibold mb-2">AI Comment Generator</h3>
       <textarea
         value={taskDescription}
         onChange={(e) => setTaskDescription(e.target.value)}
-        placeholder="输入任务描述..."
+        placeholder="Enter task description..."
         className="w-full p-2 border rounded mb-2"
       />
       <button
@@ -175,7 +189,7 @@ const JiraCommentGenerator = () => {
         disabled={isStreaming}
         className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        {isStreaming ? '生成中...' : '生成评论'}
+        {isStreaming ? 'Generating...' : 'Generate Comment'}
       </button>
       {content && (
         <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
@@ -190,30 +204,56 @@ const JiraCommentGenerator = () => {
 export default JiraCommentGenerator
 ```
 
-## 🛠 开发指南
+## 🛠 Development Guide
 
-### Plasmo特性
+### Browser-Specific Configuration
 
-- **Content Scripts**: 在目标网站注入UI组件
-- **Background Scripts**: 处理API调用和数据管理
-- **Popup**: 扩展图标点击时显示的界面
-- **Storage API**: 跨页面数据持久化
-- **Messaging**: 组件间通信
+Plasmo supports configuration specific to different browsers:
 
-### 开发最佳实践
+#### Environment Variable Files
 
-1. **使用TypeScript**: 确保类型安全
-2. **模块化组件**: 创建可复用的UI组件
-3. **错误处理**: 妥善处理API错误和网络问题
-4. **性能优化**: 避免不必要的重渲染
-5. **用户体验**: 提供加载状态和错误反馈
+- `.env.firefox` - Firefox-specific environment variables
+- `.env` - General environment variables
 
-## � 相关文档
+#### Browser-Specific Entry Files
 
-- [Plasmo官方文档](https://docs.plasmo.com/) - Plasmo框架文档
-- [后端文档](../backend/README.md) - 后端API文档
-- [项目根目录](../README.md) - 项目概览和设置
+- `popup.firefox.tsx` - Firefox-specific popup page
+- `popup.tsx` - General popup page
+
+#### Browser Detection in Code
+
+```typescript
+if (process.env.PLASMO_BROWSER === "firefox") {
+  // Firefox-specific code
+  console.log("Running on Firefox");
+} else {
+  // Other browsers code
+  console.log("Running on Chrome/Edge");
+}
+```
+
+### Plasmo Features
+
+- **Content Scripts**: Inject UI components into target websites
+- **Background Scripts**: Handle API calls and data management
+- **Popup**: Interface displayed when extension icon is clicked
+- **Storage API**: Cross-page data persistence
+- **Messaging**: Inter-component communication
+
+### Development Best Practices
+
+1. **Use TypeScript**: Ensure type safety
+2. **Modular Components**: Create reusable UI components
+3. **Error Handling**: Properly handle API errors and network issues
+4. **Performance Optimization**: Avoid unnecessary re-renders
+5. **User Experience**: Provide loading states and error feedback
+
+## 📚 Related Documentation
+
+- [Plasmo Official Documentation](https://docs.plasmo.com/) - Plasmo framework documentation
+- [Backend Documentation](../backend/README.md) - Backend API documentation
+- [Project Root](../README.md) - Project overview and setup
 
 ---
 
-**注意**: 这是一个基于Plasmo框架的浏览器扩展项目，专注于为AI工具箱提供无缝的浏览器集成体验。
+**Note**: This is a Plasmo framework-based browser extension project focused on providing seamless browser integration experience for the AI Toolbox.

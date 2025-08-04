@@ -2,21 +2,14 @@ import { marked } from "marked"
 import React, { useEffect, useState } from "react"
 
 import { useNotification } from "~components/common/notification"
-import { useJiraTicketSummaryMessaging } from "~hook/use-api-messaging"
+import { sendHealthCheck, sendJiraMessage } from "../../../lib/utils/messaging"
 
 import { SparklesIcon } from "../../../lib/icons/heroicon"
-import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const GenerateTicketSummaryButton = () => {
   const { showError, showWarning, showInfo } = useNotification()
-  const { execute, loading, error } = useJiraTicketSummaryMessaging()
+  const [loading, setLoading] = useState(false)
   const [streamingContent, setStreamingContent] = useState("")
-
-  useEffect(() => {
-    if (error) {
-      showError("Summary Generation Failed", error)
-    }
-  }, [error, showError])
 
   const extractTicketIdFromUrl = (): string | null => {
     try {
@@ -64,36 +57,49 @@ export const GenerateTicketSummaryButton = () => {
   const handleGenerateTicketSummary = async (issueKey: string) => {
     if (loading) return
 
+    setLoading(true)
+    
     try {
-      const apiConfig = getApiConfigSync()
-      const healthCheck = await fetch(apiConfig.endpoints.ai.health)
-      if (!healthCheck.ok) throw new Error("Backend API unavailable")
+      // 1. 健康检查 - 通过消息传递
+      console.log("🏥 Performing health check via messaging...")
+      await sendHealthCheck()
+      console.log("✅ Health check passed")
     } catch (error) {
-      console.error("Backend API connection failed:", error)
+      console.error("❌ Backend API connection failed:", error)
       showError("Connection Failed", "Unable to connect to backend API server. Please ensure the server is running.")
+      setLoading(false)
       return
     }
 
-    setStreamingContent("")
-    showInfo("Generating", "Generating intelligent ticket summary in real-time...")
-
-    const result = await execute({
-      issue_key: issueKey
-    }, {
-      onChunk: (chunk: string, fullText: string) => {
-        setStreamingContent(fullText)
-        setCommentAreaRealtime(fullText)
-      }
-    })
-
-    if (result) {
-      const finalContent = result.generated_content || streamingContent
-      if (finalContent) {
-        await setCommentArea(finalContent)
-      }
+    try {
       setStreamingContent("")
-    } else {
-      console.error("Generation failed, result is empty")
+      showInfo("Generating", "Generating intelligent ticket summary via secure messaging...")
+
+      // 2. Jira API 调用 - 通过消息传递
+      console.log("🎯 Calling Jira API via messaging for issue:", issueKey)
+      const result = await sendJiraMessage({
+        issue_key: issueKey
+      })
+
+      if (result.success && result.data) {
+        const finalContent = result.data.generated_content || ""
+        console.log("✅ Generated content received:", finalContent.slice(0, 100) + "...")
+        
+        if (finalContent) {
+          await setCommentArea(finalContent)
+          showInfo("Success", "Ticket summary generated successfully!")
+        } else {
+          throw new Error("Generated content is empty")
+        }
+      } else {
+        throw new Error(result.error || "Generation failed")
+      }
+    } catch (error) {
+      console.error("❌ Generation failed:", error)
+      showError("Generation Failed", error instanceof Error ? error.message : "Unknown error occurred")
+    } finally {
+      setLoading(false)
+      setStreamingContent("")
     }
   }
 

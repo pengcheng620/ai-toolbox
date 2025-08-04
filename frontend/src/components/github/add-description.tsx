@@ -178,7 +178,7 @@ export const AddDescription = () => {
       // If we have Jira ticket, check API connectivity before proceeding
       const isAPIConnected = await checkAPIConnectivity()
       if (!isAPIConnected) {
-        showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.")
+        showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8077.")
         return
       }
 
@@ -255,7 +255,7 @@ export const AddDescription = () => {
       // Check API connectivity after popover closes
       const isAPIConnected = await checkAPIConnectivity()
       if (!isAPIConnected) {
-        showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8000.")
+        showError("Connection Failed", "Unable to connect to backend service. Please ensure the backend service is running on localhost:8077.")
         setPendingGenerationData(null)
         return
       }

@@ -12,6 +12,7 @@ from app.utils.logger import get_logger
 
 # Import routers
 from app.api.auth import router as auth_router
+from app.api.config import router as config_router
 # New modular AI routers
 from app.api.ai import router as ai_router
 from app.api.base import router as base_ai_router
@@ -89,6 +90,7 @@ async def log_requests(request: Request, call_next):
 
 # Include routers with modular structure
 app.include_router(auth_router, prefix=f"{settings.api_v1_prefix}/auth", tags=["Auth"])
+app.include_router(config_router, prefix=f"{settings.api_v1_prefix}", tags=["Configuration"])
 app.include_router(ai_router, prefix=f"{settings.api_v1_prefix}/ai", tags=["AI Services"])
 app.include_router(base_ai_router, prefix=f"{settings.api_v1_prefix}/ai", tags=["AI Base"])
 app.include_router(chat_router, prefix=f"{settings.api_v1_prefix}/ai/chat", tags=["AI Chat"])

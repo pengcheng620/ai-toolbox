@@ -1,0 +1,49 @@
+# Production Docker Compose Configuration
+# AI Toolbox Backend Production Deployment
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    image: ai-toolbox-backend:latest
+    container_name: ai-toolbox-backend
+    restart: unless-stopped
+    
+    # Port mapping. The internal port should be determined by the config.
+    ports:
+      - "8077:8077" # Default, can be overridden by env var in .env
+    
+    # All environment-specific configurations and secrets
+    # are now loaded from this file by the application.
+    # This keeps the Compose file clean and environment-agnostic.
+    env_file:
+      - ./backend/.env
+    
+    # Volume for persistent logs
+    volumes:
+      - ./backend/logs:/app/logs
+    
+    # Health check to ensure the service is running
+    healthcheck:
+      # The health check now uses the port defined in the config/env
+      test: "curl -f http://localhost:8077/health || exit 1"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Network configuration
+    networks:
+      - ai-toolbox-network
+
+# Network configuration
+networks:
+  ai-toolbox-network:
+    driver: bridge
+    
+# Volume configuration
+volumes:
+  backend-logs:
+    driver: local
