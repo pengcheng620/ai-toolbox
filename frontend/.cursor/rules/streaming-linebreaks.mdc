@@ -1,0 +1,217 @@
+---
+description: Jira Ticket Summary Streaming Response Line Breaks Fix Solution
+globs: **/components/jira/**/*.tsx,**/background/handlers/**/*.ts,**/hooks/**/*.tsx
+alwaysApply: false
+---
+
+# Jira Streaming Response Line Breaks Fix Solution
+
+## 🔍 Problem Description
+
+### Symptoms
+- **Frontend Display**: Generated content in TinyMCE rich text editor appears as a single long paragraph, missing paragraph separation and line breaks
+- **Backend Response**: Server correctly generates content with paragraph separators (`\\n\\n`)
+- **Data Transmission**: Line breaks are lost or incorrectly handled during SSE (Server-Sent Events) streaming
+
+### Root Cause Analysis
+1. **SSE Encoding Problem**: Backend doesn't correctly encode line breaks in SSE transmission
+2. **Frontend Parsing Problem**: Frontend streaming response handler doesn't correctly handle chunks containing line breaks
+3. **HTML Generation Problem**: TinyMCE requires specific HTML structure (`<p>` tags) instead of simple markdown
+
+## 🔧 Solution Implementation
+
+### 1. Backend SSE Streaming Fix (`backend/app/api/ai.py`)
+
+**Core Fix**: Add correct line break encoding between paragraphs
+
+```python
+# ❌ Before Fix: Yield paragraph content directly, no paragraph separators
+for paragraph_idx, paragraph in enumerate(paragraphs):
+    if paragraph.strip():
+        # Process paragraph content...
+        yield chunk
+
+# ✅ After Fix: Add encoded line breaks between paragraphs
+for paragraph_idx, paragraph in enumerate(paragraphs):
+    if paragraph.strip():
+        # Process paragraph content...
+        yield chunk
+        # Critical Fix: Add encoded line breaks between paragraphs
+        if paragraph_idx < len(paragraphs) - 1:
+            yield '\\\\n\\\\n'  # Encoded line breaks for SSE transmission
+```
+
+**Technical Details**:
+- Use `\\\\n\\\\n` encoding format, not misinterpreted by browsers during SSE transmission
+- Ensure each paragraph has clear separator markers
+- Maintain original chunked streaming transmission logic
+
+### 2. Frontend Response Processing Fix (`background/handlers/base.ts`)
+
+**Core Fix**: Improve empty chunk handling and line break decoding
+
+```typescript
+// ❌ Before Fix: May ignore empty chunks or incorrectly decoded
+const decodedData = data.replace(/\\\\n/g, '\\n')
+if (decodedData.trim()) {  // This ignores chunks containing only line breaks
+    fullContent += decodedData
+}
+
+// ✅ After Fix: Ensure all chunks are processed
+for (const line of lines) {
+  if (line.startsWith('data: ')) {
+    const data = line.slice(6) // Remove 'data: ' prefix
+    
+    if (data === '[DONE]') {
+      port.postMessage({ type: 'done' })
+      return
+    }
+    
+    // Critical Fix: Decode encoded line breaks
+    let decodedData = data
+    if (data.includes('\\n')) {
+      decodedData = data.replace(/\\n/g, '\n')
+    }
+    
+    // Always send data, even if empty (might be line breaks)
+    port.postMessage({ type: 'chunk', data: decodedData })
+  }
+}
+```
+
+**Technical Details**:
+- Removed filtering for empty chunks, ensuring line breaks aren't ignored
+- Improved line break decoding logic, handling different encoding formats
+- Maintained original streaming processing performance
+
+### 3. TinyMCE HTML Generation Fix (`components/jira/ticket-summary-button.tsx`)
+
+**Core Fix**: Create dedicated TinyMCE-friendly HTML generation function
+
+```typescript
+const generateTinyMCEFriendlyHTML = useMemo(() => (text: string): string => {
+  if (!text) return ''
+  
+  let paragraphs: string[]
+  
+  // 🔧 Debug logging for analysis
+  console.log(`🔧 Original text length: ${text.length} First 100 chars:`, text.slice(0, 100))
+  
+  // Critical Fix: Split paragraphs based on double line breaks
+  if (text.includes('\n\n')) {
+    paragraphs = text.split('\n\n')
+    console.log("🔧 ✅ Using \\n\\n split, found", paragraphs.length, "paragraphs")
+  } else {
+    paragraphs = [text]
+    console.log("🔧 ⚠️ No \\n\\n found, treating as single paragraph")
+  }
+  
+  const htmlParts = paragraphs
+    .map(paragraph => paragraph.trim())
+    .filter(paragraph => paragraph.length > 0)
+    .map((paragraph) => {
+      // Detect list paragraphs
+      const isListParagraph = paragraph.includes('\n- ') || paragraph.startsWith('- ')
+      
+      if (isListParagraph) {
+        // Process bulleted lists
+        const items = paragraph.split('\n')
+          .filter(line => line.trim().startsWith('- '))
+          .map(item => item.trim().slice(2).trim())
+        return `<ul>${items.map(item => 
+          `<li>${item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</li>`
+        ).join('')}</ul>`
+      } else {
+        // Process regular paragraphs
+        const formatted = paragraph
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>') // Single line breaks become <br>
+        return `<p>${formatted}</p>`
+      }
+    })
+  
+  const result = htmlParts.join('')
+  console.log(`🔧 Generated ${htmlParts.length} HTML elements`)
+  return result
+}, [])
+```
+
+**Technical Details**:
+- Prioritize double line breaks (`\n\n`) for paragraph splitting
+- Smart detection of list formats and generation of `<ul><li>` structure
+- Process bold markdown syntax to `<strong>` tags
+- Generate TinyMCE-compatible HTML structure
+
+## 📊 Fix Effects Comparison
+
+### Before Fix
+```
+🔧 Original text length: 200 First 100 chars: **Executive Summary**No information is available
+🔧 ⚠️ No \n\n found, treating as single paragraph
+🔧 Generated 1 HTML elements
+```
+
+### After Fix
+```
+🔧 Original text length: 200 First 100 chars: **Executive Summary**\n\nNo information is available
+🔧 ✅ Using \n\n split, found 3 paragraphs
+🔧 Generated 3 HTML elements
+```
+
+## 🧪 Test Validation
+
+### Test Steps
+1. Open any Jira ticket page
+2. Open browser developer tools Console panel
+3. Click "Generate Ticket Summary" button
+4. Observe Console logs to confirm line breaks are correctly transmitted
+
+### Key Metrics
+- ✅ `added: "\\n\\n"` - Confirm line breaks are correctly transmitted
+- ✅ `🔧 ✅ Using \n\n split` - Confirm paragraphs are correctly split
+- ✅ `Generated X HTML elements (X > 1)` - Confirm multiple HTML elements generated
+- ✅ **Visual Effect**: Multiple paragraphs displayed in TinyMCE, not single line
+
+## 🔧 Technical Summary
+
+### SSE Streaming Best Practices
+1. **Line Break Encoding**: Use `\\n\\n` instead of `\n\n` in SSE
+2. **Chunk Integrity**: Ensure paragraph separators transmitted as independent chunks
+3. **Client Decoding**: Correctly handle encoded line breaks and maintain chunk integrity
+
+### TinyMCE Integration Best Practices
+1. **HTML Structure**: Use `<p>` and `<ul><li>` tags instead of relying on line breaks
+2. **Markdown Conversion**: Optimize HTML generation logic for TinyMCE
+3. **Real-time Updates**: Update editor content in real-time during streaming
+
+### Debugging Strategies
+1. **Layer-by-Layer Debugging**: Verify each layer of backend generation, SSE transmission, and frontend parsing
+2. **Critical Logs**: Record chunk content, line break encoding status, and HTML generation process
+3. **Visual Validation**: Observe data flow process through browser Console
+
+## 🚀 Application Scenarios
+
+This solution is suitable for:
+- **Jira Integration**: Any scenario where AI-generated content needs real-time display in Jira TinyMCE editor
+- **Streaming AI Response**: Need to maintain formatted streaming AI text generation
+- **Rich Text Editor**: Other similar TinyMCE rich text editor integrations
+
+## 📝 Related Files
+- `backend/app/api/ai.py` - SSE streaming transmission logic
+- `frontend/src/background/handlers/base.ts` - Streaming response processing
+- `frontend/src/components/jira/ticket-summary-button.tsx` - TinyMCE HTML generation
+- `backend/app/services/jira/jira_service.py` - Jira backend service logic
+
+## 🔍 Debugging Checklist
+
+When implementing this fix, verify:
+- [ ] Backend sends proper line break encoding in SSE
+- [ ] Frontend correctly decodes `\\n` to `\n`
+- [ ] Double line breaks create separate paragraphs
+- [ ] Single line breaks become `<br>` tags
+- [ ] Bullet lists are properly formatted as `<ul><li>`
+- [ ] Bold formatting (`**text**`) converts to `<strong>`
+- [ ] Real-time updates work during streaming
+- [ ] Final content is properly formatted in TinyMCE
+- [ ] Console logs show correct paragraph splitting
+- [ ] Visual display matches expected formatting

@@ -23,27 +23,111 @@ A Plasmo-based browser extension that provides seamless browser integration for 
 - **Extension Type**: Manifest V3 (Chrome/Edge), Manifest V2 (Firefox)
 - **Browser Support**: Chrome, Firefox, Edge, and other Chromium-based browsers
 
-## 📁 Project Structure
+## 📁 Project Structure (Simplified Architecture)
 
 ```
 frontend/
-├── src/                    # Source code directory
-│   ├── components/         # Reusable UI components
-│   ├── hooks/             # Custom React hooks
-│   ├── services/          # API and external services
-│   ├── types/             # TypeScript type definitions
-│   └── utils/             # Utility functions
-├── background/            # Background scripts
-│   └── messages/          # Message handlers
+├── src/                    # Source code
+│   ├── components/         # React UI components  
+│   ├── hooks/             # Business logic hooks
+│   ├── background/        # Chrome extension background
+│   ├── config/            # Configuration
+│   └── types/             # TypeScript definitions
+├── docs/                  # Documentation
 ├── assets/               # Static assets
-├── lib/                  # Library files
-├── scripts/              # Build and utility scripts
-├── package.json          # Dependencies and scripts (pnpm)
-├── tailwind.config.js    # Tailwind CSS configuration
-├── postcss.config.js     # PostCSS configuration
-├── tsconfig.json         # TypeScript configuration
-└── README.md             # This file
+├── lib/                  # Library configurations
+└── package.json          # Dependencies and scripts
 ```
+
+## ⚙️ Configuration
+
+### Background Script Configuration
+
+**Correct configuration scheme** (verified to be working):
+
+#### TypeScript Path configuration (tsconfig.json)
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "~*": ["./src/*"]
+    }
+  }
+}
+```
+
+#### Directory structure
+```
+src/
+├── background/
+│   ├── index.ts          # Main background script
+│   └── messages/
+│       ├── jira.ts       # Jira API message handler
+│       ├── github.ts     # GitHub API message handler
+│       └── health.ts     # Health check message handler
+```
+
+#### Dependency versions
+- `@plasmohq/messaging`: `^0.7.2` (已安装并验证)
+- `plasmo`: `0.90.5`
+
+#### Manifest configuration
+Plasmo automatically generated manifest.json correctly points to:
+```json
+{
+  "background": {
+    "service_worker": "static/background/index.js"
+  }
+}
+```
+
+#### Function verification
+- ✅ manifest.json correctly points to background script
+- ✅ Includes logging output functionality
+- ✅ Supports Plasmo Messaging API
+- ✅ Message handlers automatically loaded from messages/ directory
+
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+```
+
+## 🤖 AI-Powered Development
+
+This project uses **Cursor Project Rules** for intelligent code assistance. The `.cursor/rules/` directory contains comprehensive guidelines for:
+
+- **architecture.mdc** - 3-layer simplified architecture patterns
+- **hook-patterns.mdc** - Hook-first development approach  
+- **component-patterns.mdc** - React component best practices
+- **new-features.mdc** - 3-step feature addition process
+- **chrome-extension.mdc** - Chrome extension specific patterns
+
+**Using Cursor IDE?** The AI assistant automatically understands the project structure and coding patterns from Project Rules. Rules are scoped to specific file types and applied contextually.
+
+## 🎯 Key Features
+
+- **3-Layer Simplified Architecture** - Components → Hooks → Background
+- **Auto-routing** - Convention-based request routing
+- **Type-safe** - Complete TypeScript support
+- **Self-cleaning** - Automatic resource cleanup
+
+### Adding New APIs
+
+Adding a new streaming API requires only **3 simple steps**:
+
+1. **Add endpoint** to `config/streaming.ts`
+2. **Create Hook** in `hooks/{service}/index.ts`
+3. **Export Hook** in `hooks/index.ts`
+
+That's it! The auto-routing system handles everything else.
 
 ## 🚀 Quick Start
 

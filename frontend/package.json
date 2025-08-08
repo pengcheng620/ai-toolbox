@@ -17,7 +17,7 @@
     "@heroicons/react": "^2.1.4",
     "@mantine/core": "^7.11.1",
     "@mantine/hooks": "^7.11.1",
-    "@plasmohq/messaging": "^0.7.1",
+    "@plasmohq/messaging": "^0.7.2",
     "@plasmohq/storage": "^1.11.0",
     "ai": "^3.2.34",
     "clsx": "^2.1.1",

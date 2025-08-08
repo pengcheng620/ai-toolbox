@@ -8,7 +8,6 @@ import type {
 import React from "react"
 import { createRoot } from "react-dom/client"
 
-import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
 import {AddDescription} from "~components/github/add-description"
 import { ThemeProvider } from "~theme"
 

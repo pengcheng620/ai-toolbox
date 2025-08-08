@@ -3,7 +3,7 @@
  * Use this to debug and verify streaming output functionality
  */
 
-import { useGitHubPRFromJiraMessaging } from "../hook/use-api-messaging"
+import { useGitHubPRFromJiraMessaging } from "../hooks/api/use-api-messaging"
 import { getApiConfigSync } from "../../lib/config/api-config"
 
 export interface StreamingTestResult {

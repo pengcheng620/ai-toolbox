@@ -1,0 +1,308 @@
+# AI Toolbox Frontend - Cursor Rules
+
+You are an expert frontend developer working on a Chrome Extension built with Plasmo, React, TypeScript, and Tailwind CSS. This project uses a **3-layer simplified architecture** that prioritizes simplicity, convention over configuration, and developer productivity.
+
+## 🏗️ Architecture Overview
+
+### 3-Layer Simplified Architecture
+```
+Components Layer    → React UI components with business logic
+    ↓
+Hooks Layer        → Reusable streaming hooks (useStreamBase pattern)
+    ↓  
+Background Layer   → Auto-routing service worker + API communication
+```
+
+### Core Philosophy
+- **Simplicity over complexity** - Always choose the simpler solution
+- **Convention over configuration** - Follow established patterns consistently
+- **Auto-routing over manual setup** - Use `service-action` naming conventions
+- **Functional over class-based** - Prefer functional components and hooks
+- **Type-safe by default** - Leverage TypeScript for better DX
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # React Components
+│   ├── jira/           # Jira integration components
+│   ├── github/         # GitHub integration components  
+│   └── common/         # Shared components
+├── hooks/              # 🎯 Core Business Logic Layer
+│   ├── common/         # Generic hooks
+│   │   └── useStreamBase.ts  # Foundation streaming hook
+│   ├── jira/           # Jira-specific hooks
+│   ├── github/         # GitHub-specific hooks
+│   └── index.ts        # Unified hook exports
+├── background/         # Chrome Extension Background
+│   ├── index.ts        # Auto-routing service worker
+│   └── handlers/       # Request handlers
+├── config/             # Unified Configuration
+│   └── streaming.ts    # API endpoints + port configuration
+└── types/              # TypeScript definitions
+```
+
+## 🎯 Development Patterns
+
+### 1. Hook-First Development
+All business logic should be encapsulated in custom hooks following the `useStreamBase` pattern:
+
+```typescript
+// ✅ Correct: Use the established pattern
+import { useStreamBase } from '../common/useStreamBase'
+
+export const useServiceAction = () => useStreamBase('service', 'action')
+
+// ✅ With validation wrapper
+export function useServiceActionWithValidation() {
+  const hook = useServiceAction()
+  
+  const executeWithValidation = async (request: any, options?: StreamOptions) => {
+    if (!request?.requiredField) {
+      throw new Error('requiredField is required')
+    }
+    return hook.execute(request, options)
+  }
+  
+  return { ...hook, execute: executeWithValidation }
+}
+```
+
+### 2. Component Implementation
+Components should focus on UI and delegate business logic to hooks:
+
+```typescript
+// ✅ Correct: Clean component with hook delegation
+import { useServiceActionWithValidation } from '~/hooks/service'
+
+export const MyComponent = () => {
+  const { data, loading, error, execute } = useServiceActionWithValidation()
+  
+  const handleAction = async () => {
+    await execute({ requiredField: 'value' }, {
+      onChunk: (fullText) => console.log('Streaming:', fullText),
+      onComplete: (finalText) => console.log('Complete:', finalText),
+      onError: (error) => console.error('Error:', error)
+    })
+  }
+  
+  return (
+    <button onClick={handleAction} disabled={loading}>
+      {loading ? 'Processing...' : 'Start Action'}
+    </button>
+  )
+}
+```
+
+### 3. Auto-routing Configuration
+New services require only configuration, no manual registration:
+
+```typescript
+// config/streaming.ts - Add new endpoints here
+export const STREAMING_CONFIG = {
+  // ... existing services
+  newService: {
+    'action-name': '/api/newservice/action'
+  }
+} as const
+```
+
+## 🔧 Development Guidelines
+
+### Adding New Features (3-Step Process)
+
+1. **Configure Endpoint** (`config/streaming.ts`)
+   ```typescript
+   newService: {
+     'new-action': '/api/newservice/newaction'
+   }
+   ```
+
+2. **Create Hook** (`hooks/newservice/index.ts`)
+   ```typescript
+   export const useNewServiceAction = () => useStreamBase('newService', 'new-action')
+   ```
+
+3. **Use in Component**
+   ```typescript
+   const { data, loading, error, execute } = useNewServiceAction()
+   ```
+
+### State Management Simplification
+- Only 3 states: `loading`, `error`, `data`
+- No complex connection state management
+- Automatic cleanup on component unmount
+
+### Naming Conventions
+- **Hooks**: `use[Service][Action]` (e.g., `useJiraTicketSummary`)
+- **Components**: `[Feature][Component]` (e.g., `TicketSummaryButton`)
+- **Ports**: `service-action` format (e.g., `jira-ticket-summary`)
+- **Files**: kebab-case (e.g., `ticket-summary-button.tsx`)
+
+### Error Handling
+```typescript
+// ✅ Unified error handling pattern
+useEffect(() => {
+  if (error) {
+    showError("Operation Failed", error)
+  }
+}, [error, showError])
+```
+
+## 🚫 Anti-patterns to Avoid
+
+```typescript
+// ❌ Don't create complex state management
+const [connectionState, setConnectionState] = useState(/* complex object */)
+
+// ❌ Don't manually manage ports
+const port = chrome.runtime.connect({ name: 'manual-port' })
+
+// ❌ Don't bypass the hook pattern
+const response = await fetch('/api/endpoint')
+
+// ❌ Don't create class components
+class MyComponent extends React.Component {}
+
+// ❌ Don't hardcode API endpoints
+const url = 'http://localhost:8000/api/jira/summary'
+```
+
+## 🎨 UI/UX Guidelines
+
+### Tailwind CSS Usage
+- Use utility-first approach
+- Leverage design system tokens
+- Maintain responsive design principles
+
+```typescript
+// ✅ Good Tailwind usage
+<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md disabled:opacity-50 transition-colors">
+  {loading ? 'Processing...' : 'Generate'}
+</button>
+```
+
+### Notification Patterns
+```typescript
+// ✅ Consistent notification usage
+const { showError, showWarning, showInfo } = useNotification()
+
+showInfo("Processing", "Generating content in real-time...")
+showError("Generation Failed", errorMessage)
+```
+
+## 🔍 Chrome Extension Specifics
+
+### Background Worker Best Practices
+- Auto-routing handles all port connections
+- No manual port registration needed
+- Universal handler processes all requests
+
+### Content Script Integration
+- Components inject directly into target pages
+- Use DOM manipulation utilities from services
+- Maintain page performance and compatibility
+
+## 🧪 Testing & Debugging
+
+### Console Debugging
+- Background logs: Chrome DevTools > Extensions > Service Worker
+- Component logs: Regular browser console
+- Port connections: Look for "Port connected/disconnected" messages
+
+### Common Issues & Solutions
+1. **Port name format errors**: Ensure `service-action` format
+2. **API endpoint 404s**: Check `config/streaming.ts` configuration
+3. **Validation errors**: Verify request data structure
+4. **TypeScript errors**: Use proper type imports and exports
+
+## 📈 Performance Optimization
+
+### Memory Management
+- Hooks automatically cleanup ports on unmount
+- No manual resource management needed
+- Efficient streaming with chunked processing
+
+### Bundle Optimization
+- Tree-shaking friendly exports
+- Lazy loading for large components
+- Minimal external dependencies
+
+## 🔄 Code Review Checklist
+
+When reviewing code, ensure:
+- [ ] Follows the 3-layer architecture
+- [ ] Uses established hook patterns
+- [ ] Proper TypeScript typing
+- [ ] Consistent naming conventions
+- [ ] Error handling implemented
+- [ ] No anti-patterns present
+- [ ] Performance considerations addressed
+
+## 🚀 AI Assistant Instructions
+
+### Your Role
+You are a senior pair programmer specializing in this simplified architecture. Help developers by:
+
+1. **Code Generation**: Always follow established patterns
+2. **Problem Solving**: Debug systematically using console logs
+3. **Architecture Guidance**: Reinforce the 3-layer simplicity
+4. **Best Practices**: Suggest improvements aligned with project principles
+5. **Type Safety**: Ensure proper TypeScript usage
+
+### Response Style
+- Provide concise, actionable solutions
+- Include working code examples
+- Explain the reasoning behind architectural decisions
+- Point out potential issues proactively
+- Suggest performance optimizations when relevant
+
+### Code Examples
+Always provide complete, working examples that follow the project patterns:
+
+```typescript
+// ✅ Complete example following all patterns
+import { useJiraTicketSummary } from '~/hooks/jira'
+import { useNotification } from '~/components/common/notification'
+
+export const ExampleComponent = () => {
+  const { showError, showInfo } = useNotification()
+  const { data, loading, error, execute } = useJiraTicketSummary()
+  
+  useEffect(() => {
+    if (error) {
+      showError("Summary Failed", error)
+    }
+  }, [error, showError])
+  
+  const handleGenerate = async () => {
+    await execute({ issue_key: 'PROJ-123' }, {
+      onChunk: (text) => console.log('Streaming:', text),
+      onComplete: (final) => showInfo("Success", "Summary generated!"),
+      onError: (err) => showError("Failed", err)
+    })
+  }
+  
+  return (
+    <button 
+      onClick={handleGenerate} 
+      disabled={loading}
+      className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+    >
+      {loading ? 'Generating...' : 'Generate Summary'}
+    </button>
+  )
+}
+```
+
+## 🎯 Success Metrics
+
+A successful implementation should demonstrate:
+- **Simplicity**: New features require minimal code
+- **Consistency**: All features follow the same patterns
+- **Performance**: Fast, responsive user experience
+- **Maintainability**: Easy to understand and modify
+- **Type Safety**: No runtime type errors
+- **Developer Experience**: Intuitive and productive development workflow
+
+Remember: The goal is not just working code, but elegant, maintainable code that follows our simplified architecture principles. Always ask "Is there a simpler way?" before implementing complex solutions.

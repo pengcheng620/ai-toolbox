@@ -1,0 +1,51 @@
+---
+description: Hook development patterns and best practices
+globs: **/hooks/**/*.ts,**/hooks/**/*.tsx
+alwaysApply: false
+---
+
+# Hook Development Patterns
+
+## useStreamBase Pattern
+
+All business logic should follow the established `useStreamBase` pattern:
+
+```typescript
+// ✅ Correct: Use the established pattern
+import { useStreamBase } from '../common/useStreamBase'
+
+export const useServiceAction = () => useStreamBase('service', 'action')
+
+// ✅ With validation wrapper
+export function useServiceActionWithValidation() {
+  const hook = useServiceAction()
+  
+  const executeWithValidation = async (request: any, options?: StreamOptions) => {
+    if (!request?.requiredField) {
+      throw new Error('requiredField is required')
+    }
+    return hook.execute(request, options)
+  }
+  
+  return { ...hook, execute: executeWithValidation }
+}
+```
+
+## Naming Conventions
+
+- **Hooks**: `use[Service][Action]` (e.g., `useJiraTicketSummary`)
+- **Ports**: `service-action` format (e.g., `jira-ticket-summary`)
+- **Files**: kebab-case (e.g., `use-jira-ticket-summary.ts`)
+
+## Anti-patterns to Avoid
+
+```typescript
+// ❌ Don't create complex state management
+const [connectionState, setConnectionState] = useState(/* complex object */)
+
+// ❌ Don't manually manage ports
+const port = chrome.runtime.connect({ name: 'manual-port' })
+
+// ❌ Don't bypass the hook pattern
+const response = await fetch('/api/endpoint')
+```

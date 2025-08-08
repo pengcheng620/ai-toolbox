@@ -54,7 +54,7 @@ export function getApiEndpoints(baseUrl: string): ApiEndpoints {
  */
 export function getApiConfigSync() {
   // Get the base URL from environment variable (set during build time)
-  const baseUrl = process.env.PLASMO_PUBLIC_API_BASE_URL || 'http://localhost:8077';
+  const baseUrl = process.env.PLASMO_PUBLIC_API_BASE_URL || 'http://10.148.218.115:8077';
   
   return {
     baseUrl,

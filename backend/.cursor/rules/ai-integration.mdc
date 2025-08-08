@@ -1,0 +1,168 @@
+---
+description: AI Integration Patterns and Best Practices
+globs: **/services/**/*.py,**/prompts/**/*.py
+alwaysApply: false
+---
+
+# AI Integration Guidelines
+
+## Azure OpenAI Integration
+
+### Client Initialization
+```python
+# ✅ Correct: Singleton pattern for AI client
+from azure.openai import AsyncAzureOpenAI
+
+class AzureAIClient:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.client = AsyncAzureOpenAI(
+                api_key=settings.AZURE_OPENAI_API_KEY,
+                api_version=settings.AZURE_OPENAI_API_VERSION,
+                azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
+            )
+        return cls._instance
+```
+
+### Streaming Implementation
+```python
+# ✅ Correct: Proper streaming with error handling and line break encoding
+async def stream_completion(self, messages: List[dict]):
+    try:
+        response = await self.client.chat.completions.create(
+            model=settings.AZURE_OPENAI_MODEL,
+            messages=messages,
+            stream=True,
+            temperature=0.7
+        )
+        
+        async for chunk in response:
+            if chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+                
+    except Exception as e:
+        logger.error(f"AI streaming error: {e}")
+        raise HTTPException(status_code=500, detail="AI service error")
+
+# ✅ SSE Line Break Encoding Best Practice
+async def stream_with_paragraph_breaks(self, content_generator):
+    """
+    Properly encode line breaks for SSE transmission to prevent
+    formatting loss in frontend rich text editors like TinyMCE.
+    """
+    paragraphs = []
+    current_paragraph = ""
+    
+    async for chunk in content_generator:
+        current_paragraph += chunk
+        
+        # Detect paragraph boundaries
+        if chunk.endswith('\n\n') or chunk == '\n\n':
+            paragraphs.append(current_paragraph.strip())
+            current_paragraph = ""
+    
+    # Yield paragraphs with proper SSE encoding
+    for idx, paragraph in enumerate(paragraphs):
+        if paragraph.strip():
+            yield paragraph
+            # Critical: Add encoded line breaks between paragraphs
+            if idx < len(paragraphs) - 1:
+                yield '\\\\n\\\\n'  # Double-encoded for SSE transmission
+```
+
+## Prompt Management
+
+### Prompt Templates
+```python
+# ✅ Correct: Structured prompt templates
+class JiraPrompts:
+    TICKET_SUMMARY = """
+    Analyze the following Jira ticket and provide a concise summary:
+    
+    Ticket: {ticket_key}
+    Description: {description}
+    Comments: {comments}
+    
+    Focus on:
+    - Key issues and requirements
+    - Current status and blockers
+    - Next steps and recommendations
+    """
+    
+    @staticmethod
+    def build_summary_prompt(ticket_data: dict) -> str:
+        return JiraPrompts.TICKET_SUMMARY.format(**ticket_data)
+```
+
+### Context Management
+```python
+# ✅ Correct: Token-aware context building
+def build_context(self, data: dict, max_tokens: int = 4000) -> List[dict]:
+    messages = [{"role": "system", "content": self.system_prompt}]
+    
+    # Add context within token limits
+    content = self.truncate_content(data, max_tokens)
+    messages.append({"role": "user", "content": content})
+    
+    return messages
+```
+
+## Performance Optimization
+
+### Caching Strategy
+```python
+# ✅ Correct: Cache frequently used data
+from functools import lru_cache
+import asyncio
+
+@lru_cache(maxsize=100)
+async def get_cached_prompt(template_name: str) -> str:
+    # Cache prompt templates
+    return await load_prompt_template(template_name)
+```
+
+### Rate Limiting
+```python
+# ✅ Correct: Implement rate limiting for AI calls
+import asyncio
+from asyncio import Semaphore
+
+class AIRateLimiter:
+    def __init__(self, max_concurrent: int = 5):
+        self.semaphore = Semaphore(max_concurrent)
+    
+    async def acquire(self):
+        await self.semaphore.acquire()
+    
+    def release(self):
+        self.semaphore.release()
+```
+
+## Error Handling
+
+### Retry Logic
+```python
+# ✅ Correct: Exponential backoff for AI calls
+import tenacity
+
+@tenacity.retry(
+    stop=tenacity.stop_after_attempt(3),
+    wait=tenacity.wait_exponential(multiplier=1, min=4, max=10)
+)
+async def call_ai_with_retry(self, prompt: str):
+    return await self.ai_client.generate(prompt)
+```
+
+### Graceful Degradation
+```python
+# ✅ Correct: Fallback strategies
+async def generate_with_fallback(self, request: dict):
+    try:
+        return await self.primary_ai_service(request)
+    except Exception as e:
+        logger.warning(f"Primary AI failed: {e}, using fallback")
+        return await self.fallback_response(request)
+```

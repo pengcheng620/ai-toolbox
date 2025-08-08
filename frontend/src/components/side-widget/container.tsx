@@ -4,7 +4,7 @@ import { SparklesIcon } from "@heroicons/react/24/outline"
 import { Card } from "@mantine/core"
 import React from "react"
 
-import { useDrag } from "~hook/use-drag"
+import { useDrag } from "~hooks/common/use-drag"
 
 
 

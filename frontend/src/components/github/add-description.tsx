@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react"
 import { useNotification } from "~components/common/notification"
-import { useGitHubPRFromJiraMessaging } from "~hook/use-api-messaging"
+// 🎯 New Architecture: Use simplified GitHub Hook
+import { useGitHubPRDescriptionWithValidation } from "../../hooks/github"
 
 import {
   fetchPRCommitMessages,
@@ -10,7 +11,7 @@ import {
 } from "../../services/github-pr-page-service"
 import { SparklesIcon } from "../../../lib/icons/heroicon"
 import { getGitHubPageStrategy } from "../../../lib/utils/github"
-import { useGitHubDOM } from "../../hooks/useGitHubDOM"
+import { useGitHubDOM } from "../../hooks/github/use-github-dom"
 import styles from "./add-description.module.css"
 import { getApiConfigSync } from "../../../lib/config/api-config"
 import { JiraTicketInput } from "./jira-ticket-input"
@@ -44,7 +45,8 @@ const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
 
 export const AddDescription = () => {
   const { showError, showWarning } = useNotification()
-  const { execute, loading, error } = useGitHubPRFromJiraMessaging()
+  // 🎯 New Architecture: Use simplified Hook
+  const { data, loading, error, execute } = useGitHubPRDescriptionWithValidation()
   const githubDOM = useGitHubDOM()
   const [originalContent, setOriginalContent] = useState<string>("")
   const [hasGeneratedContent, setHasGeneratedContent] = useState(false)
@@ -359,73 +361,49 @@ export const AddDescription = () => {
       // Check if edit mode is already active
       const strategy = getGitHubPageStrategy()
       const activeTextarea = strategy.findEditModeTextarea()
-      let result: any = null
 
-      if (activeTextarea) {
-        // Execute with streaming callback to update textarea in real-time
-        result = await execute(payload, {
-          onChunk: (_chunk: string, fullText: string) => {
-            console.log("Received streaming content _chunk:", _chunk)
-            console.log("Received streaming content fullText:", fullText)
-            setStreamingContent(fullText)
+      // 🎯 New Architecture: Unified execute call with callbacks
+      await execute(payload, {
+        onChunk: (fullText: string) => {
+          console.log("Received streaming content:", fullText)
+          setStreamingContent(fullText)
+          
+          // Real-time update for active textarea
+          if (activeTextarea) {
             githubDOM.updateTextareaRealtime(activeTextarea, fullText)
           }
-        })
-      } else {
-        // Standard mode with streaming to state
-        result = await execute(payload, {
-          onChunk: (_chunk: string, fullText: string) => {
-            setStreamingContent(fullText)
-          }
-        })
-      }
+        },
+        onComplete: async (finalContent: string) => {
+          console.log("Generation completed:", finalContent)
+          
+          if (finalContent && finalContent.trim()) {
+            // Mark that content has been generated
+            setHasGeneratedContent(true)
 
-      // Extract description from result
-      let description = streamingContent || null
-
-      if (result) {
-        // Try different response formats
-        if (result.generated_description) {
-          description = result.generated_description
-        } else if (result.generated_content) {
-          description = result.generated_content
-        } else if (typeof result === 'string') {
-          description = result
-        } else if (result.text) {
-          description = result.text
-        } else {
-          // Check for alternative text properties
-          const textProperties = ['content', 'message', 'response', 'data']
-          for (const prop of textProperties) {
-            if (result[prop] && typeof result[prop] === 'string') {
-              description = result[prop]
-              break
+            // If edit mode is not active, set the comment area
+            if (!activeTextarea) {
+              const result = await githubDOM.setCommentArea(finalContent)
+              if (!result.success) {
+                console.error("Failed to set comment area:", result.error)
+                showError("Update Failed", "Failed to update description area. Please try again.")
+              }
             }
+
+            // Clear streaming content
+            setStreamingContent("")
+            
+            // Success is implicit - user can see the generated content
+            console.log("✅ PR description generated successfully")
+          } else {
+            console.error("Generation completed but no valid content found")
+            showError("Generation Failed", "Failed to generate description content. Please try again.")
           }
+        },
+        onError: (errorMessage: string) => {
+          console.error("Generation failed:", errorMessage)
+          showError("Generation Failed", errorMessage)
         }
-      }
-
-      if (description && description.trim()) {
-        // Mark that content has been generated
-        setHasGeneratedContent(true)
-
-        // If edit mode is already active, content is already filled via streaming
-        // Otherwise, use normal flow
-        if (!activeTextarea) {
-          const result = await githubDOM.setCommentArea(description)
-          if (!result.success) {
-            console.error("Failed to set comment area:", result.error)
-          }
-        }
-
-        // Suggested title is handled by the UI directly - no notification needed
-        // User can see the suggested title in the interface
-
-        // No success notification needed - user can see the generated content directly
-      } else {
-        console.error("Generation failed, no valid description found")
-        showError("Generation Failed", "Failed to generate description content. Please try again.")
-      }
+      })
     } catch (error) {
       console.error("Generation error:", error)
       // Error handling is now centralized in the API hook

@@ -1,0 +1,49 @@
+---
+description: AI Toolbox Frontend Architecture Guidelines
+globs: **/*.tsx,**/*.ts
+alwaysApply: true
+---
+
+# AI Toolbox Frontend Architecture
+
+You are an expert frontend developer working on a Chrome Extension built with Plasmo, React, TypeScript, and Tailwind CSS.
+
+## 3-Layer Simplified Architecture
+
+```
+Components Layer → React UI components with business logic
+    ↓
+Hooks Layer     → Reusable streaming hooks (useStreamBase pattern)  
+    ↓
+Background Layer → Auto-routing service worker + API communication
+```
+
+## Core Principles
+
+- **Simplicity over complexity** - Always choose the simpler solution
+- **Convention over configuration** - Follow established patterns consistently
+- **Auto-routing over manual setup** - Use `service-action` naming conventions
+- **Functional over class-based** - Prefer functional components and hooks
+- **Type-safe by default** - Leverage TypeScript for better DX
+
+## Project Structure
+
+```
+src/
+├── components/          # React Components
+├── hooks/              # 🎯 Core Business Logic Layer
+│   ├── common/         # useStreamBase.ts (foundation)
+│   ├── jira/           # Jira-specific hooks
+│   ├── github/         # GitHub-specific hooks
+│   └── index.ts        # Unified exports
+├── background/         # Auto-routing service worker
+├── config/             # streaming.ts (unified configuration)
+└── types/              # TypeScript definitions
+```
+
+## State Management Simplification
+
+Only 3 states: `loading`, `error`, `data`
+- No complex connection state management
+- Automatic cleanup on component unmount
+- Unified error handling pattern

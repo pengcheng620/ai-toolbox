@@ -2,19 +2,18 @@ import { marked } from "marked"
 import React, { useEffect, useState } from "react"
 
 import { useNotification } from "~components/common/notification"
-import { messageOptimizeMessaging } from "~hook/use-api-messaging"
+import { useJiraMessageOptimizeWithValidation } from "../../hooks/jira"
 
 import { SparklesIcon } from "../../../lib/icons/heroicon"
-import { getApiConfigSync } from "../../../lib/config/api-config"
 
 export const MessageOptimizerButton = () => {
   const { showError, showWarning, showInfo } = useNotification()
-  const { execute, loading, error } = messageOptimizeMessaging()
+  const { data, loading, error, execute } = useJiraMessageOptimizeWithValidation()
   const [streamingContent, setStreamingContent] = useState("")
 
   useEffect(() => {
     if (error) {
-      showError("Summary Generation Failed", error)
+      showError("Message Optimization Failed", error)
     }
   }, [error, showError])
 
@@ -47,36 +46,32 @@ export const MessageOptimizerButton = () => {
     if (loading) return
 
     try {
-      const apiConfig = getApiConfigSync()
-      const healthCheck = await fetch(apiConfig.endpoints.ai.health)
-      if (!healthCheck.ok) throw new Error("Backend API unavailable")
-    } catch (error) {
-      console.error("Backend API connection failed:", error)
-      showError("Connection Failed", "Unable to connect to backend API server. Please ensure the server is running.")
-      return
-    }
-
-    setStreamingContent("")
-    showInfo("Optimizing", "Optimizing message in real-time...")
-
-    const result = await execute({
-      issue_key: ticketId,
-      message_to_optimize: currentMessage
-    }, {
-      onChunk: (chunk: string, fullText: string) => {
-        setStreamingContent(fullText)
-        setCommentAreaRealtime(fullText)
-      }
-    })
-
-    if (result) {
-      const finalContent = result.generated_content || streamingContent
-      if (finalContent) {
-        await setCommentArea(finalContent)
-      }
       setStreamingContent("")
-    } else {
-      console.error("Optimize failed, result is empty")
+      showInfo("Optimizing", "Optimizing message in real-time...")
+
+      await execute({
+        issue_key: ticketId,
+        message_to_optimize: currentMessage
+      }, {
+        onChunk: (fullText: string) => {
+          setStreamingContent(fullText)
+          setCommentAreaRealtime(fullText)
+        },
+        onComplete: (finalContent: string) => {
+          setCommentArea(finalContent)
+          setStreamingContent("")
+          showInfo("Success", "Message optimization completed!")
+        },
+        onError: (errorMessage: string) => {
+          showError("Optimization Failed", errorMessage)
+        }
+      })
+
+    } catch (error) {
+      console.error("❌ Optimization failed:", error)
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      showError("Optimization Failed", errorMessage)
+      setStreamingContent("")
     }
   }
 

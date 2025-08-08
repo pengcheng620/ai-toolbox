@@ -1,0 +1,73 @@
+---
+description: AI Toolbox Project Overview and General Guidelines
+globs: ["**/*.md", "**/*.py", "**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# AI Toolbox Project Overview
+
+## Project Structure
+
+This is a full-stack AI-powered toolbox with Chrome Extension frontend and Python FastAPI backend:
+
+```
+ai-toolbox/
+├── frontend/           # Chrome Extension (Plasmo + React + TypeScript)
+├── backend/           # Python FastAPI API Server
+├── config/            # Shared configuration
+└── deployment/        # Docker and deployment configs
+```
+
+## Core Philosophy
+
+- **Simplicity over complexity** - Always choose the simpler solution
+- **Convention over configuration** - Follow established patterns
+- **Developer productivity** - Optimize for fast, intuitive development
+- **Type safety** - Leverage TypeScript and Python type hints
+- **Real-time streaming** - All AI interactions use streaming responses
+
+## Technology Stack
+
+### Frontend
+- **Framework**: Plasmo (Chrome Extension)
+- **UI**: React 18 + TypeScript + Tailwind CSS
+- **Architecture**: 3-layer simplified (Components → Hooks → Background)
+- **State**: Minimal state with automatic cleanup
+
+### Backend  
+- **Framework**: FastAPI + Python
+- **AI**: Azure OpenAI integration
+- **Authentication**: OAuth2 with Azure AD
+- **Architecture**: Service-oriented with clean separation
+
+## Development Principles
+
+1. **Code Quality**: Clean, readable, maintainable code
+2. **Performance**: Efficient streaming, minimal bundle size
+3. **Security**: Proper authentication and data handling
+4. **Testing**: Comprehensive testing strategy
+5. **Documentation**: Self-documenting code with clear patterns
+
+## Integration Points
+
+- **Jira API**: Ticket management and optimization
+- **GitHub API**: PR descriptions and code review
+- **Azure AI**: Streaming text generation
+- **Chrome APIs**: Extension functionality
+
+## Common Patterns
+
+### Error Handling
+- Unified error messages across frontend/backend
+- Graceful degradation for network issues
+- Clear user feedback for all operations
+
+### Streaming Implementation
+- Server-Sent Events (SSE) for real-time responses
+- Chunked processing with progress indicators
+- Automatic reconnection and cleanup
+
+### Configuration Management
+- Environment-based configuration
+- Centralized API endpoint management
+- Type-safe configuration objects

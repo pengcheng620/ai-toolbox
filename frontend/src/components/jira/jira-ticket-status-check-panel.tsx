@@ -2,12 +2,13 @@ import { marked } from 'marked'
 import React, { useEffect, useState, useRef } from "react"
 
 import { useNotification } from "~components/common/notification"
-import { useJiraTicketStatusCheckMessaging } from "~hook/use-api-messaging"
-import { getApiConfigSync } from "../../../lib/config/api-config"
+// 🎯 New Architecture: Use simplified Jira Hook
+import { useJiraStatusCheck } from "../../hooks/jira"
 
 export const JiraTicketStatusCheckPanel = () => {
   const { showError, showWarning, showInfo } = useNotification()
-  const { execute, loading, error } = useJiraTicketStatusCheckMessaging()
+  // 🎯 New Architecture: Use simplified Hook
+  const { data, loading, error, execute } = useJiraStatusCheck()
   const [streamingContent, setStreamingContent] = useState("")
   const [markdownContent, setMarkdownContent] = useState('Checking...')
   const hasExecuted = useRef(false)
@@ -40,35 +41,30 @@ export const JiraTicketStatusCheckPanel = () => {
     if (loading) return
 
     try {
-      const apiConfig = getApiConfigSync()
-      const healthCheck = await fetch(apiConfig.endpoints.ai.health)
-      if (!healthCheck.ok) throw new Error("Backend API unavailable")
-    } catch (error) {
-      console.error("Backend API connection failed:", error)
-      showError("Connection Failed", "Unable to connect to backend API server. Please ensure the server is running.")
-      return
-    }
-
-    setStreamingContent("")
-    showInfo("Ticket status checking", "Checking ticket status in real-time...")
-
-    const result = await execute({
-      issue_key: ticketId
-    }, {
-      onChunk: (chunk: string, fullText: string) => {
-        setStreamingContent(fullText)
-        setStatusCheckResultAtRealTime(fullText)
-      }
-    })
-
-    if (result) {
-      const finalContent = result.generated_content || streamingContent
-      if (finalContent) {
-        await setStatusCheckResult(finalContent)
-      }
       setStreamingContent("")
-    } else {
-      console.error("Status check failed, result is empty")
+      showInfo("Ticket Status Check", "Checking ticket status in real-time...")
+
+      // 🎯 New Architecture: Simplified execute call with new callback interface
+      await execute({
+        issue_key: ticketId
+      }, {
+        onChunk: (fullText: string) => {
+          setStreamingContent(fullText)
+          setStatusCheckResultAtRealTime(fullText)
+        },
+        onComplete: (finalContent: string) => {
+          setStatusCheckResult(finalContent)
+          setStreamingContent("")
+          showInfo("Success", "Ticket status check completed successfully!")
+        },
+        onError: (errorMessage: string) => {
+          showError("Status Check Failed", errorMessage)
+        }
+      })
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      console.error("Status check failed:", error)
+      showError("Status Check Failed", errorMessage)
     }
   }
 

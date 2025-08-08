@@ -1,0 +1,75 @@
+---
+description: Guidelines for adding new features using the 3-step process
+alwaysApply: false
+---
+
+# Adding New Features - 3-Step Process
+
+## Step 1: Configure Endpoint
+
+Add to `config/streaming.ts`:
+
+```typescript
+// config/streaming.ts
+export const STREAMING_CONFIG = {
+  // ... existing services
+  newService: {
+    'action-name': '/api/newservice/action'
+  }
+} as const
+```
+
+## Step 2: Create Hook
+
+Create `hooks/newservice/index.ts`:
+
+```typescript
+import { useStreamBase } from '../common/useStreamBase'
+
+export const useNewServiceAction = () => useStreamBase('newService', 'action-name')
+
+// With validation if needed
+export function useNewServiceActionWithValidation() {
+  const hook = useNewServiceAction()
+  
+  const executeWithValidation = async (request: any, options?: StreamOptions) => {
+    if (!request?.requiredField) {
+      throw new Error('requiredField is required')
+    }
+    return hook.execute(request, options)
+  }
+  
+  return { ...hook, execute: executeWithValidation }
+}
+```
+
+## Step 3: Use in Component
+
+```typescript
+import { useNewServiceAction } from '~/hooks/newservice'
+
+export const NewComponent = () => {
+  const { data, loading, error, execute } = useNewServiceAction()
+  
+  const handleAction = async () => {
+    await execute({ requiredField: 'value' }, {
+      onChunk: (text) => console.log('Streaming:', text),
+      onComplete: (final) => console.log('Complete:', final),
+      onError: (err) => console.error('Error:', err)
+    })
+  }
+  
+  return (
+    <button onClick={handleAction} disabled={loading}>
+      {loading ? 'Processing...' : 'Start Action'}
+    </button>
+  )
+}
+```
+
+## Auto-routing Configuration
+
+New services require only configuration, no manual registration:
+- Port naming follows `service-action` convention
+- Background worker automatically routes requests
+- No manual port registration needed

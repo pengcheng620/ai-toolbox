@@ -1,0 +1,68 @@
+---
+description: React component development patterns and best practices
+globs: **/components/**/*.tsx,**/components/**/*.ts
+alwaysApply: false
+---
+# Component Development Patterns
+
+## Component Implementation
+
+Components should focus on UI and delegate business logic to hooks:
+
+```typescript
+// ✅ Correct: Clean component with hook delegation
+import { useServiceActionWithValidation } from '~/hooks/service'
+
+export const MyComponent = () => {
+  const { data, loading, error, execute } = useServiceActionWithValidation()
+  
+  const handleAction = async () => {
+    await execute({ requiredField: 'value' }, {
+      onChunk: (fullText) => console.log('Streaming:', fullText),
+      onComplete: (finalText) => console.log('Complete:', finalText),
+      onError: (error) => console.error('Error:', error)
+    })
+  }
+  
+  return (
+    <button onClick={handleAction} disabled={loading}>
+      {loading ? 'Processing...' : 'Start Action'}
+    </button>
+  )
+}
+```
+
+## Error Handling Pattern
+
+```typescript
+// ✅ Unified error handling pattern
+useEffect(() => {
+  if (error) {
+    showError("Operation Failed", error)
+  }
+}, [error, showError])
+```
+
+## UI Guidelines
+
+### Tailwind CSS Usage
+```typescript
+// ✅ Good Tailwind usage
+<button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md disabled:opacity-50 transition-colors">
+  {loading ? 'Processing...' : 'Generate'}
+</button>
+```
+
+### Notification Patterns
+```typescript
+// ✅ Consistent notification usage
+const { showError, showWarning, showInfo } = useNotification()
+
+showInfo("Processing", "Generating content in real-time...")
+showError("Generation Failed", errorMessage)
+```
+
+## Naming Conventions
+
+- **Components**: `[Feature][Component]` (e.g., `TicketSummaryButton`)
+- **Files**: kebab-case (e.g., `ticket-summary-button.tsx`)

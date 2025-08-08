@@ -1,0 +1,63 @@
+---
+description: Chrome Extension specific patterns and best practices
+globs: **/background/**/*.ts,**/contents/**/*.tsx
+alwaysApply: false
+---
+# Chrome Extension Best Practices
+
+## Background Worker Patterns
+
+### Auto-routing System
+- All port connections are handled automatically
+- Use `service-action` naming convention for ports
+- Universal handler processes all requests
+
+### Port Management
+```typescript
+// ✅ Correct: Let the system handle ports automatically
+const { execute } = useServiceAction()
+
+// ❌ Don't manually manage ports
+const port = chrome.runtime.connect({ name: 'manual-port' })
+```
+
+## Content Script Integration
+
+### Component Injection
+- Components inject directly into target pages
+- Use DOM manipulation utilities from services
+- Maintain page performance and compatibility
+
+### DOM Interaction
+```typescript
+// ✅ Use service utilities for DOM manipulation
+import { setCommentArea, updateTextareaRealtime } from '~/services/dom-utils'
+
+// Update DOM through services, not directly in components
+await setCommentArea(generatedContent)
+```
+
+## Debugging Chrome Extensions
+
+### Console Debugging Locations
+- **Background logs**: Chrome DevTools > Extensions > Service Worker
+- **Component logs**: Regular browser console
+- **Port connections**: Look for "Port connected/disconnected" messages
+
+### Common Issues & Solutions
+1. **Port name format errors**: Ensure `service-action` format
+2. **API endpoint 404s**: Check `config/streaming.ts` configuration
+3. **Validation errors**: Verify request data structure
+4. **Context Invalidated**: Normal in development, restart dev server
+
+## Performance Considerations
+
+### Memory Management
+- Hooks automatically cleanup ports on unmount
+- No manual resource management needed
+- Efficient streaming with chunked processing
+
+### Bundle Optimization
+- Tree-shaking friendly exports
+- Lazy loading for large components
+- Minimal external dependencies

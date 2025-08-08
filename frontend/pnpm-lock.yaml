@@ -21,8 +21,8 @@ importers:
         specifier: ^7.11.1
         version: 7.17.7(react@18.2.0)
       '@plasmohq/messaging':
-        specifier: ^0.7.1
-        version: 0.7.1(react@18.2.0)
+        specifier: ^0.7.2
+        version: 0.7.2(react@18.2.0)
       '@plasmohq/storage':
         specifier: ^1.11.0
         version: 1.15.0(react@18.2.0)
@@ -1351,8 +1351,8 @@ packages:
   '@plasmohq/init@0.7.0':
     resolution: {integrity: sha512-P75g48dqOGneJ+n0AcqnLE/TYflcaPc3B7h6EopnCBBYUDnCNBMwYmKAkaf5pnhsEB0ybPS6TU1C2DTGfqaW7A==}
 
-  '@plasmohq/messaging@0.7.1':
-    resolution: {integrity: sha512-oKTrEO+Qhm/hgUKoiz17dspt2Vwf0O0JN5sUT3WjwEhL6uK7NdSawBl8eELK4qvm7pFSvNcJXiiuHYAvtPKaWg==}
+  '@plasmohq/messaging@0.7.2':
+    resolution: {integrity: sha512-waIp827DRgy4KiF+eoWQBvlacltAGzD1LgeFdgMC0tF2eMSgSFmvIEZc/8irQUFTcG+nk/Z+ESTIS7MVX71iTQ==}
     peerDependencies:
       react: ^16.8.6 || ^17 || ^18 || ^19.0.0
     peerDependenciesMeta:
@@ -2764,8 +2764,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.3:
-    resolution: {integrity: sha512-I7X2b22cxA4LIHXPSqbBCEQSL+1wv8TuoefejsX4HFWyC6jc5JG7CEaxOltiKjc1M+YCS2YkrZZcj4+dytw9GA==}
+  nanoid@5.1.5:
+    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -4899,9 +4899,9 @@ snapshots:
 
   '@plasmohq/init@0.7.0': {}
 
-  '@plasmohq/messaging@0.7.1(react@18.2.0)':
+  '@plasmohq/messaging@0.7.2(react@18.2.0)':
     dependencies:
-      nanoid: 5.0.3
+      nanoid: 5.1.5
     optionalDependencies:
       react: 18.2.0
 
@@ -6449,7 +6449,7 @@ snapshots:
 
   nanoid@3.3.6: {}
 
-  nanoid@5.0.3: {}
+  nanoid@5.1.5: {}
 
   needle@3.3.1:
     dependencies:

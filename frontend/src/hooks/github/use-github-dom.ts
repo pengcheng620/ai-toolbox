@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useRef } from "react"
-import { getGitHubPageStrategy } from "../../lib/utils/github"
+import { getGitHubPageStrategy } from "../../../lib/utils/github"
 
 // Constants for edit mode handling
 const EDIT_MODE_WAIT_TIME = 3000 // 3 seconds

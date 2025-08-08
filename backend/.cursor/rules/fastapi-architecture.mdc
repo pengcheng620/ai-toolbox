@@ -1,0 +1,88 @@
+---
+description: FastAPI Backend Architecture Guidelines
+globs: **/*.py
+alwaysApply: true
+---
+
+# FastAPI Backend Architecture
+
+## Project Structure
+
+```
+backend/
+├── app/
+│   ├── api/            # API route handlers
+│   ├── services/       # Business logic services
+│   ├── models/         # Pydantic models and schemas
+│   ├── prompts/        # AI prompt templates
+│   └── utils/          # Utility functions
+├── config.py          # Configuration management
+├── main.py           # FastAPI application entry
+└── requirements.txt  # Dependencies
+```
+
+## Core Patterns
+
+### API Route Structure
+```python
+# ✅ Correct: Clean route with service delegation
+from fastapi import APIRouter
+from app.services.ai_service import AIService
+
+router = APIRouter(prefix="/api/v1")
+
+@router.post("/jira/summary")
+async def generate_jira_summary(request: JiraSummaryRequest):
+    service = AIService()
+    return service.generate_summary(request)
+```
+
+### Service Layer Pattern
+```python
+# ✅ Correct: Service encapsulates business logic
+class AIService:
+    def __init__(self):
+        self.client = get_azure_client()
+    
+    async def generate_summary(self, request: JiraSummaryRequest):
+        prompt = self.build_prompt(request)
+        return await self.stream_response(prompt)
+```
+
+### Streaming Response Pattern
+```python
+# ✅ Correct: SSE streaming implementation
+from fastapi.responses import StreamingResponse
+
+async def stream_ai_response(prompt: str):
+    async def generate():
+        async for chunk in ai_client.stream(prompt):
+            yield f"data: {chunk}\n\n"
+        yield "data: [DONE]\n\n"
+    
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"}
+    )
+```
+
+## Development Guidelines
+
+### Error Handling
+- Use FastAPI's HTTPException for API errors
+- Implement proper logging with structured messages
+- Return consistent error response format
+
+### Type Safety
+- Use Pydantic models for all request/response data
+- Implement proper type hints throughout
+- Validate input data at API boundaries
+
+### Configuration
+- Environment-based configuration with Pydantic Settings
+- Centralized configuration management
+- Secure handling of API keys and secrets
+
+### Testing
+- Currently, we don't have any tests.

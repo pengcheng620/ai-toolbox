@@ -6,7 +6,6 @@ import type {
 import React from "react"
 import { createRoot } from "react-dom/client"
 
-// import { GenerateDoDefinitionButton } from "~components/jira/add-comment-button"
 import { GenerateTicketSummaryButton } from "~components/jira/ticket-summary-button"
 
 export const config: PlasmoCSConfig = {

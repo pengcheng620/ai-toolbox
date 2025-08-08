@@ -1,5 +1,5 @@
 import { CountButton } from "~features/count-button";
-import { AppConfigProvider } from "~hook/useAppConfig";
+import { AppConfigProvider } from "~hooks/common/use-app-config";
 import { MantineProvider } from "@mantine/core";
 
 import "~style.css";
