@@ -8,7 +8,6 @@ export interface ApiConfig {
   endpoints: {
     github: {
       pr: string
-      prFromJira: string
       prData: string
       commit: string
       review: string
@@ -40,7 +39,6 @@ export const defaultApiConfig: ApiConfig = {
   endpoints: {
     github: {
       pr: "/ai/github/pr",
-      prFromJira: "/ai/github/pr-from-jira",
       prData: "/ai/github/pr-data",
       commit: "/ai/github/commit",
       review: "/ai/github/review",
@@ -228,7 +226,7 @@ export class ApiClient {
       commits: data.commits ? `${data.commits.length} commits` : 'none'
     })
 
-    const response = await fetch(this.getFullUrl(this.config.endpoints.github.prFromJira), {
+    const response = await fetch(this.getFullUrl(this.config.endpoints.github.pr), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 ---
 description: Chrome Extension specific patterns and best practices
-globs: **/background/**/*.ts,**/contents/**/*.tsx
+globs: ["frontend/src/background/**/*.ts", "frontend/src/contents/**/*.tsx"]
 alwaysApply: false
 ---
 # Chrome Extension Best Practices

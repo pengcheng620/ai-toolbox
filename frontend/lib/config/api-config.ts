@@ -36,9 +36,6 @@ export function getApiEndpoints(baseUrl: string): ApiEndpoints {
   return {
     ai: {
       health: `${apiV1Prefix}/ai/health`,
-      github: {
-        prFromJira: `${apiV1Prefix}/ai/github/pr-from-jira`
-      },
       jira: {
         generate: `${apiV1Prefix}/ai/jira/generate`
       }

@@ -1,0 +1,178 @@
+---
+description: Project Directory Structure Standards and Organization
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Directory Structure Standards
+
+## Mandatory Directory Organization
+
+This project follows a strict directory structure. All files MUST be placed in their designated locations.
+
+## Root Structure
+
+```
+ai-toolbox/
+├── .cursor/rules/      # Cursor AI rules (numbered: 001-, 010-, 100-, 200-)
+├── .github/            # GitHub workflows and configurations
+├── backend/            # Python FastAPI backend
+├── config/             # Shared YAML configuration files
+├── deployment/         # Docker and deployment configurations
+├── frontend/           # Chrome Extension (Plasmo + React + TypeScript)
+├── scripts/            # Build, deployment, and utility scripts
+├── CLAUDE.md           # Claude AI assistant documentation
+├── CONFIGURATION.md    # Configuration guide
+├── README.md           # Project documentation
+└── STORY.md            # Project story and context
+```
+
+## Backend Directory Structure
+
+```
+backend/
+├── app/
+│   ├── api/            # API route handlers (FastAPI routers)
+│   │   ├── ai.py       # AI-related endpoints
+│   │   ├── auth.py     # Authentication endpoints
+│   │   ├── github.py   # GitHub integration endpoints
+│   │   ├── jira.py     # Jira integration endpoints
+│   │   └── ...
+│   ├── models/         # Pydantic models and schemas
+│   │   └── schemas.py  # Request/response models
+│   ├── prompts/        # AI prompt templates (organized by feature)
+│   │   ├── chat/       # Chat-related prompts
+│   │   ├── github/     # GitHub-related prompts
+│   │   ├── jira/       # Jira-related prompts
+│   │   └── utils.py    # Prompt utilities
+│   ├── services/       # Business logic services
+│   │   ├── jira/       # Jira-specific services
+│   │   ├── azure_ai.py # Azure AI service
+│   │   ├── github_service.py
+│   │   └── ...
+│   ├── utils/          # Utility functions
+│   │   ├── config_loader.py
+│   │   ├── logger.py
+│   │   └── stream_handler.py
+│   ├── config.py       # Configuration management
+│   └── main.py         # FastAPI application entry point
+├── logs/               # Application logs (gitignored)
+├── Dockerfile          # Docker configuration
+├── requirements.txt    # Python dependencies
+└── pyproject.toml      # Python project configuration
+```
+
+## Frontend Directory Structure
+
+```
+frontend/
+├── src/
+│   ├── background/     # Chrome extension background worker
+│   │   ├── handlers/   # Request handlers
+│   │   └── index.ts    # Main background script
+│   ├── components/     # React components
+│   │   ├── common/     # Shared components
+│   │   ├── github/     # GitHub-specific components
+│   │   ├── jira/       # Jira-specific components
+│   │   └── side-widget/# Side widget components
+│   ├── config/         # Configuration files
+│   │   ├── cache-config.ts
+│   │   └── streaming.ts # Streaming endpoints config
+│   ├── contents/       # Content scripts (Plasmo)
+│   │   ├── github-pr.tsx
+│   │   ├── jira.tsx
+│   │   └── ...
+│   ├── hooks/          # React hooks (business logic)
+│   │   ├── common/     # useStreamBase.ts
+│   │   ├── github/     # GitHub-specific hooks
+│   │   ├── jira/       # Jira-specific hooks
+│   │   └── index.ts    # Unified exports
+│   ├── services/       # Service utilities
+│   │   ├── github-api.ts
+│   │   ├── jira-dom-parser.ts
+│   │   └── ...
+│   ├── types/          # TypeScript type definitions
+│   ├── utils/          # Utility functions
+│   ├── popup.tsx       # Extension popup
+│   └── style.css       # Global styles
+├── assets/             # Static assets (icons, images)
+├── build/              # Build output (gitignored)
+├── lib/                # Legacy/shared utilities
+├── package.json        # Node.js dependencies
+├── tailwind.config.js  # Tailwind CSS configuration
+└── tsconfig.json       # TypeScript configuration
+```
+
+## File Placement Rules
+
+### ❌ DON'T Place Files Here:
+- Source code in project root
+- Components in services directory
+- API routes in services directory
+- Configuration in source directories
+- Test files mixed with source code
+- Build artifacts in source directories
+
+### ✅ DO Place Files Here:
+- **API routes** → `backend/app/api/`
+- **Business logic** → `backend/app/services/`
+- **Pydantic models** → `backend/app/models/`
+- **AI prompts** → `backend/app/prompts/[feature]/`
+- **React components** → `frontend/src/components/[feature]/`
+- **React hooks** → `frontend/src/hooks/[feature]/`
+- **Background handlers** → `frontend/src/background/handlers/`
+- **Content scripts** → `frontend/src/contents/`
+- **TypeScript types** → `frontend/src/types/`
+- **Configuration** → `config/` (shared) or `[backend|frontend]/config/`
+- **Cursor rules** → `.cursor/rules/` (numbered)
+
+## Naming Conventions for Directories
+
+- Use **lowercase** with **hyphens** for directories: `api-client/`, `user-auth/`
+- Group related files in feature-based subdirectories
+- Keep directory depth reasonable (max 4 levels from src)
+
+## When Adding New Features
+
+1. **Backend**: Create feature-specific files in existing directories:
+   - Route: `backend/app/api/[feature].py`
+   - Service: `backend/app/services/[feature]_service.py` or `backend/app/services/[feature]/`
+   - Prompts: `backend/app/prompts/[feature]/`
+
+2. **Frontend**: Follow the 3-layer architecture:
+   - Component: `frontend/src/components/[feature]/[component-name].tsx`
+   - Hook: `frontend/src/hooks/[feature]/index.ts`
+   - Config: Update `frontend/src/config/streaming.ts`
+
+## Directory Creation Rules
+
+- Create feature subdirectories when you have 3+ related files
+- Use `__init__.py` for Python packages
+- Use `index.ts` for TypeScript module exports
+- Include README.md in complex directories
+
+## Prohibited Patterns
+
+🚫 **NEVER** do these:
+- Creating random directories in project root
+- Mixing backend and frontend code
+- Placing business logic in API routes
+- Storing configuration in code files
+- Creating duplicate directory structures
+- Using inconsistent naming (camelCase vs snake_case vs kebab-case)
+
+## Examples
+
+### ✅ Correct File Placement
+```
+backend/app/services/jira/jira_service.py         # Jira business logic
+frontend/src/hooks/jira/index.ts                  # Jira hook
+frontend/src/components/jira/ticket-panel.tsx     # Jira component
+```
+
+### ❌ Incorrect File Placement
+```
+backend/jira_service.py                           # Wrong: Not in services/
+frontend/jira-hook.ts                             # Wrong: Not in hooks/
+jira-component.tsx                                # Wrong: Not in src/
+```

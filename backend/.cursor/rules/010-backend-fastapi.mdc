@@ -1,7 +1,7 @@
 ---
 description: FastAPI Backend Architecture Guidelines
-globs: **/*.py
-alwaysApply: true
+globs: ["backend/**/*.py"]
+alwaysApply: false
 ---
 
 # FastAPI Backend Architecture

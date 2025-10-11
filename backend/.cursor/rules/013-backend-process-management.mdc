@@ -1,0 +1,51 @@
+---
+description: Backend Process Management and Cleanup Guidelines
+globs: backend/run_*.py, backend/cleanup.py
+alwaysApply: false
+---
+
+# Process Management
+
+## Startup Scripts
+
+**Required**: Auto-cleanup before starting server
+
+```python
+# ✅ In run_dev.py / run_prod.py
+def cleanup_old_processes(port: int, pid_file: Path):
+    # 1. Check PID file, kill old process
+    # 2. Check port occupancy, kill if needed
+    # 3. Handle NoSuchProcess gracefully (don't exit)
+
+# Error handling
+except psutil.NoSuchProcess:
+    print("Process already terminated")  # Continue, don't sys.exit(1)
+```
+
+## PID File Management
+
+**Pattern**:
+1. Startup: Check & clean PID file → Kill old process → Write new PID
+2. Running: PID file tracks current process
+3. Shutdown: Delete PID file (signal handler + finally block)
+
+**Files**:
+- `.dev_server.pid` - Development
+- `.prod_server.pid` - Production
+- `.gitignore` - Ignore *.pid files
+
+## Cleanup Script
+
+**Usage**:
+```bash
+uv run cleanup.py              # Clean port 8077 + PID files
+uv run cleanup.py --kill-all   # Also kill all uvicorn (with confirm)
+uv run cleanup.py --port 8080  # Custom port
+```
+
+**Purpose**: Fallback when auto-cleanup fails
+
+## Error Handling Rules
+
+**DO**: Gracefully handle missing processes
+**DON'T**: Exit on NoSuchProcess - process may already be terminated

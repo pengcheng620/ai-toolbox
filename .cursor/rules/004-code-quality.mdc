@@ -1,0 +1,32 @@
+﻿---
+description: Code Quality Principles - DRY, KISS, YAGNI, and Best Practices
+globs: ["**/*.py", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+alwaysApply: true
+---
+
+# Code Quality Principles
+
+Follow DRY (Don't Repeat Yourself), KISS (Keep It Simple, Stupid), and YAGNI (You Aren't Gonna Need It) principles.
+
+## Core Principles
+
+### DRY: Reuse existing patterns and avoid code duplication
+### KISS: Simplify code structure, inline simple one-liners
+### YAGNI: Don't add functionality until needed
+
+## Pattern Consistency
+- Backend: Follow BaseAIService pattern for AI services
+- Frontend: Use useStreamBase pattern for all hooks
+- Extract hard-coded strings as constants
+- Think holistically about related files that need updates
+
+## Code Review Checklist
+- [ ] Type safety with proper hints/annotations
+- [ ] Proper error handling
+- [ ] Naming conventions followed
+- [ ] Correct directory placement
+- [ ] Pattern consistency maintained
+- [ ] No code duplication
+- [ ] Simplicity over complexity
+- [ ] Constants extracted
+- [ ] Complex logic documented

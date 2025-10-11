@@ -1,6 +1,6 @@
 ---
 description: React component development patterns and best practices
-globs: **/components/**/*.tsx,**/components/**/*.ts
+globs: ["frontend/src/components/**/*.tsx", "frontend/src/components/**/*.ts"]
 alwaysApply: false
 ---
 # Component Development Patterns

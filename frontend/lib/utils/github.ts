@@ -1,6 +1,7 @@
 // Removed unused constant - JIRA_TICKET_REGEX is defined inline where needed
 
 import githubCacheService from '../../src/services/github-cache-service'
+import { githubAPIService } from '../../src/services/github-api'
 
 /**
  * Defines the interface for a strategy that extracts information from a GitHub PR page.
@@ -15,6 +16,7 @@ export interface GitHubPageStrategy {
   getDescriptionTemplate(): string
   findEditButton(): HTMLButtonElement | null
   findEditModeTextarea(): HTMLTextAreaElement | null
+  getCurrentPRUrl(): string
 }
 
 // --- Strategy for Public GitHub (github.com) ---
@@ -79,9 +81,6 @@ class PublicGitHubStrategy implements GitHubPageStrategy {
 
   private async getCodeChangesFromAPI(): Promise<string | null> {
     try {
-      // Import the GitHub API service dynamically to avoid circular dependencies
-      const { githubAPIService } = await import('../../src/services/github-api')
-
       // Get current PR URL
       const currentUrl = window.location.href
 
@@ -209,9 +208,6 @@ class PublicGitHubStrategy implements GitHubPageStrategy {
 
   private async getCommitMessagesFromAPI(): Promise<string[] | null> {
     try {
-      // Import the GitHub API service dynamically
-      const { githubAPIService } = await import('../../src/services/github-api')
-
       // Get current PR URL
       const currentUrl = window.location.href
 
@@ -479,6 +475,10 @@ class PublicGitHubStrategy implements GitHubPageStrategy {
 
     console.warn("❌ No edit mode textarea found")
     return null
+  }
+
+  getCurrentPRUrl(): string {
+    return window.location.href
   }
 }
 

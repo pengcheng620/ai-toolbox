@@ -1,0 +1,188 @@
+---
+description: File, Folder, Variable, and Code Naming Standards
+globs: ["**/*.py", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+alwaysApply: true
+---
+
+# Naming Conventions
+
+## File Naming Standards
+
+### Python Files (Backend)
+- **Modules**: `snake_case.py`
+  - ✅ `jira_service.py`, `azure_ai.py`, `config_loader.py`
+  - ❌ `JiraService.py`, `azureAi.py`, `configLoader.py`
+
+- **API Routes**: `[resource].py`
+  - ✅ `jira.py`, `github.py`, `auth.py`
+  - ❌ `jira_api.py`, `jira-routes.py`
+
+- **Test Files**: `test_[module].py`
+  - ✅ `test_jira_service.py`, `test_azure_ai.py`
+  - ❌ `jira_test.py`, `jira_service_test.py`
+
+### TypeScript/JavaScript Files (Frontend)
+- **Components**: `kebab-case.tsx` or `PascalCase.tsx`
+  - ✅ `ticket-summary-panel.tsx`, `TicketSummaryPanel.tsx`
+  - ❌ `ticket_summary_panel.tsx`, `ticketSummaryPanel.tsx`
+
+- **Hooks**: `kebab-case.ts` or `camelCase.ts`
+  - ✅ `use-jira-ticket-summary.ts`, `useJiraTicketSummary.ts`
+  - ❌ `UseJiraTicketSummary.ts`, `jira_ticket_summary_hook.ts`
+
+- **Services**: `kebab-case.ts`
+  - ✅ `github-api-client.ts`, `jira-dom-parser.ts`
+  - ❌ `GithubApiClient.ts`, `jira_dom_parser.ts`
+
+- **Types**: `kebab-case.ts` or `camelCase.ts`
+  - ✅ `notification.ts`, `api-types.ts`
+  - ❌ `Notification.ts`, `API_TYPES.ts`
+
+### Configuration Files
+- Use standard naming conventions:
+  - ✅ `package.json`, `tsconfig.json`, `tailwind.config.js`
+  - ✅ `pyproject.toml`, `requirements.txt`, `.env.example`
+
+### Cursor Rules Files
+- **Pattern**: `[NNN]-[category]-[description].mdc`
+  - Core (001-099): `001-project-overview.mdc`, `002-directory-structure.mdc`
+  - Backend (010-019): `010-backend-fastapi.mdc`
+  - Frontend (020-029): `020-frontend-architecture.mdc`
+  - Patterns (100-199): `100-component-patterns.mdc`
+  - Features (200-299): `200-new-features-guide.mdc`
+
+## Directory Naming Standards
+
+### General Rules
+- **Backend**: `snake_case` (Python convention)
+  - ✅ `app/services/`, `jira/`, `api_client/`
+  - ❌ `appServices/`, `JIRA/`, `api-client/`
+
+- **Frontend**: `kebab-case` (JavaScript convention)
+  - ✅ `src/components/`, `github-api/`, `side-widget/`
+  - ❌ `src/Components/`, `github_api/`, `sideWidget/`
+
+## Code Naming Standards
+
+### Python (Backend)
+
+#### Classes
+- **PascalCase**: `class JiraService`, `class AzureAIClient`
+- ❌ `class jira_service`, `class azure_ai_client`
+
+#### Functions/Methods
+- **snake_case**: `def get_ticket_summary()`, `async def stream_completion()`
+- ❌ `def getTicketSummary()`, `def StreamCompletion()`
+
+#### Variables
+- **snake_case**: `ticket_data`, `api_endpoint`, `max_tokens`
+- ❌ `ticketData`, `ApiEndpoint`, `MAX_TOKENS` (unless constant)
+
+#### Constants
+- **UPPER_SNAKE_CASE**: `MAX_RETRIES`, `DEFAULT_TIMEOUT`, `API_VERSION`
+- ❌ `max_retries`, `defaultTimeout`, `apiVersion`
+
+#### Private Members
+- **Leading underscore**: `_internal_state`, `_validate_token()`
+- ❌ `internal_state`, `validateToken()`
+
+### TypeScript/React (Frontend)
+
+#### Components
+- **PascalCase**: `TicketSummaryPanel`, `MessageOptimizer`
+- ❌ `ticketSummaryPanel`, `message-optimizer`
+
+#### Hooks
+- **camelCase with `use` prefix**: `useJiraTicketSummary`, `useStreamBase`
+- ❌ `UseJiraTicketSummary`, `jiraTicketSummaryHook`
+
+#### Functions
+- **camelCase**: `handleSubmit`, `fetchTicketData`, `parseJiraResponse`
+- ❌ `HandleSubmit`, `fetch_ticket_data`, `ParseJiraResponse`
+
+#### Variables
+- **camelCase**: `ticketData`, `isLoading`, `apiEndpoint`
+- ❌ `ticket_data`, `IsLoading`, `api-endpoint`
+
+#### Constants
+- **UPPER_SNAKE_CASE**: `MAX_RETRIES`, `DEFAULT_TIMEOUT`, `API_BASE_URL`
+- ❌ `maxRetries`, `defaultTimeout`, `apiBaseUrl`
+
+#### Types/Interfaces
+- **PascalCase**: `interface TicketData`, `type StreamOptions`
+- ❌ `interface ticketData`, `type stream_options`
+
+#### Enums
+- **PascalCase** for name, **UPPER_SNAKE_CASE** for values:
+  ```typescript
+  enum ApiStatus {
+    SUCCESS = 'SUCCESS',
+    ERROR = 'ERROR',
+    LOADING = 'LOADING'
+  }
+  ```
+
+## Port/Event Naming (Chrome Extension)
+
+### Port Names
+- **Pattern**: `service-action` (kebab-case)
+  - ✅ `jira-ticket-summary`, `github-pr-description`
+  - ❌ `jiraTicketSummary`, `github_pr_description`, `JIRA-TICKET-SUMMARY`
+
+### Event Names
+- **Pattern**: `category:action` (kebab-case)
+  - ✅ `jira:fetch-ticket`, `github:generate-pr`
+  - ❌ `jira-fetch-ticket`, `jiraFetchTicket`
+
+## API Endpoint Naming
+
+### REST API Paths
+- **Pattern**: `/api/v1/[resource]/[action]` (kebab-case)
+  - ✅ `/api/v1/jira/ticket-summary`, `/api/v1/github/pr-description`
+  - ❌ `/api/v1/jira/ticketSummary`, `/api/v1/JIRA/ticket_summary`
+
+### Query Parameters
+- **snake_case**: `?ticket_id=123&include_comments=true`
+- ❌ `?ticketId=123&includeComments=true`
+
+## Git Branch Naming
+
+### Pattern: `[type]/[description]`
+- **Types**: `feature/`, `fix/`, `refactor/`, `docs/`, `test/`
+- **Examples**:
+  - ✅ `feature/jira-ticket-summary`, `fix/streaming-line-breaks`
+  - ❌ `feature-jira-ticket-summary`, `fix_streaming_line_breaks`
+
+## Commit Message Conventions
+
+### Pattern: `[type]: [description]`
+- **Types**: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`
+- **Examples**:
+  - ✅ `feat: add Jira ticket summary endpoint`
+  - ✅ `fix: resolve SSE line break encoding issue`
+  - ❌ `Added feature`, `fixed bug`
+
+## Quick Reference
+
+| Context | Convention | Example |
+|---------|------------|---------|
+| Python files | snake_case | `jira_service.py` |
+| TS/React files | kebab-case | `ticket-panel.tsx` |
+| Python classes | PascalCase | `JiraService` |
+| Python functions | snake_case | `get_ticket()` |
+| React components | PascalCase | `TicketPanel` |
+| React hooks | use + camelCase | `useTicketSummary` |
+| Variables (all) | snake_case (Py), camelCase (TS) | `ticket_data`, `ticketData` |
+| Constants (all) | UPPER_SNAKE_CASE | `MAX_RETRIES` |
+| Directories (Py) | snake_case | `jira_service/` |
+| Directories (TS) | kebab-case | `jira-service/` |
+| API endpoints | kebab-case | `/api/jira/ticket-summary` |
+| Ports | kebab-case | `jira-ticket-summary` |
+| Git branches | type/kebab-case | `feature/add-summary` |
+
+## When in Doubt
+
+- **Backend (Python)**: Use `snake_case` for everything except classes (PascalCase)
+- **Frontend (TypeScript)**: Use `camelCase` for code, `kebab-case` for files
+- **Configuration**: Follow the tool's convention (e.g., `package.json`, `pyproject.toml`)
+- **Consistency**: When adding to existing code, match the existing pattern

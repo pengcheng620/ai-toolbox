@@ -1,7 +1,7 @@
 ---
 description: AI Toolbox Frontend Architecture Guidelines
-globs: **/*.tsx,**/*.ts
-alwaysApply: true
+globs: ["frontend/**/*.tsx", "frontend/**/*.ts"]
+alwaysApply: false
 ---
 
 # AI Toolbox Frontend Architecture

@@ -28,8 +28,9 @@ export async function handleStreamRequest(
     
     const fullUrl = `${config.baseUrl}/api/v1${endpoint}`
     const requestPayload = { ...requestData, stream: true }
-    console.log(`[${requestId}] Starting stream request to: ${fullUrl}`)
-    console.log(`[${requestId}] Request payload:`, JSON.stringify(requestPayload, null, 2))
+    console.log(`[${requestId}] 🚀 Starting stream request to: ${fullUrl}`)
+    console.log(`[${requestId}] 📤 Request payload:`, JSON.stringify(requestPayload, null, 2))
+    console.log(`[${requestId}] 🔧 Service: ${service}, Action: ${action}, Endpoint: ${endpoint}`)
     
     // Start streaming request (reference existing implementation, no API Key)
     const response = await fetch(`${config.baseUrl}/api/v1${endpoint}`, {
@@ -44,7 +45,10 @@ export async function handleStreamRequest(
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error(`[${requestId}] ❌ HTTP ${response.status}: ${response.statusText}`)
+      console.error(`[${requestId}] ❌ Error response body:`, errorText)
+      throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`)
     }
 
     if (!response.body) {

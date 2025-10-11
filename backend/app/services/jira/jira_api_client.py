@@ -374,10 +374,14 @@ class JiraAPIClient:
 
     async def get_issue_details(self, issue_key: str, include_comments: bool = True, include_attachments: bool = True) -> Dict[str, Any]:
         """Get detailed information for a specific issue including comments, links, and attachments."""
+        logger.info(f"🎯 get_issue_details called for issue: {issue_key}")
+        
         if not settings.jira_api_enabled:
+            logger.error("❌ Jira API is not enabled")
             raise ValueError("Jira API is not enabled or properly configured")
         
         if not self.session:
+            logger.error("❌ Session not initialized")
             raise ValueError("Session not initialized. Use 'async with' context manager.")
 
         try:
@@ -392,10 +396,13 @@ class JiraAPIClient:
             params = {
                 "expand": ",".join(expand_params)
             }
+            logger.info(f"🌐 Making request to Jira: {url}")
             
             async with self.session.get(url, params=params) as response:
+                logger.info(f"🔄 Jira API response status: {response.status}")
                 if response.status == 200:
                     data = await response.json()
+                    logger.info(f"✅ Successfully parsed Jira response data")
                     
                     # Parse basic issue information
                     basic_info = self._parse_issue_data(data)

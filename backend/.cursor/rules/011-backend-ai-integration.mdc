@@ -1,6 +1,6 @@
 ---
 description: AI Integration Patterns and Best Practices
-globs: **/services/**/*.py,**/prompts/**/*.py
+globs: ["backend/app/services/**/*.py", "backend/app/prompts/**/*.py"]
 alwaysApply: false
 ---
 

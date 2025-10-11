@@ -328,9 +328,11 @@ export const AddDescription = () => {
       }
     }
 
+    const strategy = getGitHubPageStrategy()
     await handleGenerate({
       jira_ticket_id: jiraTicketId || "", // Use empty string if null (skip Jira integration)
       pr_title: data.prTitle,
+      pr_url: strategy.getCurrentPRUrl(), // Add required PR URL parameter
       code_changes: data.codeChanges,
       branch_name: data.branchName,
       commit_messages: data.commitMessages,
@@ -343,6 +345,7 @@ export const AddDescription = () => {
   const handleGenerate = async (payload: {
     jira_ticket_id: string
     pr_title: string
+    pr_url: string
     code_changes: string
     branch_name: string
     commit_messages: string[]

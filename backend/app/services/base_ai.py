@@ -176,63 +176,82 @@ class BaseAzureAIService:
         temperature: float = 0.7,
         system_message: Optional[str] = None,
         max_retries: int = 2,
+        use_langchain: bool = True,  # NEW: Default to LangChain for testing
     ) -> AsyncIterator[str]:
-        """Generate streaming text using Azure OpenAI."""
+        """Generate streaming text using LangChain or Azure SDK with OAuth."""
         model_name = model or settings.azure_openai_deployment_name
 
         for attempt in range(max_retries + 1):
             try:
-                # Get Azure OpenAI client
-                client = await self._get_azure_client()
-
-                # Prepare messages
-                messages = []
-                if system_message:
-                    messages.append({"role": "system", "content": system_message})
-                messages.append({"role": "user", "content": prompt})
-
-                # Create streaming completion
-                # For o3-mini model, use max_completion_tokens instead of max_tokens
-                # and exclude temperature if it's an o3 model
-                completion_params = {
-                    "model": model_name,
-                    "messages": messages,
-                    "stream": True,
-                }
-
-                if "o3" in model_name.lower():
-                    completion_params["max_completion_tokens"] = max_tokens
+                if use_langchain:
+                    # Use LangChain streaming - produces literal \\n automatically
+                    from langchain_core.messages import HumanMessage, SystemMessage
+                    
+                    client = await self._get_langchain_client()
+                    
+                    # Prepare LangChain messages
+                    messages = []
+                    if system_message:
+                        messages.append(SystemMessage(content=system_message))
+                    messages.append(HumanMessage(content=prompt))
+                    
+                    # LangChain's astream produces chunks with literal \\n for newlines
+                    # No conversion needed - already in correct format for SSE
+                    async for chunk in client.astream(messages):
+                        if chunk.content:
+                            yield chunk.content
+                    
+                    logger.info(f"LangChain streaming completed using model {model_name}")
+                    return
                 else:
-                    completion_params["max_tokens"] = max_tokens
-                    completion_params["temperature"] = temperature
+                    # Use Azure SDK - produces real \n (0x0A)
+                    client = await self._get_azure_client()
 
-                stream = await client.chat.completions.create(**completion_params)
+                    # Prepare messages
+                    messages = []
+                    if system_message:
+                        messages.append({"role": "system", "content": system_message})
+                    messages.append({"role": "user", "content": prompt})
 
-                async for chunk in stream:
-                    if chunk.choices and chunk.choices[0].delta.content:
-                        content = chunk.choices[0].delta.content
-                        yield content
+                    # Create streaming completion using Azure SDK
+                    response = await client.chat.completions.create(
+                        model=model_name,
+                        messages=messages,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                        stream=True
+                    )
 
-                logger.info(f"Streaming text generated successfully using model {model_name}")
-                return
+                    # Azure SDK produces chunks with real \n (0x0A) characters
+                    # Convert to literal \\n for SSE transmission
+                    async for chunk in response:
+                        if chunk.choices and chunk.choices[0].delta.content:
+                            content = chunk.choices[0].delta.content
+                            # Convert real newlines to literal string for SSE
+                            if '\n' in content:
+                                content = content.replace('\n', '\\n')
+                            yield content
+
+                    logger.info(f"Azure SDK streaming completed using model {model_name}")
+                    return
 
             except Exception as e:
                 error_str = str(e)
-                logger.error(f"Streaming generation attempt {attempt + 1} failed: {error_str}")
+                method = "LangChain" if use_langchain else "Azure SDK"
+                logger.error(f"{method} streaming attempt {attempt + 1} failed: {error_str}")
 
                 # Check if this is an authentication error and we have retries left
                 if self._is_auth_error(error_str) and attempt < max_retries:
-                    logger.info(f"Authentication error detected, refreshing auth and retrying (attempt {attempt + 1}/{max_retries})")
+                    logger.info(f"Authentication error detected, refreshing client (attempt {attempt + 1}/{max_retries})")
                     try:
                         await self.refresh_auth()
                         continue  # Retry with new token
                     except Exception as refresh_error:
                         logger.error(f"Auth refresh failed: {str(refresh_error)}")
-                        # Continue to final error handling
 
                 # If this is the last attempt or not an auth error, raise error
                 if attempt == max_retries:
-                    logger.error(f"All {max_retries + 1} attempts failed for streaming generation")
+                    logger.error(f"All {max_retries + 1} attempts failed")
                     raise Exception(f"Streaming generation failed: {error_str}")
 
     async def refresh_auth(self):

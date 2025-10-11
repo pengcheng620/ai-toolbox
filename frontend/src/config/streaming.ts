@@ -11,7 +11,7 @@ export const STREAMING_CONFIG = {
     'status-check': '/ai/jira/statuscheck'
   },
   github: {
-    'pr-description': '/ai/github/pr-description',
+    'pr-description': '/ai/github/pr',
     'code-review': '/ai/github/code-review', 
     'commit-message': '/ai/github/commit-message'
   }

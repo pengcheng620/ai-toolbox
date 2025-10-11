@@ -1,6 +1,6 @@
 ---
-description: Jira Ticket Summary Streaming Response Line Breaks Fix Solution
-globs: **/components/jira/**/*.tsx,**/background/handlers/**/*.ts,**/hooks/**/*.tsx
+description: SSE Streaming Line Breaks Fix - Best Practices and Solution
+globs: ["frontend/src/components/jira/**/*.tsx", "frontend/src/background/handlers/**/*.ts", "backend/app/api/**/*.py", "backend/app/services/**/*.py"]
 alwaysApply: false
 ---
 

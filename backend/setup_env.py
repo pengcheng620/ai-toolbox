@@ -82,7 +82,7 @@ ENABLE_METRICS=true
     print("   AZURE_OPENAI_DEPLOYMENT_NAME -> 部署的模型名称 (例如: gpt-4o)")
     
     print("\n✅ 配置完成后，运行以下命令启动服务：")
-    print("   uv run python run_dev.py")
+    print("   uv run run_dev.py")
 
 if __name__ == "__main__":
     setup_env() 

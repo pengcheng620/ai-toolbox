@@ -180,4 +180,9 @@ logs/
 uploads/
 temp/
 .coverage
-htmlcov/ 
+htmlcov/
+
+# Process management
+*.pid
+.dev_server.pid
+.prod_server.pid 

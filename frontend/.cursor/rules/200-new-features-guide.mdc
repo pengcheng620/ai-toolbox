@@ -1,5 +1,6 @@
 ---
 description: Guidelines for adding new features using the 3-step process
+globs: ["frontend/**/*.ts", "frontend/**/*.tsx"]
 alwaysApply: false
 ---
 

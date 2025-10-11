@@ -1,0 +1,10 @@
+﻿{
+  "jira_ticket_id": "TEST-123",
+  "pr_title": "Test PR",
+  "pr_url": "https://example.com/pr/123",
+  "code_changes": "Test changes with\nmultiple lines\n\nAnother paragraph here",
+  "branch_name": "feature/test",
+  "commit_messages": ["First commit", "Second commit"],
+  "description_template": "",
+  "stream": true
+}

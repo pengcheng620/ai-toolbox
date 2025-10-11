@@ -1,6 +1,6 @@
 """AI-powered services API endpoints."""
 
-from typing import List, Optional
+from typing import List, Optional, Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -9,6 +9,7 @@ from app.services.jira.jira_service import jira_service
 from app.services.github_service import github_service
 from app.utils.logger import get_logger
 from app.utils.stream_handler import StreamableRequest, create_streaming_response
+from app.api.github import ParsedFile, ParsedCommit
 
 logger = get_logger(__name__)
 
@@ -75,12 +76,15 @@ class JiraTicketStatusCheckRequest(StreamableRequest):
 class GitHubPRRequest(StreamableRequest):
     """Request model for GitHub PR description generation."""
 
+    jira_ticket_id: str = Field(default="", description="Jira ticket ID")
     pr_title: str = Field(..., description="Pull Request title")
+    pr_url: str = Field(default="", description="Pull Request URL")
     code_changes: str = Field(..., description="Code changes summary")
     branch_name: str = Field(default="", description="Branch name")
-    commit_messages: List[str] = Field(
-        default_factory=list, description="Commit messages"
-    )
+    commit_messages: List[str] = Field(default_factory=list, description="Commit messages")
+    description_template: str = Field(default="", description="Description template")
+    files_changed: Optional[List[ParsedFile]] = Field(None, description="Files changed")
+    commits: Optional[List[ParsedCommit]] = Field(None, description="Commits")
 
 
 # Response models
@@ -418,20 +422,44 @@ async def generate_github_pr_description(request: GitHubPRRequest):
         logger.info(f"Generating GitHub PR description for: {request.pr_title}, stream: {request.stream}")
 
         if request.stream:
-            generator = azure_ai_service.generate_github_pr_description_stream(
-                pr_title=request.pr_title,
-                code_changes=request.code_changes,
-                branch_name=request.branch_name,
-                commit_messages=request.commit_messages,
-            )
-            return await create_streaming_response(generator, "GitHub PR description generation")
+            async def generate_stream():
+                try:
+                    # Streaming is handled by base_ai.py which ensures consistent encoding:
+                    # - LangChain: produces literal \\n automatically
+                    # - Azure SDK: converts real \n to literal \\n
+                    async for chunk in github_service.generate_pr_description_from_jira_stream(
+                        jira_ticket_id=request.jira_ticket_id,
+                        pr_title=request.pr_title,
+                        code_changes=request.code_changes,
+                        branch_name=request.branch_name,
+                        commit_messages=request.commit_messages,
+                        description_template=request.description_template,
+                        files_changed=request.files_changed,
+                        commits=request.commits,
+                    ):
+                        yield chunk
+                except Exception as e:
+                    logger.error(f"GitHub PR streaming error: {str(e)}")
+                    import traceback
+                    logger.error(f"Full traceback: {traceback.format_exc()}")
+                    yield f"Error: {str(e)}"
+
+            return await create_streaming_response(generate_stream(), "GitHub PR description generation")
         else:
-            result = await azure_ai_service.generate_github_pr_description(
+            result = await github_service.generate_pr_description_from_jira(
+                jira_ticket_id=request.jira_ticket_id,
                 pr_title=request.pr_title,
                 code_changes=request.code_changes,
                 branch_name=request.branch_name,
                 commit_messages=request.commit_messages,
+                description_template=request.description_template,
+                files_changed=request.files_changed,
+                commits=request.commits,
             )
+
+            if result.get("success") is False:
+                raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
+
             return GitHubPRResponse(**result)
 
     except Exception as e:

@@ -22,11 +22,18 @@ async def create_streaming_response(
     generator: AsyncIterator[str],
     error_prefix: str = "AI generation"
 ) -> StreamingResponse:
-    """Create a streaming response from an async generator."""
+    """
+    Create a streaming response from an async generator.
+    
+    IMPORTANT: Encodes newlines in chunks for proper SSE transmission.
+    Frontend will decode \\n back to \n for display in rich text editors.
+    """
     
     async def generate():
         try:
             async for chunk in generator:
+                # Chunks should already have encoded newlines as literal '\\n'
+                # We just wrap them in SSE format
                 yield f"data: {chunk}\n\n"
             yield "data: [DONE]\n\n"
         except Exception as e:

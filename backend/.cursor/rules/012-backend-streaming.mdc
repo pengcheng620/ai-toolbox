@@ -1,0 +1,52 @@
+---
+description: Azure OpenAI Streaming with LangChain and Azure SDK
+globs: backend/app/services/**/*.py, backend/app/api/**/*.py
+alwaysApply: false
+---
+
+# Streaming Implementation
+
+## Default: Use LangChain
+
+**✅ LangChain streaming** (recommended):
+- Automatically produces literal `\\n` for newlines
+- OAuth support via `azure_ad_token`
+- No manual encoding needed
+
+```python
+# base_ai.py - LangChain (use_langchain=True)
+async for chunk in client.astream(messages):
+    if chunk.content:
+        yield chunk.content  # Already has literal \\n
+```
+
+## Fallback: Azure SDK
+
+**Azure SDK** (use_langchain=False):
+- Produces real `\n` (0x0A) characters
+- Requires manual conversion to literal `\\n`
+
+```python
+# base_ai.py - Azure SDK (use_langchain=False)
+async for chunk in response:
+    if chunk.choices and chunk.choices[0].delta.content:
+        content = chunk.choices[0].delta.content
+        if '\n' in content:
+            content = content.replace('\n', '\\n')  # Convert to literal
+        yield content
+```
+
+## Key Points
+
+1. **Newline Encoding**: Frontend expects literal `\\n` (0x5C 0x6E), not real newline (0x0A)
+2. **Unified at base_ai.py**: All encoding happens in `generate_text_stream()`
+3. **No encoding in ai.py**: Endpoints just yield chunks directly
+4. **Verified**: Hex dump confirms LangChain produces correct literal `\\n`
+
+## Testing
+
+```powershell
+# Test and verify hex output
+curl http://localhost:8077/api/v1/ai/github/pr -d @test.json
+# Check for 5C 6E (literal \n) not 0A (real newline)
+```

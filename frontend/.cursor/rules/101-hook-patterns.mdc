@@ -1,6 +1,6 @@
 ---
 description: Hook development patterns and best practices
-globs: **/hooks/**/*.ts,**/hooks/**/*.tsx
+globs: ["frontend/src/hooks/**/*.ts", "frontend/src/hooks/**/*.tsx"]
 alwaysApply: false
 ---
 
